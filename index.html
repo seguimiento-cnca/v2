@@ -346,6 +346,34 @@ window.addEventListener('load', ()=>{
  #fx-card-home { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M8 12l3 3 5-6'/%3E%3C/svg%3E"); } #fx-card-programa { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V5M8 9l4-4 4 4'/%3E%3Cpath d='M5 19h14'/%3E%3C/svg%3E"); } #mf-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l5 5v13H7z'/%3E%3Cpath d='M14 3v5h5'/%3E%3Cpath d='M10 13h6M10 17h6'/%3E%3C/svg%3E"); } #nov-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h14l-3-3'/%3E%3Cpath d='M20 16H6l3 3'/%3E%3C/svg%3E"); } #ruta-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2.5'/%3E%3Ccircle cx='18' cy='6' r='2.5'/%3E%3Cpath d='M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5'/%3E%3C/svg%3E"); }
  #mf-sub .menu-card:nth-child(1) { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l5 5v13H7z'/%3E%3Cpath d='M14 3v5h5'/%3E%3Cpath d='M10 13h6M10 17h6'/%3E%3C/svg%3E"); } #mf-sub .menu-card:nth-child(2) { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h14v16H5z'/%3E%3Cpath d='M9 9l2 2 4-4M9 16h6'/%3E%3C/svg%3E"); }
  .ap-abajo { display: none; }
+ /* El menú lateral acompaña todas las pantallas del instructor */
+ body:not(.con-sesion) .ap-lat, body.modo-admin .ap-lat, body:not(.con-sesion) .ap-fondo, body.modo-admin .ap-fondo { display: none !important; }
+ .ap-lat { font-family: 'Work Sans', 'DM Sans', 'Segoe UI', sans-serif; }
+ .ap-lat button { font-family: inherit; }
+ .ap-menu-global { display: none; }
+ html[data-vista="movil"] .ap-lat { z-index: 9550; }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) #barra-sesion .bs-acciones > .bs-btn,
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) #barra-sesion .vista-selector { display: none; }
+ html[data-vista="movil"] #distintivo-pruebas { right: auto !important; left: 8px !important; font-size: 10px !important; padding: 5px 8px !important; }
+ html[data-vista="movil"] .ap-fondo { z-index: 9540; }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) .ap-menu-global { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex: 0 0 40px; padding: 0; border: none; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; cursor: pointer; }
+ /* Computador: menú fijo a la izquierda y la herramienta ocupa el espacio restante */
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) #barra-sesion { margin-left: 280px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .herramienta { margin-left: 0; }
+ /* En computador el menú lateral ya trae el nombre, la contraseña, la vista y salir: la barra de sesión sobra */
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) #barra-sesion { display: none !important; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-vista { left: 280px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-top { padding: 14px 32px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-nav,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-tabs,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-body { max-width: 1104px; padding-left: 32px; padding-right: 32px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .container,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .page-wrap,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) #btn-volver-wrap,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) #btn-volver-wrap-planes,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta div[style*="max-width:700px"] { max-width: 1104px !important; padding-left: 32px !important; padding-right: 32px !important; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header { padding-left: 32px; padding-right: 32px; }
  html[data-vista="movil"] body.en-inicio #distintivo-pruebas { bottom: 78px !important; }
  /* Computador: menú fijo a la izquierda */
  html[data-vista="pc"] .ap-main { margin-left: 280px; min-height: 100vh; }
@@ -361,8 +389,8 @@ window.addEventListener('load', ()=>{
  html[data-vista="pc"] #home #mf-sub { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
  /* Celular: el menú se abre desde el botón y hay accesos abajo */
  html[data-vista="movil"] .ap-lat { transform: translateX(-105%); transition: transform .22s ease; box-shadow: 8px 0 28px rgba(0,0,0,.25); width: min(300px, 86vw); }
- html[data-vista="movil"] #home.ap-menu-abierto .ap-lat { transform: none; }
- html[data-vista="movil"] #home.ap-menu-abierto .ap-fondo { display: block; }
+ html[data-vista="movil"] body.ap-menu-abierto .ap-lat { transform: none; }
+ html[data-vista="movil"] body.ap-menu-abierto .ap-fondo { display: block; }
  html[data-vista="movil"] .ap-top { background: linear-gradient(100deg, var(--ap-morado) 0%, var(--ap-azul) 100%); padding: 12px 14px; gap: 10px; }
  html[data-vista="movil"] .ap-btn-menu { background: rgba(255,255,255,.16); color: #fff; }
  html[data-vista="movil"] .ap-top .ap-logo { flex: 0 0 44px; height: 44px; border-radius: 12px; }
@@ -745,6 +773,7 @@ window.addEventListener('load', ()=>{
 
 <!-- Barra de sesión: nombre y cargo de quien ingresó -->
 <div id="barra-sesion">
+ <button type="button" class="ap-menu-global" aria-label="Abrir menú" onclick="apMenu(true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
  <div class="bs-perfil">
   <div class="bs-avatar" id="bs-avatar"></div>
   <div class="bs-textos">
@@ -762,26 +791,26 @@ window.addEventListener('load', ()=>{
  </div>
 </div>
 
+<div class="ap-fondo" onclick="apMenu(false)"></div>
+<aside class="ap-lat" aria-label="Menú principal">
+ <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span></div>
+ <button type="button" class="ap-item on" data-ap="inicio" onclick="apInicio()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="ap-txt">Inicio</span></button>
+ <button type="button" class="ap-item" data-ap="alertas" onclick="apIr('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="ap-txt">Notificaciones</span><span class="ap-cuenta" data-ap-cuenta></span></button>
+ <div class="ap-grupo">PRINCIPAL</div>
+ <button type="button" class="ap-item" data-ap="asis" onclick="apIr('asis')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg><span class="ap-txt">Registro de inasistencia</span></button>
+ <button type="button" class="ap-item" data-ap="llamados" onclick="apHerramienta('llamados')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/></svg><span class="ap-txt">Llamados de atención</span></button>
+ <button type="button" class="ap-item" data-ap="planes" onclick="apHerramienta('planes')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9l2 2 4-4M9 16h6"/></svg><span class="ap-txt">Planes de mejoramiento</span></button>
+ <button type="button" class="ap-item" data-ap="nov" onclick="apIr('nov')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3"/><path d="M20 16H6l3 3"/></svg><span class="ap-txt">Trámite de novedades</span></button>
+ <button type="button" class="ap-item" data-ap="ruta" onclick="apIr('ruta')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5"/></svg><span class="ap-txt">Activación de ruta</span></button>
+ <button type="button" class="ap-item" id="ap-item-programa" style="display:none;" data-ap="cargar" onclick="apIr('cargar')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M8 9l4-4 4 4"/><path d="M5 19h14"/></svg><span class="ap-txt">Fichas del programa</span></button>
+ <div class="ap-grupo">MI PERFIL</div>
+ <button type="button" class="ap-item" data-ap="mias" onclick="apIr('mias')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/></svg><span class="ap-txt">Mis fichas</span></button>
+ <button type="button" class="ap-item" onclick="apMenu(false);abrirCambioPassword()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg><span class="ap-txt">Contraseña</span></button>
+ <div class="vista-selector"><button type="button" class="vista-btn" onclick="toggleMenuVista(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg><span class="ap-txt">Vista: <span class="vista-actual">Automática</span></span></button><div class="vista-menu"></div></div>
+ <div class="ap-espacio"></div>
+ <button type="button" class="ap-item" onclick="cerrarSesion()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><span class="ap-txt">Salir</span></button>
+</aside>
 <div class="home active" id="home">
- <div class="ap-fondo" onclick="apMenu(false)"></div>
- <aside class="ap-lat" aria-label="Menú principal">
-  <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span></div>
-  <button type="button" class="ap-item on" onclick="apMenu(false)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="ap-txt">Inicio</span></button>
-  <button type="button" class="ap-item" onclick="apIr('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="ap-txt">Notificaciones</span><span class="ap-cuenta" data-ap-cuenta></span></button>
-  <div class="ap-grupo">PRINCIPAL</div>
-  <button type="button" class="ap-item" onclick="apIr('asis')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg><span class="ap-txt">Registro de inasistencia</span></button>
-  <button type="button" class="ap-item" onclick="apHerramienta('llamados')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/></svg><span class="ap-txt">Llamados de atención</span></button>
-  <button type="button" class="ap-item" onclick="apHerramienta('planes')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9l2 2 4-4M9 16h6"/></svg><span class="ap-txt">Planes de mejoramiento</span></button>
-  <button type="button" class="ap-item" onclick="apIr('nov')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3"/><path d="M20 16H6l3 3"/></svg><span class="ap-txt">Trámite de novedades</span></button>
-  <button type="button" class="ap-item" onclick="apIr('ruta')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5"/></svg><span class="ap-txt">Activación de ruta</span></button>
-  <button type="button" class="ap-item" id="ap-item-programa" style="display:none;" onclick="apIr('cargar')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M8 9l4-4 4 4"/><path d="M5 19h14"/></svg><span class="ap-txt">Fichas del programa</span></button>
-  <div class="ap-grupo">MI PERFIL</div>
-  <button type="button" class="ap-item" onclick="apIr('mias')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/></svg><span class="ap-txt">Mis fichas</span></button>
-  <button type="button" class="ap-item" onclick="apMenu(false);abrirCambioPassword()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg><span class="ap-txt">Contraseña</span></button>
-  <div class="vista-selector"><button type="button" class="vista-btn" onclick="toggleMenuVista(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg><span class="ap-txt">Vista: <span class="vista-actual">Automática</span></span></button><div class="vista-menu"></div></div>
-  <div class="ap-espacio"></div>
-  <button type="button" class="ap-item" onclick="cerrarSesion()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><span class="ap-txt">Salir</span></button>
- </aside>
  <div class="ap-main">
   <header class="ap-top">
    <button type="button" class="ap-btn-menu" aria-label="Abrir menú" onclick="apMenu(true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
@@ -856,9 +885,32 @@ window.addEventListener('load', ()=>{
 </div>
 <script>
 // ── Nuevo inicio: menú lateral, saludo y avisos ──
-function apMenu(abrir){ document.getElementById('home').classList.toggle('ap-menu-abierto', !!abrir); }
-function apIr(tab){ apMenu(false); fxAbrir(tab); }
-function apHerramienta(id){ apMenu(false); abrirHerramienta(id); }
+function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); }
+function apMarcar(clave){ document.querySelectorAll('.ap-lat [data-ap]').forEach(b => b.classList.toggle('on', b.dataset.ap === clave)); }
+function apHerramientaActiva(){ const h = document.querySelector('.herramienta.active'); return h ? h.id : ''; }
+function apFxAbierta(){ const v = document.getElementById('fx-vista'); return !!(v && v.classList.contains('abierta')); }
+// Opción "Inicio": cierra lo que esté abierto y vuelve al tablero
+function apInicio(){
+ apMenu(false);
+ if(apFxAbierta()) fxCerrar();
+ if(apHerramientaActiva()) volverInicio();
+ apMarcar('inicio');
+ window.scrollTo(0, 0);
+}
+// Herramientas del módulo de fichas (inasistencia, novedades, ruta, mis fichas, notificaciones)
+function apIr(tab){
+ apMenu(false);
+ if(apHerramientaActiva()) volverInicio();
+ fxAbrir(tab);
+}
+// Llamados de atención y planes de mejoramiento
+function apHerramienta(id){
+ apMenu(false);
+ if(apFxAbierta()) fxCerrar();
+ if(apHerramientaActiva()) volverInicio();
+ abrirHerramienta(id);
+ window.scrollTo(0, 0);
+}
 function apPintar(){
  if(!sesionActual) return;
  const esCtaAdmin = sesionActual.usuario === 'admin';
@@ -2679,6 +2731,7 @@ document.getElementById('fecha').valueAsDate=new Date();
 
 
 function abrirHerramienta(id){
+ if(typeof apMarcar === 'function') apMarcar(id);
  document.getElementById('home').classList.remove('active');
  document.getElementById('h-'+id).classList.add('active');
  const titulos = {
@@ -2698,6 +2751,7 @@ function abrirHerramienta(id){
 }
 
 function volverInicio(){
+ if(typeof apMarcar === 'function') apMarcar('inicio');
  document.querySelectorAll('.herramienta').forEach(h=>h.classList.remove('active'));
  document.getElementById('home').classList.add('active');
  document.getElementById('header-h1').textContent = 'Seguimiento a la Formación';
@@ -5991,6 +6045,7 @@ aplicarVista();
 
 <div id="fx-vista" class="fx-vista">
  <div class="fx-top">
+  <button type="button" class="ap-menu-global" aria-label="Abrir menú" onclick="apMenu(true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
   <img id="fx-logo" alt="SENA">
   <div style="min-width:0;flex:1;"><div class="fx-titulo" id="fx-titulo-txt">Registro de inasistencia</div><div class="fx-sub" id="fx-sub"></div></div>
   <button type="button" class="fx-campana" data-fx-campana onclick="fxAbrir('alertas')" title="Notificaciones"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="fx-badge"></span></button>
@@ -6155,11 +6210,13 @@ function fxAbrir(tab){
 }
 function fxCerrar(){
  document.getElementById('fx-vista').classList.remove('abierta');
+ if(typeof apMarcar === 'function'){ const h = document.querySelector('.herramienta.active'); apMarcar(h ? h.id.replace(/^h-/,'') : 'inicio'); }
  fxContarAlertas();
  document.body.style.overflow = '';
 }
 function fxIrTab(tab){
  const tabs = fxTabs();
+ if(typeof apMarcar === 'function' && FX.modo !== 'admin') apMarcar(tab);
  FX.tab = tab;
  document.getElementById('fx-tabs').style.display = tabs.length ? '' : 'none';
  if(tab!=='cargar') FX.cargaPend = FX.cargaPend.filter(it => it.estado==='listo');
