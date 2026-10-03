@@ -397,6 +397,18 @@ window.addEventListener('load', ()=>{
  body.con-sesion:not(.modo-admin) #h-planes-menu .home-title { text-align: left; padding-top: 0; margin-bottom: 14px !important; }
  body.con-sesion:not(.modo-admin) #h-planes-menu .home-title p { font-size: 14px; margin-top: 0; }
 
+ /* Mensajes */
+ .fx-msj { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit; background: #fff; }
+ .fx-msj:hover { border-color: var(--ap-morado); }
+ .fx-msj.nuevo { border-left: 4px solid var(--ap-morado); }
+ .fx-msj-top { display: flex; justify-content: space-between; gap: 10px; align-items: baseline; }
+ .fx-msj-de { font-size: 13px; color: var(--ap-gris); min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+ .fx-msj.nuevo .fx-msj-de { color: var(--ap-tinta); font-weight: 700; }
+ .fx-msj-as { font-size: 15px; font-weight: 600; color: var(--ap-tinta); line-height: 1.35; }
+ .fx-msj.nuevo .fx-msj-as { font-weight: 700; }
+ .fx-msj-res { font-size: 13px; color: var(--ap-gris); line-height: 1.45; }
+ .ap-quien .ap-sobre svg { width: 20px; height: 20px; }
+
  /* Pie de página (sugerencias y autoría) sobre fondo claro */
  body.con-sesion:not(.modo-admin) .ap-pie span { color: var(--ap-gris) !important; }
  body.con-sesion:not(.modo-admin) .ap-pie button { color: var(--ap-morado) !important; }
@@ -891,6 +903,7 @@ window.addEventListener('load', ()=>{
  <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span><button type="button" class="ap-plegar" id="ap-plegar" title="Ocultar el menú" aria-label="Ocultar el menú" onclick="apPlegar()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 6l-6 6 6 6"/><path d="M19 6l-6 6 6 6"/></svg></button></div>
  <button type="button" class="ap-item on" data-ap="inicio" onclick="apInicio()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="ap-txt">Inicio</span></button>
  <button type="button" class="ap-item" data-ap="alertas" onclick="apIr('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="ap-txt">Notificaciones</span><span class="ap-cuenta" data-ap-cuenta></span></button>
+<button type="button" class="ap-item" data-ap="msj" onclick="apIr('msj')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span class="ap-txt">Mensajes</span><span class="ap-cuenta" data-ap-msj></span></button>
  <div class="ap-grupo">PRINCIPAL</div>
  <button type="button" class="ap-item" data-ap="asis" onclick="apIr('asis')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg><span class="ap-txt">Registro de inasistencia</span></button>
  <button type="button" class="ap-item" data-ap="llamados" onclick="apHerramienta('llamados')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/></svg><span class="ap-txt">Llamados de atención</span></button>
@@ -920,7 +933,7 @@ window.addEventListener('load', ()=>{
     <div class="ap-banner">
      <span class="ap-eti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>NOVEDADES DE TUS FICHAS</span>
      <b id="ap-banner-tit">Lo que registró tu equipo</b>
-     <p>Revisa las inasistencias, los cambios de estado y las rutas activadas por otros instructores en las fichas que tienes asociadas.</p>
+     <p>Revisa las inasistencias y los cambios de estado registrados por otros instructores en las fichas que tienes asociadas.</p>
      <button type="button" onclick="fxAbrir('alertas')">Ver notificaciones<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
     </div>
    </section>
@@ -972,7 +985,7 @@ window.addEventListener('load', ()=>{
  <nav class="ap-abajo" aria-label="Accesos rápidos">
   <button type="button" class="on" onclick="window.scrollTo(0,0)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span>Inicio</span></button>
   <button type="button" onclick="fxAbrir('alertas')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Avisos</span><span class="ap-cuenta" data-ap-cuenta></span></button>
-  <button type="button" onclick="fxAbrir('mias')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/></svg><span>Mis fichas</span></button>
+  <button type="button" onclick="fxAbrir('msj')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg><span>Mensajes</span><span class="ap-cuenta" data-ap-msj></span></button>
   <button type="button" onclick="apMenu(true)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menú</span></button>
  </nav>
 </div>
@@ -1027,6 +1040,7 @@ function apDatosUsuario(){
   iniciales: ((p[0]||'')[0]||'').toUpperCase() + ((p[p.length>2?2:1]||'')[0]||'').toUpperCase(),
   primero: p[0] ? p[0].charAt(0).toUpperCase() + p[0].slice(1).toLowerCase() : '' };
 }
+const AP_SVG_SOBRE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>';
 const AP_SVG_CAMPANA = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>';
 function apMontarQuien(){
  const U = apDatosUsuario();
@@ -1035,8 +1049,9 @@ function apMontarQuien(){
   if(!q){
    q = document.createElement('div');
    q.className = 'ap-quien';
-   q.innerHTML = '<button type="button" class="fx-campana" data-fx-campana title="Notificaciones" aria-label="Notificaciones">' + AP_SVG_CAMPANA + '<span class="fx-badge"></span></button><div class="ap-quien-txt"><b></b><small></small></div><span class="ap-avatar" aria-hidden="true"></span>';
-   q.querySelector('button').onclick = () => fxAbrir('alertas');
+   q.innerHTML = '<button type="button" class="fx-campana ap-sobre" title="Mensajes" aria-label="Mensajes">' + AP_SVG_SOBRE + '<span class="fx-badge" data-ap-msj-n></span></button><button type="button" class="fx-campana" data-fx-campana title="Notificaciones" aria-label="Notificaciones">' + AP_SVG_CAMPANA + '<span class="fx-badge"></span></button><div class="ap-quien-txt"><b></b><small></small></div><span class="ap-avatar" aria-hidden="true"></span>';
+   q.querySelector('.ap-sobre').onclick = () => apIr('msj');
+   q.querySelector('[data-fx-campana]').onclick = () => fxAbrir('alertas');
    cab.appendChild(q);
   }
   q.querySelector('b').textContent = U.nombre;
@@ -1054,6 +1069,12 @@ function apPintar(){
  document.getElementById('ap-titulo').textContent = document.documentElement.dataset.vista === 'movil' ? 'Seguimiento a la Formación' : 'Inicio';
  apMontarQuien();
  if(typeof fxPintarCampanas === 'function') fxPintarCampanas();
+ apPintarMensajes();
+}
+function apPintarMensajes(){
+ const n = (typeof FX !== 'undefined' && FX.nMensajes) || 0, txt = n > 99 ? '99+' : String(n);
+ document.querySelectorAll('[data-ap-msj]').forEach(e => { e.textContent = txt; e.classList.toggle('con', n > 0); });
+ document.querySelectorAll('[data-ap-msj-n]').forEach(e => { e.textContent = txt; e.parentElement.classList.toggle('con', n > 0); e.parentElement.title = n ? `${n} mensaje${n!==1?'s':''} sin leer` : 'Mensajes'; });
 }
 function apPintarAvisos(){
  const n = (typeof FX !== 'undefined' && FX.nAlertas) || 0;
@@ -6247,6 +6268,7 @@ async function fxAlIniciar(){
  fxPintarBotonAdmin();
  fxPonerCampanas();
  fxContarAlertas();
+ fxContarMensajes();
  apPintar();
  if(fxEsLider()){
   const c = document.getElementById('bs-cargo');
@@ -6343,6 +6365,7 @@ function fxCerrar(){
  document.getElementById('fx-vista').classList.remove('abierta');
  if(typeof apMarcar === 'function'){ const h = document.querySelector('.herramienta.active'); apMarcar(h ? h.id.replace(/^h-/,'') : 'inicio'); }
  fxContarAlertas();
+ fxContarMensajes();
  document.body.style.overflow = '';
 }
 function fxIrTab(tab){
@@ -6354,12 +6377,13 @@ function fxIrTab(tab){
  document.getElementById('fx-tabs').innerHTML = tabs.map(([k,l]) => `<button type="button" class="fx-tab ${k===tab?'on':''}" onclick="fxIrTab('${k}')">${l}</button>`).join('');
  const body = document.getElementById('fx-body');
  body.innerHTML = '<div class="fx-sobre" style="padding:20px;text-align:center;">Cargando...</div>';
- const titulos = {asis:'Registro de inasistencia', nov:'Trámite de novedades', ruta:'Activación de ruta', mias:'Mis fichas', alertas:'Notificaciones', cargar: FX.modo==='admin' ? 'Líderes y fichas' : 'Fichas del programa', lideres:'Líderes y fichas'};
+ const titulos = {asis:'Registro de inasistencia', nov:'Trámite de novedades', ruta:'Activación de ruta', msj:'Mensajes', mias:'Mis fichas', alertas:'Notificaciones', cargar: FX.modo==='admin' ? 'Líderes y fichas' : 'Fichas del programa', lideres:'Líderes y fichas'};
  document.getElementById('fx-titulo-txt').textContent = titulos[tab] || 'Registro de inasistencia';
  document.getElementById('fx-vista').scrollTop = 0;
  if(tab==='asis') fxRenderAsis();
  else if(tab==='nov') fxRenderNov();
  else if(tab==='ruta') fxRenderRuta();
+ else if(tab==='msj') fxRenderMsj();
  else if(tab==='mias') fxRenderMias();
  else if(tab==='alertas') fxRenderAlertas();
  else if(tab==='cargar') fxRenderCargar();
@@ -7079,7 +7103,7 @@ async function fxContarAlertas(){
    const r = await fxReq(`inasistencias?ficha_numero=in.${fxEnc(nums)}&usuario_id=neq.${sesionActual.id}&created_at=gt.${encodeURIComponent(desde)}&select=documento`);
    FX.nAlertas = new Set((r||[]).map(x => x.documento)).size;
    try{ const nv = await fxReq(`novedades_aprendiz?ficha_numero=in.${fxEnc(nums)}&usuario_id=neq.${sesionActual.id}&created_at=gt.${encodeURIComponent(desde)}&select=id`); FX.nAlertas += (nv||[]).length; }catch(e){}
-   try{ const rt = await fxReq(`rutas_desercion?ficha_numero=in.${fxEnc(nums)}&usuario_id=neq.${sesionActual.id}&created_at=gt.${encodeURIComponent(desde)}&select=id`); FX.nAlertas += (rt||[]).length; }catch(e){}
+   // Las rutas activadas llegan a la bandeja de Mensajes, no a la campana
   }
  }catch(e){ FX.nAlertas = 0; }
  const b = document.getElementById('fx-btn-admin-mias');
@@ -7098,7 +7122,7 @@ async function fxRenderAlertas(){
   try{ nv = await fxReq(`novedades_aprendiz?ficha_numero=in.${fxEnc(nums)}&usuario_id=neq.${sesionActual.id}&select=id,documento,nombre_aprendiz,ficha_numero,estado_anterior,estado_nuevo,observacion,instructor_nombre,created_at&order=created_at.desc&limit=40`) || []; }catch(e){ nv = []; }
   const nvNuevas = nv.filter(x => x.created_at > desde).length;
   let rt = [];
-  try{ rt = await fxReq(`rutas_desercion?ficha_numero=in.${fxEnc(nums)}&usuario_id=neq.${sesionActual.id}&select=*&order=created_at.desc&limit=40`) || []; }catch(e){ rt = []; }
+  rt = []; // las rutas activadas se consultan en Mensajes
   const rtNuevas = rt.filter(x => x.created_at > desde).length;
   const htmlRuta = rt.length ? `<div class="fx-sobre" style="margin-bottom:8px;">${rtNuevas?`<b>${rtNuevas} activación${rtNuevas!==1?'es':''} de ruta nueva${rtNuevas!==1?'s':''}</b> · `:''}Rutas de prevención de la deserción en tus fichas</div>` + rt.map(x => `<div class="fx-muted" style="margin:0 0 4px 2px;">Ficha ${mapa[x.ficha_numero] ? fxEtiqueta(mapa[x.ficha_numero]) : fxEsc(x.ficha_numero)}</div>` + fxRutaTarjeta(x, false, x.created_at > desde)).join('') : '';
   const htmlNov0 = nv.length ? `<div class="fx-sobre" style="margin-bottom:8px;">${nvNuevas?`<b>${nvNuevas} cambio${nvNuevas!==1?'s':''} de estado nuevo${nvNuevas!==1?'s':''}</b> · `:''}Cambios de estado en tus fichas</div>` + nv.map(x => fxTarjetaNovedad(x, mapa[x.ficha_numero], x.created_at > desde)).join('') : '';
@@ -7106,7 +7130,7 @@ async function fxRenderAlertas(){
   const marcarVisto = () => fxReq('lecturas_alertas?on_conflict=usuario_id','POST',{usuario_id: sesionActual.id, visto_hasta: new Date().toISOString()},'resolution=merge-duplicates,return=minimal').then(() => { FX.nAlertas = 0; fxPintarCampanas(); }).catch(()=>{});
   const rutas = {};
   for(const num of [...new Set(r.map(x => x.ficha_numero))]){ rutas[num] = (await fxRutaPorFicha(num)).out; }
-  if(!r.length){ body.innerHTML = atras + (htmlNov || '<div class="fx-card fx-vacio"><p>No hay inasistencias, cambios de estado ni rutas activadas por otros instructores en tus fichas.</p></div>'); if(nvNuevas || rtNuevas) marcarVisto(); return; }
+  if(!r.length){ body.innerHTML = atras + (htmlNov || '<div class="fx-card fx-vacio"><p>No hay inasistencias ni cambios de estado registrados por otros instructores en tus fichas.</p></div>'); if(nvNuevas || rtNuevas) marcarVisto(); return; }
   // Una sola notificación por aprendiz, con todos sus reportes adentro (el más reciente primero)
   const grupos = [], porDoc = {};
   r.forEach(x => { if(!porDoc[x.documento]){ porDoc[x.documento] = {doc: x.documento, nombre: x.nombre_aprendiz||x.documento, ficha: x.ficha_numero, reportes: []}; grupos.push(porDoc[x.documento]); } porDoc[x.documento].reportes.push(x); });
@@ -7261,6 +7285,147 @@ async function fxNovGuardar(){
  }
 }
 
+
+// ═══ MENSAJES: bandeja interna de la plataforma ═══
+// Cada mensaje lo ven solo quien lo envía y sus destinatarios. Las rutas activadas llegan aquí como mensaje formal al equipo ejecutor.
+const FXM = { vista: 'rec', hilos: [], abierto: null };
+async function fxContarMensajes(){
+ if(!sesionActual){ FX.nMensajes = 0; return; }
+ try{
+  const r = await fxReq(`mensaje_destinatarios?usuario_id=eq.${sesionActual.id}&leido_at=is.null&select=mensaje_id,mensajes(padre_id)`);
+  FX.nMensajes = new Set((r||[]).map(x => (x.mensajes && x.mensajes.padre_id) || x.mensaje_id)).size;
+ }catch(e){ FX.nMensajes = 0; }
+ if(typeof apPintarMensajes === 'function') apPintarMensajes();
+}
+async function fxMsjCargar(){
+ const r = await fxReq('mensajes?select=id,tipo,asunto,cuerpo,padre_id,ficha_id,ficha_numero,ruta_id,remitente_id,remitente_nombre,created_at,mensaje_destinatarios(usuario_id,leido_at,usuarios(nombre))&order=created_at.asc&limit=400') || [];
+ const yo = sesionActual.id, mapa = {};
+ r.forEach(m => { const k = m.padre_id || m.id; (mapa[k] = mapa[k] || []).push(m); });
+ FXM.hilos = Object.keys(mapa).map(k => {
+  const ms = mapa[k], raiz = ms.find(m => m.id === k) || ms[0], ult = ms[ms.length-1];
+  const recibido = ms.some(m => (m.mensaje_destinatarios||[]).some(d => d.usuario_id === yo));
+  const enviado = ms.some(m => m.remitente_id === yo);
+  const sinLeer = ms.some(m => (m.mensaje_destinatarios||[]).some(d => d.usuario_id === yo && !d.leido_at));
+  return { id: k, raiz, ms, ult, recibido, enviado, sinLeer };
+ }).sort((a,b) => (b.ult.created_at||'').localeCompare(a.ult.created_at||''));
+}
+function fxMsjNombre(n){ return typeof apNombrePropio === 'function' ? apNombrePropio(n) : (n||''); }
+function fxMsjPara(m){ return (m.mensaje_destinatarios||[]).map(d => fxMsjNombre((d.usuarios||{}).nombre||'')).filter(Boolean); }
+async function fxRenderMsj(){
+ const body = document.getElementById('fx-body');
+ try{
+  await fxMsjCargar();
+  FXM.abierto = null;
+  fxMsjLista();
+  fxContarMensajes();
+ }catch(e){ body.innerHTML = `<div class="fx-aviso fx-err">No se pudieron cargar los mensajes. (${fxEsc(e.message)})</div>`; }
+}
+function fxMsjLista(){
+ const body = document.getElementById('fx-body');
+ const rec = FXM.hilos.filter(h => h.recibido), env = FXM.hilos.filter(h => h.enviado);
+ const lista = FXM.vista === 'env' ? env : rec, nSin = rec.filter(h => h.sinLeer).length;
+ body.innerHTML = `<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-bottom:12px;">
+   <button type="button" class="fx-tab ${FXM.vista==='rec'?'on':''}" onclick="FXM.vista='rec';fxMsjLista()">Recibidos${nSin?` (${nSin})`:''}</button>
+   <button type="button" class="fx-tab ${FXM.vista==='env'?'on':''}" onclick="FXM.vista='env';fxMsjLista()">Enviados</button>
+   <span style="flex:1;"></span>
+   <button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxMsjRedactar()">Redactar mensaje</button>
+  </div>` +
+  (lista.length ? lista.map(h => {
+    const u = h.ult, deMi = u.remitente_id === sesionActual.id;
+    const quien = FXM.vista === 'env' ? 'Para: ' + (fxMsjPara(h.raiz).join(', ') || 'sin destinatarios') : (deMi ? 'Tú' : fxMsjNombre(u.remitente_nombre));
+    return `<button type="button" class="fx-card fx-msj ${h.sinLeer && FXM.vista==='rec' ? 'nuevo' : ''}" onclick="fxMsjAbrir('${h.id}')">
+     <span class="fx-msj-top"><span class="fx-msj-de">${fxEsc(quien)}</span><span class="fx-muted" style="flex:0 0 auto;">${fxEsc(fxFechaHora(u.created_at))}</span></span>
+     <span class="fx-msj-as">${h.raiz.tipo==='ruta' ? '<span class="fx-pill" style="background:#fdecea;color:#a93226;margin-right:6px;">Ruta</span>' : ''}${fxEsc(h.raiz.asunto)}${h.ms.length>1?` <span class="fx-muted">(${h.ms.length})</span>`:''}</span>
+     <span class="fx-msj-res">${fxEsc(String(u.cuerpo||'').replace(/\s+/g,' ').slice(0,140))}</span>
+    </button>`;
+   }).join('')
+   : `<div class="fx-card fx-vacio"><p>${FXM.vista === 'env' ? 'Todavía no has enviado mensajes.' : 'No tienes mensajes. Aquí te llegan las rutas activadas en tus fichas y lo que te escriban otros instructores.'}</p></div>`);
+}
+async function fxMsjAbrir(id){
+ const h = FXM.hilos.find(x => x.id === id); if(!h) return;
+ FXM.abierto = id;
+ const body = document.getElementById('fx-body'), yo = sesionActual.id;
+ const para = fxMsjPara(h.raiz);
+ body.innerHTML = `<button type="button" class="fx-btn fx-btn-s fx-btn-sm" style="margin-bottom:12px;" onclick="fxMsjVolver()">← Mensajes</button>
+  <div class="fx-card">
+   <div style="font-size:17px;font-weight:700;line-height:1.3;">${fxEsc(h.raiz.asunto)}</div>
+   <div class="fx-muted" style="margin-top:4px;">${h.raiz.ficha_numero ? 'Ficha ' + fxEsc(h.raiz.ficha_numero) + ' · ' : ''}De ${fxEsc(fxMsjNombre(h.raiz.remitente_nombre))} para ${fxEsc(para.join(', ') || 'sin destinatarios')}</div>
+  </div>` +
+  h.ms.map(m => {
+   const mio = m.remitente_id === yo, ds = m.mensaje_destinatarios||[], leidos = ds.filter(d => d.leido_at).length;
+   return `<div class="fx-card" style="${mio?'background:#FBF9FF;':''}">
+    <div style="display:flex;justify-content:space-between;gap:8px;align-items:baseline;"><b style="font-size:14px;">${mio ? 'Tú' : fxEsc(fxMsjNombre(m.remitente_nombre))}</b><span class="fx-muted" style="flex:0 0 auto;">${fxEsc(fxFechaHora(m.created_at))}</span></div>
+    <div style="font-size:14px;line-height:1.6;white-space:pre-line;margin-top:8px;">${fxEsc(m.cuerpo)}</div>
+    ${m.tipo==='ruta' && m.ruta_id ? `<div style="margin-top:12px;"><button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxRutaVer('${m.ruta_id}')">Ver la ruta y descargar el Excel</button></div>` : ''}
+    ${mio && ds.length ? `<div class="fx-muted" style="margin-top:10px;">Leído por ${leidos} de ${ds.length}${leidos ? ': ' + ds.filter(d => d.leido_at).map(d => fxEsc(fxMsjNombre((d.usuarios||{}).nombre||''))).join(', ') : ''}</div>` : ''}
+   </div>`;
+  }).join('') +
+  `<div class="fx-card">
+    <label class="fx-muted" for="fxm-resp" style="display:block;margin-bottom:6px;font-weight:600;">Responder a todos los de la conversación</label>
+    <textarea id="fxm-resp" class="fx-input" rows="3" maxlength="4000" placeholder="Escribe tu respuesta"></textarea>
+    <button type="button" id="fxm-resp-btn" class="fx-btn fx-btn-p" style="margin-top:10px;" onclick="fxMsjResponder()">Enviar respuesta</button>
+   </div>`;
+ document.getElementById('fx-vista').scrollTop = 0;
+ if(h.sinLeer){
+  try{ await fxReq('rpc/app_leer_mensaje','POST',{p_mensaje: h.id}); h.sinLeer = false; h.ms.forEach(m => (m.mensaje_destinatarios||[]).forEach(d => { if(d.usuario_id === yo && !d.leido_at) d.leido_at = new Date().toISOString(); })); fxContarMensajes(); }catch(e){}
+ }
+}
+function fxMsjVolver(){ FXM.abierto = null; fxMsjLista(); document.getElementById('fx-vista').scrollTop = 0; }
+const FXM_ERR = {SESION:'Tu sesión venció. Vuelve a ingresar.', DATOS:'Escribe el asunto y el mensaje.', SIN_PERMISO:'No tienes permiso para escribir en esa ficha o conversación.', SIN_DESTINATARIOS:'No hay a quién enviarlo: la ficha no tiene otros instructores asociados o no elegiste destinatario.', NO_FICHA:'La ficha ya no existe.', NO_MENSAJE:'La conversación ya no está disponible.'};
+async function fxMsjResponder(){
+ const t = document.getElementById('fxm-resp'), btn = document.getElementById('fxm-resp-btn'), txt = t.value.trim();
+ if(!txt){ t.focus(); return; }
+ btn.disabled = true; btn.textContent = 'Enviando...';
+ try{
+  const r = await fxReq('rpc/app_enviar_mensaje','POST',{p_asunto: null, p_cuerpo: txt, p_ficha: null, p_usuarios: null, p_padre: FXM.abierto});
+  if(r !== 'OK'){ alert(FXM_ERR[r] || 'No se pudo enviar.'); btn.disabled = false; btn.textContent = 'Enviar respuesta'; return; }
+  const id = FXM.abierto; await fxMsjCargar(); fxMsjAbrir(id);
+ }catch(e){ alert('No se pudo enviar: '+e.message); btn.disabled = false; btn.textContent = 'Enviar respuesta'; }
+}
+async function fxMsjRedactar(){
+ fxAbrirHoja('<b>Nuevo mensaje</b>', '<div class="fx-muted" style="padding:14px;text-align:center;">Cargando...</div>');
+ try{
+  await fxTraerMias();
+  const [fichas, usuarios] = await Promise.all([ fxNovFichas(), fxReq('usuarios?select=id,nombre&activo=eq.true&order=nombre.asc') ]);
+  const otros = (usuarios||[]).filter(u => u.id !== sesionActual.id);
+  FXM.para = fichas.length ? 'ficha' : 'persona';
+  document.getElementById('fx-hoja-cuerpo').innerHTML = `
+   <div class="fx-muted" style="margin-bottom:6px;font-weight:600;">Para</div>
+   <div style="display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;">
+    <label style="flex:1 1 180px;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #d6ded4;border-radius:10px;font-size:14px;cursor:pointer;${fichas.length?'':'opacity:.5;'}"><input type="radio" name="fxm-para" value="ficha" ${FXM.para==='ficha'?'checked':''} ${fichas.length?'':'disabled'} onchange="fxMsjPara2(this.value)" style="width:18px;height:18px;">El equipo de una ficha</label>
+    <label style="flex:1 1 180px;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #d6ded4;border-radius:10px;font-size:14px;cursor:pointer;"><input type="radio" name="fxm-para" value="persona" ${FXM.para==='persona'?'checked':''} onchange="fxMsjPara2(this.value)" style="width:18px;height:18px;">Un instructor</label>
+   </div>
+   <select id="fxm-ficha" class="fx-input" style="margin-bottom:10px;${FXM.para==='ficha'?'':'display:none;'}"><option value="">Selecciona la ficha…</option>${fichas.map(f => `<option value="${f.id}">${fxEtiqueta(f)}</option>`).join('')}</select>
+   <select id="fxm-persona" class="fx-input" style="margin-bottom:10px;${FXM.para==='persona'?'':'display:none;'}"><option value="">Selecciona el instructor…</option>${otros.map(u => `<option value="${u.id}">${fxEsc(fxMsjNombre(u.nombre))}</option>`).join('')}</select>
+   <div id="fxm-nota" class="fx-muted" style="margin:-4px 0 10px;${FXM.para==='ficha'?'':'display:none;'}">Le llega a todos los instructores asociados a esa ficha.</div>
+   <label class="fx-muted" for="fxm-asunto" style="display:block;margin-bottom:4px;font-weight:600;">Asunto</label>
+   <input type="text" id="fxm-asunto" class="fx-input" maxlength="200" style="margin-bottom:10px;">
+   <label class="fx-muted" for="fxm-cuerpo" style="display:block;margin-bottom:4px;font-weight:600;">Mensaje</label>
+   <textarea id="fxm-cuerpo" class="fx-input" rows="6" maxlength="4000"></textarea>
+   <button type="button" id="fxm-enviar" class="fx-btn fx-btn-p" style="width:100%;margin-top:12px;" onclick="fxMsjEnviar()">Enviar mensaje</button>`;
+ }catch(e){ document.getElementById('fx-hoja-cuerpo').innerHTML = `<div class="fx-aviso fx-err">${fxEsc(e.message)}</div>`; }
+}
+function fxMsjPara2(v){
+ FXM.para = v;
+ document.getElementById('fxm-ficha').style.display = v === 'ficha' ? '' : 'none';
+ document.getElementById('fxm-nota').style.display = v === 'ficha' ? '' : 'none';
+ document.getElementById('fxm-persona').style.display = v === 'persona' ? '' : 'none';
+}
+async function fxMsjEnviar(){
+ const ficha = FXM.para === 'ficha' ? document.getElementById('fxm-ficha').value : '', persona = FXM.para === 'persona' ? document.getElementById('fxm-persona').value : '';
+ const asunto = document.getElementById('fxm-asunto').value.trim(), cuerpo = document.getElementById('fxm-cuerpo').value.trim();
+ if(!ficha && !persona){ alert(FXM.para === 'ficha' ? 'Selecciona la ficha.' : 'Selecciona el instructor.'); return; }
+ if(!asunto){ alert('Escribe el asunto.'); document.getElementById('fxm-asunto').focus(); return; }
+ if(!cuerpo){ alert('Escribe el mensaje.'); document.getElementById('fxm-cuerpo').focus(); return; }
+ const btn = document.getElementById('fxm-enviar'); btn.disabled = true; btn.textContent = 'Enviando...';
+ try{
+  const r = await fxReq('rpc/app_enviar_mensaje','POST',{p_asunto: asunto, p_cuerpo: cuerpo, p_ficha: ficha || null, p_usuarios: persona ? [persona] : null, p_padre: null});
+  if(r !== 'OK'){ alert(FXM_ERR[r] || 'No se pudo enviar.'); btn.disabled = false; btn.textContent = 'Enviar mensaje'; return; }
+  fxCerrarHoja();
+  FXM.vista = 'env';
+  if(FX.tab === 'msj') await fxRenderMsj(); else fxAbrir('msj');
+ }catch(e){ alert('No se pudo enviar: '+e.message); btn.disabled = false; btn.textContent = 'Enviar mensaje'; }
+}
 
 // ═══ ACTIVACIÓN DE RUTA: prevención de la deserción (formato GFPI-F-176) ═══
 // El instructor reporta a un aprendiz en riesgo de deserción. La plataforma guarda el caso, avisa al equipo ejecutor,
@@ -7476,7 +7641,7 @@ async function fxRutaVer(rid, recien){
   FXR.viendo = { r, f };
   document.getElementById('fx-hoja-tit').innerHTML = `<b>Ruta de prevención de la deserción</b><div class="fx-muted">Formato GFPI-F-176 · Ficha ${fxEtiqueta(f)}</div>`;
   caja.innerHTML =
-   (recien ? '<div class="fx-aviso fx-ok" style="margin-bottom:12px;">La ruta quedó registrada y enviada al equipo ejecutor de la ficha. Les aparece en sus notificaciones y pueden consultarla aquí cuando quieran.</div>' : '') +
+   (recien ? '<div class="fx-aviso fx-ok" style="margin-bottom:12px;">La ruta quedó registrada y enviada al equipo ejecutor de la ficha. Les llega a su bandeja de Mensajes y pueden consultarla cuando quieran.</div>' : '') +
    `<div style="border:1px solid #d6ded4;border-radius:12px;padding:14px;background:#fff;">
      ${fila('Fecha', fxEsc(rutaFechaLarga(r.fecha_registro)))}
      ${fila('De', fxEsc(r.instructor_nombre||'') + ' · Instructor')}
