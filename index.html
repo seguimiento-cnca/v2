@@ -48,7 +48,7 @@ window.addEventListener('load', ()=>{
 </script>
 <style>
 
- @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&display=swap');
+ @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Work+Sans:ital,wght@0,400;0,500;0,600;0,700;1,700&display=swap');
  :root {
  --green: #15851E; --green-light: #EAF3DE; --green-mid: #27500A;
  --border: #e2e8e0; --bg: #f7f9f7; --card: #ffffff;
@@ -288,10 +288,108 @@ window.addEventListener('load', ()=>{
   .bs-btn .solo-pc { display: none; }
  }
  @media (min-width: 561px){ .bs-btn .solo-cel { display: none; } }
+
+ /* ═══ NUEVA APARIENCIA DEL INICIO (menú lateral, barra superior y accesos) — paleta tomada de Betowa ═══ */
+ :root { --ap-morado:#4B1FA6; --ap-azul:#2A62C9; --ap-cian:#12B5CE; --ap-verde:#2E8B00; --ap-tinta:#0B2545; --ap-gris:#4F5B73; --ap-fondo:#F5F6FB; --ap-lila:#EFE8FB; --ap-linea:#E6E8F0; }
+ body.con-sesion.en-inicio:not(.modo-admin) { background: var(--ap-fondo); }
+ body.con-sesion.en-inicio:not(.modo-admin) #barra-sesion { display: none !important; }
+ body:not(.con-sesion) #home, body.modo-admin #home { display: none !important; }
+ #home { font-family: 'Work Sans', 'DM Sans', 'Segoe UI', sans-serif; color: var(--ap-tinta); }
+ #home button { font-family: inherit; }
+ .ap-lat { position: fixed; top: 0; bottom: 0; left: 0; width: 280px; z-index: 750; background: linear-gradient(180deg, var(--ap-morado) 0%, #3A2AA8 55%, var(--ap-azul) 100%); display: flex; flex-direction: column; overflow-y: auto; -webkit-overflow-scrolling: touch; padding-bottom: 16px; }
+ .ap-marca { display: flex; align-items: center; gap: 14px; padding: 22px 22px 18px; }
+ .ap-logo { flex: 0 0 56px; height: 56px; border-radius: 16px; background: #fff; display: flex; align-items: center; justify-content: center; }
+ .ap-logo img { width: 46px; height: 42px; object-fit: contain; }
+ .ap-marca b { display: block; font-size: 16px; font-weight: 700; font-style: italic; color: #fff; line-height: 1.2; }
+ .ap-marca small { display: block; font-size: 12px; color: #DDD4F5; line-height: 1.3; margin-top: 3px; }
+ .ap-grupo { padding: 20px 30px 6px; font-size: 12px; font-weight: 600; letter-spacing: .08em; color: #C9BEEC; }
+ .ap-item { display: flex; align-items: center; gap: 14px; width: calc(100% - 28px); margin: 0 14px; min-height: 46px; padding: 10px 16px; border: none; border-radius: 999px; background: transparent; color: #EDE7FA; font-size: 15px; text-align: left; cursor: pointer; }
+ .ap-item svg { flex: 0 0 20px; }
+ .ap-item:hover { background: rgba(255,255,255,.12); }
+ .ap-item.on { background: #fff; color: var(--ap-morado); font-weight: 700; }
+ .ap-item span.ap-txt { flex: 1; min-width: 0; }
+ .ap-cuenta { flex: 0 0 auto; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: #e41e3f; color: #fff; font-size: 12px; font-weight: 700; line-height: 22px; text-align: center; display: none; }
+ .ap-cuenta.con { display: block; }
+ .ap-lat .vista-selector { margin: 0 14px; }
+ .ap-lat .vista-btn { display: flex; align-items: center; gap: 14px; width: 100%; min-height: 46px; padding: 10px 16px; border: none; border-radius: 999px; background: transparent; color: #EDE7FA; font-size: 15px; text-align: left; }
+ .ap-lat .vista-btn:hover { background: rgba(255,255,255,.12); }
+ .ap-lat .vista-menu { left: 0; right: auto; top: auto; bottom: calc(100% + 6px); }
+ .ap-lat .vista-actual { display: inline !important; }
+ .ap-espacio { flex: 1; min-height: 12px; }
+ .ap-fondo { display: none; position: fixed; inset: 0; z-index: 740; background: rgba(11,37,69,.5); }
+ .ap-top { display: flex; align-items: center; gap: 12px; position: sticky; top: 0; z-index: 70; }
+ .ap-top-tit { flex: 1; min-width: 0; }
+ .ap-top-tit b { display: block; font-weight: 700; line-height: 1.2; }
+ .ap-top-tit small { display: block; font-size: 12px; line-height: 1.3; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+ .ap-btn-menu { width: 44px; height: 44px; flex: 0 0 44px; border: none; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+ .ap-top .fx-campana { width: 44px; height: 44px; flex: 0 0 44px; }
+ .ap-avatar { width: 44px; height: 44px; flex: 0 0 44px; border-radius: 50%; background: var(--ap-morado); color: #fff; font-weight: 700; font-size: 15px; display: flex; align-items: center; justify-content: center; }
+ .ap-cont { display: flex; flex-direction: column; gap: 26px; max-width: 1040px; margin: 0 auto; }
+ .ap-sec h2 { font-size: 22px; font-weight: 700; color: var(--ap-tinta); }
+ .ap-sec > p { font-size: 14px; color: var(--ap-gris); margin: 4px 0 14px; }
+ .ap-banner { background: linear-gradient(100deg, var(--ap-morado) 0%, var(--ap-azul) 52%, var(--ap-cian) 100%); border-radius: 20px; color: #fff; display: flex; flex-direction: column; align-items: flex-start; gap: 10px; box-shadow: 0 10px 24px rgba(43,40,140,.18); }
+ .ap-banner .ap-eti { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 700; letter-spacing: .06em; }
+ .ap-banner b { font-weight: 700; font-style: italic; line-height: 1.15; }
+ .ap-banner p { font-size: 15px; line-height: 1.55; max-width: 520px; }
+ .ap-banner button { margin-top: 6px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 22px; border: none; border-radius: 999px; background: #fff; color: #1E6B00; font-size: 15px; font-weight: 700; cursor: pointer; }
+ #home .menu-grid { gap: 14px; }
+ #home .menu-card { border: 1px solid var(--ap-linea); border-radius: 16px; box-shadow: 0 6px 18px rgba(30,30,90,.06); gap: 16px; padding: 20px; }
+ #home .menu-card:hover, #home .menu-card.disponible:hover { border-color: var(--ap-morado); box-shadow: 0 8px 22px rgba(75,31,166,.14); }
+ #home .menu-card.pronto:hover { border-color: var(--ap-linea); box-shadow: 0 6px 18px rgba(30,30,90,.06); }
+ #home .menu-card::before { content: ''; flex: 0 0 52px; height: 52px; border-radius: 14px; background: var(--ap-lila) var(--ico, none) center / 24px 24px no-repeat; }
+ #home .menu-info h3 { font-size: 16px; font-weight: 700; color: var(--ap-tinta); }
+ #home .menu-info p { font-size: 13.5px; color: var(--ap-gris); line-height: 1.45; }
+ #home .menu-arrow { width: 34px; height: 34px; flex: 0 0 34px; border-radius: 50%; background: var(--ap-verde); color: #fff; display: flex; align-items: center; justify-content: center; font-size: 19px; line-height: 1; transition: transform .2s; }
+ #home .menu-card.pronto .menu-arrow { background: #c9cedb; color: #fff; }
+ #home #mf-sub { grid-column: 1 / -1; margin: 0 !important; padding: 0 !important; border: none !important; gap: 14px !important; }
+ #home #mf-sub .menu-card { background: #FBF9FF; }
+ #fx-card-home { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='4' y='4' width='16' height='16' rx='3'/%3E%3Cpath d='M8 12l3 3 5-6'/%3E%3C/svg%3E"); } #fx-card-programa { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 16V5M8 9l4-4 4 4'/%3E%3Cpath d='M5 19h14'/%3E%3C/svg%3E"); } #mf-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l5 5v13H7z'/%3E%3Cpath d='M14 3v5h5'/%3E%3Cpath d='M10 13h6M10 17h6'/%3E%3C/svg%3E"); } #nov-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 8h14l-3-3'/%3E%3Cpath d='M20 16H6l3 3'/%3E%3C/svg%3E"); } #ruta-card { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='6' cy='18' r='2.5'/%3E%3Ccircle cx='18' cy='6' r='2.5'/%3E%3Cpath d='M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5'/%3E%3C/svg%3E"); }
+ #mf-sub .menu-card:nth-child(1) { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 3h7l5 5v13H7z'/%3E%3Cpath d='M14 3v5h5'/%3E%3Cpath d='M10 13h6M10 17h6'/%3E%3C/svg%3E"); } #mf-sub .menu-card:nth-child(2) { --ico: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234B1FA6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 4h14v16H5z'/%3E%3Cpath d='M9 9l2 2 4-4M9 16h6'/%3E%3C/svg%3E"); }
+ .ap-abajo { display: none; }
+ html[data-vista="movil"] body.en-inicio #distintivo-pruebas { bottom: 78px !important; }
+ /* Computador: menú fijo a la izquierda */
+ html[data-vista="pc"] .ap-main { margin-left: 280px; min-height: 100vh; }
+ html[data-vista="pc"] .ap-top { background: #fff; border-bottom: 1px solid var(--ap-linea); padding: 14px 32px; }
+ html[data-vista="pc"] .ap-top-tit b { font-size: 18px; color: var(--ap-tinta); }
+ html[data-vista="pc"] .ap-top-tit small, html[data-vista="pc"] .ap-btn-menu, html[data-vista="pc"] .ap-top .ap-logo { display: none; }
+ html[data-vista="pc"] .ap-top .fx-campana { background: var(--ap-lila); border: none; color: var(--ap-morado); }
+ html[data-vista="pc"] .ap-hola { font-size: 15px; color: var(--ap-gris); }
+ html[data-vista="pc"] .ap-hola b { color: var(--ap-tinta); }
+ html[data-vista="pc"] .ap-cont { padding: 32px; }
+ html[data-vista="pc"] .ap-banner { padding: 34px; } html[data-vista="pc"] .ap-banner b { font-size: 32px; }
+ html[data-vista="pc"] #home .menu-grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+ html[data-vista="pc"] #home #mf-sub { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
+ /* Celular: el menú se abre desde el botón y hay accesos abajo */
+ html[data-vista="movil"] .ap-lat { transform: translateX(-105%); transition: transform .22s ease; box-shadow: 8px 0 28px rgba(0,0,0,.25); width: min(300px, 86vw); }
+ html[data-vista="movil"] #home.ap-menu-abierto .ap-lat { transform: none; }
+ html[data-vista="movil"] #home.ap-menu-abierto .ap-fondo { display: block; }
+ html[data-vista="movil"] .ap-top { background: linear-gradient(100deg, var(--ap-morado) 0%, var(--ap-azul) 100%); padding: 12px 14px; gap: 10px; }
+ html[data-vista="movil"] .ap-btn-menu { background: rgba(255,255,255,.16); color: #fff; }
+ html[data-vista="movil"] .ap-top .ap-logo { flex: 0 0 44px; height: 44px; border-radius: 12px; }
+ html[data-vista="movil"] .ap-top .ap-logo img { width: 36px; height: 32px; }
+ html[data-vista="movil"] .ap-top-tit b { font-size: 15px; font-style: italic; color: #fff; }
+ html[data-vista="movil"] .ap-top-tit small { color: #EDE7FA; }
+ html[data-vista="movil"] .ap-hola, html[data-vista="movil"] .ap-avatar { display: none; }
+ html[data-vista="movil"] .ap-cont { padding: 18px 16px 96px; gap: 20px; }
+ html[data-vista="movil"] .ap-sec h2 { font-size: 18px; }
+ html[data-vista="movil"] .ap-sec > p { display: none; }
+ html[data-vista="movil"] .ap-sec h2 { margin-bottom: 10px; }
+ html[data-vista="movil"] .ap-banner { padding: 18px; } html[data-vista="movil"] .ap-banner b { font-size: 22px; }
+ html[data-vista="movil"] #home .menu-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+ html[data-vista="movil"] #home #mf-sub { grid-template-columns: 1fr 1fr; gap: 10px !important; }
+ html[data-vista="movil"] #home .menu-card { flex-direction: column; align-items: flex-start; gap: 10px; padding: 14px !important; min-height: 104px; border-radius: 16px; }
+ html[data-vista="movil"] #home .menu-card::before { flex: 0 0 40px; width: 40px; height: 40px; border-radius: 12px; background-size: 22px 22px; }
+ html[data-vista="movil"] #home .menu-info h3 { font-size: 14px; line-height: 1.25; margin: 0; }
+ html[data-vista="movil"] #home .menu-info p, html[data-vista="movil"] #home .menu-arrow { display: none; }
+ html[data-vista="movil"] #home .menu-info .menu-badge { display: inline-block; margin: 4px 0 0 0 !important; }
+ html[data-vista="movil"] .ap-abajo { display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 60; background: #fff; border-top: 1px solid var(--ap-linea); padding: 4px 6px calc(8px + env(safe-area-inset-bottom, 0px)); }
+ .ap-abajo button { flex: 1; min-height: 56px; border: none; background: none; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px; font-size: 11px; font-weight: 500; color: var(--ap-gris); cursor: pointer; position: relative; }
+ .ap-abajo button.on { color: var(--ap-morado); font-weight: 700; }
+ .ap-abajo .ap-cuenta { position: absolute; top: 4px; left: calc(50% + 6px); min-width: 18px; height: 18px; line-height: 18px; font-size: 11px; padding: 0 5px; }
 </style>
 </head>
 <body>
-<div id="distintivo-pruebas" style="position:fixed;left:8px;bottom:8px;z-index:99999;background:#b45309;color:#fff;font:600 11px/1 system-ui,sans-serif;padding:6px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);pointer-events:none;letter-spacing:.3px">VERSIÓN DE PRUEBAS · datos ficticios</div>
+<div id="distintivo-pruebas" style="position:fixed;right:8px;bottom:8px;z-index:99999;background:#b45309;color:#fff;font:600 11px/1 system-ui,sans-serif;padding:6px 9px;border-radius:999px;box-shadow:0 2px 6px rgba(0,0,0,.25);pointer-events:none;letter-spacing:.3px">VERSIÓN DE PRUEBAS · datos ficticios</div>
 <script>if(!ENTORNO.pruebas){var _d=document.getElementById('distintivo-pruebas'); if(_d) _d.remove();}</script>
 
 
@@ -655,7 +753,6 @@ window.addEventListener('load', ()=>{
   </div>
  </div>
  <div class="bs-acciones">
-  <button type="button" class="bs-btn" onclick="abrirMiCorreo(false)">Correo</button>
   <button type="button" class="bs-btn" onclick="abrirCambioPassword()"><span class="solo-pc">Contraseña</span><span class="solo-cel">Clave</span></button>
   <div class="vista-selector">
    <button type="button" class="vista-btn bs-btn" onclick="toggleMenuVista(this)">Vista<span class="vista-dos">: </span><span class="vista-actual">Automática</span> ▾</button>
@@ -666,13 +763,48 @@ window.addEventListener('load', ()=>{
 </div>
 
 <div class="home active" id="home">
- <div class="home-container">
- <div class="home-title">
- <img id="logo-inicio" alt="SENA" style="width:60px;height:60px;object-fit:contain;margin-bottom:12px;display:block;margin-left:auto;margin-right:auto;">
- <h2>Seguimiento a la Formación</h2>
- <p>Selecciona la herramienta que deseas utilizar</p>
- </div>
- <div class="home-divider"></div>
+ <div class="ap-fondo" onclick="apMenu(false)"></div>
+ <aside class="ap-lat" aria-label="Menú principal">
+  <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span></div>
+  <button type="button" class="ap-item on" onclick="apMenu(false)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="ap-txt">Inicio</span></button>
+  <button type="button" class="ap-item" onclick="apIr('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="ap-txt">Notificaciones</span><span class="ap-cuenta" data-ap-cuenta></span></button>
+  <div class="ap-grupo">PRINCIPAL</div>
+  <button type="button" class="ap-item" onclick="apIr('asis')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="M8 12l3 3 5-6"/></svg><span class="ap-txt">Registro de inasistencia</span></button>
+  <button type="button" class="ap-item" onclick="apHerramienta('llamados')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5"/><path d="M10 13h6M10 17h6"/></svg><span class="ap-txt">Llamados de atención</span></button>
+  <button type="button" class="ap-item" onclick="apHerramienta('planes')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 4h14v16H5z"/><path d="M9 9l2 2 4-4M9 16h6"/></svg><span class="ap-txt">Planes de mejoramiento</span></button>
+  <button type="button" class="ap-item" onclick="apIr('nov')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h14l-3-3"/><path d="M20 16H6l3 3"/></svg><span class="ap-txt">Trámite de novedades</span></button>
+  <button type="button" class="ap-item" onclick="apIr('ruta')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="18" r="2.5"/><circle cx="18" cy="6" r="2.5"/><path d="M8.5 18H14a4 4 0 0 0 0-8h-4a4 4 0 0 1 0-8h5.5"/></svg><span class="ap-txt">Activación de ruta</span></button>
+  <button type="button" class="ap-item" id="ap-item-programa" style="display:none;" onclick="apIr('cargar')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V5M8 9l4-4 4 4"/><path d="M5 19h14"/></svg><span class="ap-txt">Fichas del programa</span></button>
+  <div class="ap-grupo">MI PERFIL</div>
+  <button type="button" class="ap-item" onclick="apIr('mias')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/></svg><span class="ap-txt">Mis fichas</span></button>
+  <button type="button" class="ap-item" onclick="apMenu(false);abrirCambioPassword()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg><span class="ap-txt">Contraseña</span></button>
+  <div class="vista-selector"><button type="button" class="vista-btn" onclick="toggleMenuVista(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg><span class="ap-txt">Vista: <span class="vista-actual">Automática</span></span></button><div class="vista-menu"></div></div>
+  <div class="ap-espacio"></div>
+  <button type="button" class="ap-item" onclick="cerrarSesion()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><span class="ap-txt">Salir</span></button>
+ </aside>
+ <div class="ap-main">
+  <header class="ap-top">
+   <button type="button" class="ap-btn-menu" aria-label="Abrir menú" onclick="apMenu(true)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+   <span class="ap-logo"><img id="logo-inicio-cel" alt="Logo SENA"></span>
+   <div class="ap-top-tit"><b id="ap-titulo">Inicio</b><small id="ap-saludo-cel"></small></div>
+   <button type="button" class="fx-campana" data-fx-campana title="Notificaciones" aria-label="Notificaciones" onclick="fxAbrir('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="fx-badge"></span></button>
+   <span class="ap-hola">Hola, <b id="ap-nombre"></b></span>
+   <span class="ap-avatar" id="ap-avatar"></span>
+  </header>
+  <main class="ap-cont">
+   <section class="ap-sec">
+    <h2>Información para ti</h2>
+    <p>Avisos y novedades que te pueden servir.</p>
+    <div class="ap-banner">
+     <span class="ap-eti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>NOVEDADES DE TUS FICHAS</span>
+     <b id="ap-banner-tit">Lo que registró tu equipo</b>
+     <p>Revisa las inasistencias, los cambios de estado y las rutas activadas por otros instructores en las fichas que tienes asociadas.</p>
+     <button type="button" onclick="fxAbrir('alertas')">Ver notificaciones<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+    </div>
+   </section>
+   <section class="ap-sec">
+    <h2>Tus accesos principales</h2>
+    <p>Las herramientas que usas en el día a día.</p>
  <div class="menu-grid">
  <div class="menu-card disponible" id="mf-card" onclick="mfAlternar()">
  <div class="menu-info">
@@ -707,14 +839,54 @@ window.addEventListener('load', ()=>{
  <div class="menu-card disponible" id="ruta-card" onclick="fxAbrir('ruta')">
  <div class="menu-info">
  <h3>Activación de ruta</h3>
- <p>Reporta a un aprendiz en riesgo de deserción y genera el formato GFPI-F-176 para el equipo ejecutor</p>
+ <p>Reporta a un aprendiz en riesgo de deserción. Queda registrado para todo el equipo ejecutor, con el formato GFPI-F-176</p>
  </div>
  <span class="menu-arrow">›</span>
  </div>
  </div>
+   </section>
+  </main>
  </div>
+ <nav class="ap-abajo" aria-label="Accesos rápidos">
+  <button type="button" class="on" onclick="window.scrollTo(0,0)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span>Inicio</span></button>
+  <button type="button" onclick="fxAbrir('alertas')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span>Avisos</span><span class="ap-cuenta" data-ap-cuenta></span></button>
+  <button type="button" onclick="fxAbrir('mias')"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/></svg><span>Mis fichas</span></button>
+  <button type="button" onclick="apMenu(true)"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>Menú</span></button>
+ </nav>
 </div>
 <script>
+// ── Nuevo inicio: menú lateral, saludo y avisos ──
+function apMenu(abrir){ document.getElementById('home').classList.toggle('ap-menu-abierto', !!abrir); }
+function apIr(tab){ apMenu(false); fxAbrir(tab); }
+function apHerramienta(id){ apMenu(false); abrirHerramienta(id); }
+function apPintar(){
+ if(!sesionActual) return;
+ const esCtaAdmin = sesionActual.usuario === 'admin';
+ const nombre = String(esCtaAdmin ? 'Coordinación' : (sesionActual.nombre||'')).trim();
+ const p = nombre.split(/\s+/).filter(Boolean);
+ const primero = p[0] ? p[0].charAt(0).toUpperCase() + p[0].slice(1).toLowerCase() : '';
+ document.getElementById('ap-nombre').textContent = primero;
+ document.getElementById('ap-saludo-cel').textContent = primero ? 'Hola, ' + primero : '';
+ document.getElementById('ap-avatar').textContent = ((p[0]||'')[0]||'').toUpperCase() + ((p[p.length>2?2:1]||'')[0]||'').toUpperCase();
+ const lc = document.getElementById('logo-inicio-cel'); if(lc && !lc.getAttribute('src') && typeof LOGO_B64 !== 'undefined') lc.src = 'data:image/jpeg;base64,'+LOGO_B64;
+ const ip = document.getElementById('ap-item-programa');
+ if(ip) ip.style.display = (typeof fxEsLider === 'function' && (fxEsLider() || fxEsAdmin())) ? '' : 'none';
+ document.getElementById('ap-titulo').textContent = document.documentElement.dataset.vista === 'movil' ? 'Seguimiento a la Formación' : 'Inicio';
+}
+function apPintarAvisos(){
+ const n = (typeof FX !== 'undefined' && FX.nAlertas) || 0;
+ document.querySelectorAll('[data-ap-cuenta]').forEach(e => { e.textContent = n > 99 ? '99+' : n; e.classList.toggle('con', n > 0); });
+ const t = document.getElementById('ap-banner-tit');
+ if(t) t.textContent = n ? `Tienes ${n} ${n !== 1 ? 'novedades' : 'novedad'} sin revisar` : 'Lo que registró tu equipo';
+}
+// El fondo claro y la barra nueva solo aplican mientras se está en el inicio
+(function(){
+ const home = document.getElementById('home');
+ const sinc = () => document.body.classList.toggle('en-inicio', home.classList.contains('active'));
+ new MutationObserver(sinc).observe(home, {attributes: true, attributeFilter: ['class']});
+ sinc();
+ window.addEventListener('resize', () => { if(typeof sesionActual !== 'undefined' && sesionActual) apPintar(); });
+})();
 function mfAlternar(){
  const sub = document.getElementById('mf-sub'), fl = document.getElementById('mf-flecha');
  const abrir = sub.style.display === 'none';
@@ -3303,7 +3475,7 @@ function getHTMLUsuarios(){
  <option value="bienestar">Profesional de Bienestar</option>
  <option value="subdirector">Subdirector de Centro</option>
  </select></div>
- <div style="grid-column:1/-1;"><label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Correo electrónico (opcional: si lo dejas vacío, se le pide al ingresar)</label>
+ <div style="grid-column:1/-1;"><label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Correo electrónico (opcional)</label>
  <input id="form-correo" type="email" inputmode="email" autocomplete="off" placeholder="nombre@sena.edu.co" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;"></div>
  </div>
  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
@@ -3619,7 +3791,7 @@ function descargarPlantilla(){
 
  ['cargo','Rol del usuario','instructor / coord-acad / coord-form / bienestar / subdirector'],
  ['es_admin','¿Tiene acceso al panel admin?','si / no'],
- ['correo','Correo electrónico del usuario (opcional)','Ej: jcperez@sena.edu.co. Si se deja vacío, la plataforma se lo pide al usuario cuando ingrese'],
+ ['correo','Correo electrónico del usuario (opcional)','Ej: jcperez@sena.edu.co'],
  [''],
  [' IMPORTANTE:'],
  ['- No elimines la fila de encabezados (fila 1)'],
@@ -5719,6 +5891,7 @@ function elegirVista(v){
  try{ localStorage.setItem(VISTA_KEY, v); } catch(e){}
  document.querySelectorAll('.vista-selector').forEach(x => x.classList.remove('abierto'));
  aplicarVista();
+ if(typeof apPintar === 'function') apPintar();
 }
 function toggleMenuVista(btn){
  const sel = btn.closest('.vista-selector');
@@ -5888,7 +6061,7 @@ async function fxAlIniciar(){
  fxPintarBotonAdmin();
  fxPonerCampanas();
  fxContarAlertas();
- pedirCorreoSiFalta();
+ apPintar();
  if(fxEsLider()){
   const c = document.getElementById('bs-cargo');
   if(c && !/Líder/.test(c.textContent)) c.textContent += ' · Líder de programa';
@@ -5915,6 +6088,7 @@ function fxPintarCampanas(){
   const s = b.querySelector('.fx-badge'); if(s) s.textContent = n>99 ? '99+' : n;
   b.title = n ? `${n} notificación${n!==1?'es':''} nueva${n!==1?'s':''}` : 'Notificaciones';
  });
+ if(typeof apPintarAvisos === 'function') apPintarAvisos();
 }
 function fxPintarTarjetaHome(){
  const grid = document.querySelector('#home .menu-grid');
@@ -6940,7 +7114,7 @@ async function fxRenderRuta(){
   }
   if(!FXR.fichas.some(f => f.id === FXR.fid)) FXR.fid = FXR.fichas.length === 1 ? FXR.fichas[0].id : '';
   body.innerHTML = `<div class="fx-card">
-    <div class="fx-muted" style="margin-bottom:10px;line-height:1.5;">Reporta a un aprendiz en riesgo de deserción. Se avisa al equipo ejecutor de la ficha y queda listo el formato GFPI-F-176 para enviarlo por correo.</div>
+    <div class="fx-muted" style="margin-bottom:10px;line-height:1.5;">Reporta a un aprendiz en riesgo de deserción. La ruta queda en la plataforma a la vista de todo el equipo ejecutor de la ficha, con el formato GFPI-F-176 para descargar.</div>
     <label class="fx-muted" for="fxr-ficha" style="display:block;margin-bottom:4px;font-weight:600;">Ficha</label>
     <select id="fxr-ficha" class="fx-input" onchange="fxRutaElegir(this.value)">
      <option value="">Selecciona una ficha…</option>
@@ -6984,10 +7158,8 @@ function fxRutaTarjeta(r, mia, nueva){
   <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;"><div style="font-weight:700;font-size:14px;">${fxEsc(r.nombre_aprendiz||r.documento)}</div>${nueva?'<span class="fx-pill" style="background:#fdecea;color:#c0392b;flex:0 0 auto;">Nuevo</span>':`<span class="fx-pill" style="background:#fdecea;color:#a93226;flex:0 0 auto;">Ruta activa</span>`}</div>
   <div class="fx-muted">Documento ${fxEsc(r.documento)} · ${fxEsc(rutaFechaLarga(r.fecha_registro))}</div>
   <div style="font-size:13px;margin-top:6px;"><b>${fxEsc(r.situacion)}</b></div>
-  <div class="fx-muted" style="margin-top:2px;">${fxEsc(r.causa)}</div>
-  ${r.acciones?`<div class="fx-muted" style="margin-top:4px;white-space:pre-line;">${fxEsc(r.acciones)}</div>`:''}
-  <div class="fx-muted" style="margin-top:4px;">${r.escalo ? 'Escalado a: '+fxEsc(r.a_quien||'') : 'No se escaló'}${mia?'':' · Reportado por '+fxEsc(r.instructor_nombre||'')}</div>
-  ${mia?`<div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxRutaEnvio('${r.id}')">Enviar al equipo</button><button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxRutaAbrir('${r.aprendiz_id||''}','${r.id}')">Editar</button></div>`:''}</div>`;
+  <div class="fx-muted" style="margin-top:4px;">${mia ? 'Enviada por ti al equipo ejecutor' : 'Activada por '+fxEsc(r.instructor_nombre||'')}</div>
+  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;"><button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxRutaVer('${r.id}')">Ver ruta</button>${mia?`<button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxRutaAbrir('${r.aprendiz_id||''}','${r.id}')">Editar</button>`:''}</div></div>`;
 }
 function fxRutaPintar(){
  const mias = fxRutaMias(), otras = FXR.rutas.filter(r => r.usuario_id !== sesionActual.id);
@@ -7027,11 +7199,10 @@ async function fxRutaAbrir(aid, rid){
     <label style="flex:1;display:flex;align-items:center;gap:8px;padding:10px 12px;border:1px solid #d6ded4;border-radius:10px;font-size:14px;cursor:pointer;"><input type="radio" name="fxr-esc" value="no" ${prev&&!prev.escalo?'checked':''} onchange="fxRutaVerEscala()" style="width:18px;height:18px;">No</label>
    </div>
    <div id="fxr-escala" class="fx-aviso" style="margin-bottom:10px;display:none;"></div>
-   <label class="fx-muted" for="fxr-acc" style="display:block;margin-bottom:4px;font-weight:600;">Observaciones y acciones adelantadas con el aprendiz</label>
-   <textarea id="fxr-acc" class="fx-input" rows="4" maxlength="900" placeholder="Describe qué está pasando y qué se ha hecho con el aprendiz">${fxEsc(prev ? (prev.acciones||'') : '')}</textarea>
-   <label class="fx-muted" for="fxr-est" style="display:block;margin:10px 0 4px;font-weight:600;">Estado al finalizar el trimestre</label>
-   <select id="fxr-est" class="fx-input" style="margin-bottom:12px;"><option value="">Pendiente (se define al cierre del trimestre)</option>${RUTA_ESTADOS.map(s => `<option ${prev&&prev.estado_final===s?'selected':''}>${fxEsc(s)}</option>`).join('')}</select>
-   <button type="button" id="fxr-guardar" class="fx-btn fx-btn-p" style="width:100%;" onclick="fxRutaGuardar()">${prev ? 'Guardar cambios' : 'Activar ruta'}</button>`);
+   <label class="fx-muted" for="fxr-acc" style="display:block;margin-bottom:4px;font-weight:600;">Observaciones para el equipo ejecutor</label>
+   <textarea id="fxr-acc" class="fx-input" rows="4" maxlength="900" placeholder="Cuenta qué está pasando con el aprendiz. Si es por inasistencia, deja los días en que faltó.">${fxEsc(prev ? (prev.acciones||'') : '')}</textarea>
+   <div class="fx-muted" style="margin:10px 0 12px;line-height:1.5;">Al enviar, la ruta queda en la plataforma a la vista de todo el equipo ejecutor de la ficha.</div>
+   <button type="button" id="fxr-guardar" class="fx-btn fx-btn-p" style="width:100%;" onclick="fxRutaGuardar()">${prev ? 'Guardar cambios' : 'Enviar al equipo ejecutor'}</button>`);
  fxRutaCausas(prev ? prev.causa : '');
  // Días de inasistencia ya registrados en la plataforma: se muestran y, en un reporte nuevo, se dejan escritos en las observaciones
  try{
@@ -7080,82 +7251,97 @@ async function fxRutaGuardar(){
  if(!causa){ alert('Selecciona el tipo de motivo y la causa.'); return; }
  if(!acc){ alert('Escribe en observaciones qué está pasando con el aprendiz.'); document.getElementById('fxr-acc').focus(); return; }
  const btn = document.getElementById('fxr-guardar'), txt = btn.textContent;
- btn.disabled = true; btn.textContent = 'Guardando...';
+ btn.disabled = true; btn.textContent = 'Enviando...';
  try{
-  const r = await fxReq('rpc/app_activar_ruta','POST',{p_aprendiz: S.aid, p_fecha: fecha, p_situacion: sit, p_causa: causa, p_escalo: si, p_a_quien: si ? rutaAQuien(causa).replace(/\s+/g,' ') : '', p_acciones: acc, p_estado_final: document.getElementById('fxr-est').value});
+  const r = await fxReq('rpc/app_activar_ruta','POST',{p_aprendiz: S.aid, p_fecha: fecha, p_situacion: sit, p_causa: causa, p_escalo: si, p_a_quien: si ? rutaAQuien(causa).replace(/\s+/g,' ') : '', p_acciones: acc, p_estado_final: (S.prev && S.prev.estado_final) || ''});
   const msg = {SESION:'Tu sesión venció. Vuelve a ingresar.', NO_APRENDIZ:'El aprendiz ya no está en la ficha.', SIN_PERMISO:'Solo pueden activar la ruta los instructores asociados a la ficha, el líder del programa o el administrador.', DATOS:'Faltan datos por diligenciar.'};
   if(r !== 'OK'){ alert(msg[r] || 'No se pudo guardar.'); btn.disabled = false; btn.textContent = txt; return; }
   const doc = S.doc; FXR.sel = null;
   fxCerrarHoja();
   await fxRutaCargar();
   const nueva = fxRutaMias().find(x => x.documento === doc);
-  if(nueva) fxRutaEnvio(nueva.id);
+  if(nueva) fxRutaVer(nueva.id, true);
  }catch(e){ alert('No se pudo guardar: '+e.message); btn.disabled = false; btn.textContent = txt; }
 }
-// ── Correo al equipo ejecutor: destinatarios, asunto y texto listos para copiar, y el Excel para adjuntar ──
-function fxRutaCorreo(r){
- const f = FXR.f, equipo = FXR.equipo.filter(u => u.id !== sesionActual.id);
- const func = r.escalo ? FXR.contactos.filter(c => rutaRolesDe(r.a_quien).includes(c.rol)) : [];
- const para = [], visto = new Set();
- equipo.filter(u => u.correo).forEach(u => { if(!visto.has(u.correo)){ visto.add(u.correo); para.push(u.correo); } });
- func.forEach(c => { if(!visto.has(c.correo)){ visto.add(c.correo); para.push(c.correo); } });
- const asunto = `Activación de ruta de prevención de la deserción – Ficha ${f.numero} – ${r.nombre_aprendiz}`;
- const cuerpo = `${rutaSaludo()}, estimados compañeros.
-
-Les informo que se activó la ruta de atención para la prevención de la deserción del aprendiz ${r.nombre_aprendiz}, documento ${r.documento}, de la ficha ${f.numero}${f.grupo?' – '+f.grupo:''} (${f.programa}).
-
-Situación de riesgo: ${r.situacion}.
-Causa: ${r.causa.trim()}.
-${r.escalo ? 'El caso se escala a: '+(r.a_quien||'')+'.' : 'El caso no se ha escalado.'}
-
-Observaciones:
-${r.acciones||''}
-
-Adjunto el formato GFPI-F-176 diligenciado. Quedo atento a sus comentarios.
-
-${sesionActual.nombre||''}
-Instructor`;
- return { para, asunto, cuerpo, sinCorreo: equipo.filter(u => !u.correo).map(u => u.nombre), equipo, func };
-}
-async function fxCopiar(texto, btn){
+// ── Documento interno: la ruta queda en la plataforma, a la vista del equipo ejecutor de la ficha ──
+function rutaNormDoc(d){ return String(d||'').replace(/[^0-9A-Za-z]/g,''); }
+async function fxRutaVer(rid, recien){
+ fxAbrirHoja('<b>Ruta de prevención de la deserción</b>', '<div class="fx-muted" style="padding:14px;text-align:center;">Cargando...</div>');
+ const caja = document.getElementById('fx-hoja-cuerpo');
  try{
-  if(navigator.clipboard && navigator.clipboard.writeText) await navigator.clipboard.writeText(texto);
-  else { const t = document.createElement('textarea'); t.value = texto; t.style.cssText = 'position:fixed;opacity:0;'; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); }
-  if(btn){ const o = btn.textContent; btn.textContent = 'Copiado'; setTimeout(() => { btn.textContent = o; }, 1500); }
- }catch(e){ alert('No se pudo copiar. Mantén presionado el texto y cópialo manualmente.'); }
+  const rr = await fxReq(`rutas_desercion?id=eq.${rid}&select=*,fichas(id,numero,grupo,programa,programa_reporte)`);
+  const r = rr && rr[0];
+  if(!r){ caja.innerHTML = '<div class="fx-aviso fx-err">Esta ruta ya no está disponible.</div>'; return; }
+  const f = r.fichas || FX.fichasCache[r.ficha_id] || {numero: r.ficha_numero};
+  const [equipo, contactos, ina, hist] = await Promise.all([
+   fxReq(`instructor_fichas?ficha_id=eq.${r.ficha_id}&select=usuario_id,usuarios(nombre)`).catch(() => []),
+   fxReq('contactos_ruta?select=rol,nombre&order=nombre.asc').catch(() => []),
+   fxReq(`inasistencias?ficha_numero=eq.${encodeURIComponent(r.ficha_numero)}&documento=eq.${encodeURIComponent(r.documento)}&select=fecha&order=fecha.asc`).catch(() => []),
+   fxReq(`historial_documentos?ficha=eq.${encodeURIComponent(r.ficha_numero)}&select=documento_aprendiz,tipo_documento,tipo_llamado,numero_llamado,fecha_documento,nombre_usuario&order=fecha_documento.asc`).catch(() => [])
+  ]);
+  const mia = r.usuario_id === sesionActual.id;
+  const nombres = (equipo||[]).map(x => (x.usuarios||{}).nombre).filter(Boolean);
+  const func = r.escalo ? (contactos||[]).filter(c => rutaRolesDe(r.a_quien).includes(c.rol)).map(c => c.nombre) : [];
+  const dias = [...new Set((ina||[]).map(x => x.fecha))];
+  const docs = (hist||[]).filter(h => rutaNormDoc(h.documento_aprendiz) === rutaNormDoc(r.documento));
+  const fila = (k, v) => `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid #f0f0f0;font-size:13px;"><span class="fx-muted" style="flex:0 0 96px;">${k}</span><span style="flex:1;min-width:0;">${v}</span></div>`;
+  FXR.viendo = { r, f };
+  document.getElementById('fx-hoja-tit').innerHTML = `<b>Ruta de prevención de la deserción</b><div class="fx-muted">Formato GFPI-F-176 · Ficha ${fxEtiqueta(f)}</div>`;
+  caja.innerHTML =
+   (recien ? '<div class="fx-aviso fx-ok" style="margin-bottom:12px;">La ruta quedó registrada y enviada al equipo ejecutor de la ficha. Les aparece en sus notificaciones y pueden consultarla aquí cuando quieran.</div>' : '') +
+   `<div style="border:1px solid #d6ded4;border-radius:12px;padding:14px;background:#fff;">
+     ${fila('Fecha', fxEsc(rutaFechaLarga(r.fecha_registro)))}
+     ${fila('De', fxEsc(r.instructor_nombre||'') + ' · Instructor')}
+     ${fila('Para', 'Equipo ejecutor de la ficha ' + fxEtiqueta(f) + (nombres.length ? `<div class="fx-muted" style="margin-top:2px;">${nombres.map(fxEsc).join(' · ')}</div>` : ''))}
+     ${fila('Asunto', '<b>Activación de la ruta de prevención de la deserción</b>')}
+     <p style="font-size:13.5px;line-height:1.6;margin:12px 0 0;">Estimados compañeros:</p>
+     <p style="font-size:13.5px;line-height:1.6;margin:8px 0 0;">Les informo que se activó la ruta de atención para la prevención de la deserción del aprendiz <b>${fxEsc(r.nombre_aprendiz||'')}</b>, documento ${fxEsc(r.documento)}, de la ficha ${fxEtiqueta(f)}${f.programa ? ' ('+fxEsc(f.programa)+')' : ''}.</p>
+     <div style="margin-top:12px;">
+      ${fila('Situación', '<b>'+fxEsc(r.situacion)+'</b>')}
+      ${fila('Causa', fxEsc(r.causa))}
+      ${fila('Escalado', r.escalo ? fxEsc(r.a_quien||'Sí') + (func.length ? `<div class="fx-muted" style="margin-top:2px;">${func.map(fxEsc).join(' · ')}</div>` : '') : 'El caso no se ha escalado')}
+     </div>
+     ${r.acciones ? `<div style="margin-top:12px;"><div class="fx-muted" style="font-weight:600;margin-bottom:4px;">Observaciones del instructor</div><div style="font-size:13.5px;line-height:1.6;white-space:pre-line;">${fxEsc(r.acciones)}</div></div>` : ''}
+     <div style="margin-top:14px;"><div class="fx-muted" style="font-weight:600;margin-bottom:4px;">Antecedentes del aprendiz en la plataforma</div>
+      <div style="font-size:13px;line-height:1.6;">${dias.length ? `<b>${dias.length} inasistencia${dias.length!==1?'s':''} registrada${dias.length!==1?'s':''}:</b> ${fxEsc(rutaListaFechas(dias))}.` : 'Sin inasistencias registradas.'}</div>
+      ${docs.length ? docs.map(h => `<div style="font-size:13px;line-height:1.5;padding:6px 0;border-top:1px solid #f0f0f0;margin-top:6px;"><b>${fxEsc(h.tipo_documento||'Documento')}${h.tipo_llamado?' '+fxEsc(h.tipo_llamado):''}${h.numero_llamado?' N.° '+fxEsc(h.numero_llamado):''}</b><div class="fx-muted">${h.fecha_documento?fxEsc(rutaFechaLarga(h.fecha_documento))+' · ':''}${fxEsc(h.nombre_usuario||'')}</div></div>`).join('') : '<div style="font-size:13px;line-height:1.6;margin-top:4px;">Sin llamados de atención ni planes de mejoramiento generados en la plataforma.</div>'}
+     </div>
+     <p style="font-size:13.5px;line-height:1.6;margin:14px 0 0;">Quedo atento a sus comentarios.</p>
+     <p style="font-size:13.5px;line-height:1.5;margin:10px 0 0;"><b>${fxEsc(r.instructor_nombre||'')}</b><br><span class="fx-muted">Instructor</span></p>
+    </div>
+    <div class="fx-muted" style="margin:10px 0;line-height:1.5;">En el formato, las casillas de acciones adelantadas y estado al finalizar el trimestre van en blanco: las diligencia después quien recibe el caso.</div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;">
+     <button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxRutaDescargar(this, true)">Descargar Excel GFPI-F-176</button>
+     ${(navigator.canShare && window.File) ? '<button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxRutaCompartir(this)">Compartir Excel</button>' : ''}
+     ${mia ? `<button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxRutaEditarDesdeVista()">Editar</button>` : ''}
+    </div>`;
+ }catch(e){ caja.innerHTML = `<div class="fx-aviso fx-err">No se pudo abrir la ruta. (${fxEsc(e.message)})</div>`; }
 }
-function fxRutaEnvio(rid){
- const r = FXR.rutas.find(x => x.id === rid); if(!r) return;
- const C = fxRutaCorreo(r); FXR.envio = C;
- const bloque = (tit, id, texto, filas) => `<div style="margin-bottom:12px;"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><b style="font-size:13px;">${tit}</b><button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxCopiar(document.getElementById('${id}').value,this)">Copiar</button></div><textarea id="${id}" class="fx-input" rows="${filas}" readonly style="font-size:13px;background:#f7f9f6;">${fxEsc(texto)}</textarea></div>`;
- const puedeCompartir = !!(navigator.canShare && window.File);
- fxAbrirHoja(`<b>Enviar al equipo ejecutor</b><div class="fx-muted">${fxEsc(r.nombre_aprendiz)} · Ficha ${fxEtiqueta(FXR.f)}</div>`,
-  `<div class="fx-aviso fx-ok" style="margin-bottom:12px;">La ruta quedó registrada y el equipo ejecutor ya tiene el aviso en la plataforma. Para dejarlo por correo, sigue estos pasos desde tu correo institucional.</div>
-   <div style="font-weight:700;font-size:13px;margin-bottom:6px;">1. Descarga el formato</div>
-   <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;"><button type="button" class="fx-btn fx-btn-p fx-btn-sm" onclick="fxRutaDescargar(this)">Descargar Excel GFPI-F-176</button>${puedeCompartir?'<button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxRutaCompartir(this)">Compartir Excel a mi correo</button>':''}</div>
-   <div style="font-weight:700;font-size:13px;margin-bottom:6px;">2. Copia los datos del correo</div>
-   ${C.para.length ? bloque('Para ('+C.para.length+')', 'fxr-c-para', C.para.join('; '), 2) : '<div class="fx-aviso fx-err" style="margin-bottom:12px;">Ningún destinatario tiene correo registrado todavía.</div>'}
-   ${C.sinCorreo.length?`<div class="fx-muted" style="margin:-6px 0 12px;">Sin correo registrado: ${C.sinCorreo.map(fxEsc).join(', ')}. Les aparecerá cuando ingresen a la plataforma y lo registren.</div>`:''}
-   ${bloque('Asunto', 'fxr-c-asunto', C.asunto, 2)}
-   ${bloque('Mensaje', 'fxr-c-cuerpo', C.cuerpo, 9)}
-   <div style="font-weight:700;font-size:13px;margin-bottom:6px;">3. Envía desde tu correo</div>
-   <a class="fx-btn fx-btn-s" style="display:block;text-align:center;text-decoration:none;" href="mailto:${C.para.map(encodeURIComponent).join(',')}?subject=${encodeURIComponent(C.asunto)}&body=${encodeURIComponent(C.cuerpo)}">Abrir mi correo con estos datos</a>
-   <div class="fx-muted" style="margin-top:6px;line-height:1.5;">Se abre con destinatarios, asunto y mensaje ya escritos. Solo falta adjuntar el Excel descargado.</div>`);
+function fxRutaEditarDesdeVista(){
+ const V = FXR.viendo; if(!V) return;
+ fxRutaAbrir(V.r.aprendiz_id || '', V.r.id);
 }
-async function fxRutaArchivo(){
- const mias = fxRutaMias();
- if(!mias.length) throw new Error('No tienes aprendices reportados en esta ficha.');
+// El Excel reúne todos los aprendices que un mismo instructor ha reportado en la ficha (así lo pide el formato)
+async function fxRutaArchivoDe(f, usuarioId, instructor){
+ const filas = await fxReq(`rutas_desercion?ficha_id=eq.${f.id}&usuario_id=eq.${usuarioId}&select=*&order=fecha_registro.asc,created_at.asc`) || [];
+ if(!filas.length) throw new Error('No hay aprendices reportados en esta ficha.');
  await rutaCargarZip();
- const np = rutaNivelPrograma(FXR.f);
- const zip = await rutaGenerarXlsx(RUTA_PLANTILLA_B64, { instructor: rutaSinTildes(sesionActual.nombre||'').toUpperCase(), programa: np.nombre, nivel: np.nivel, ficha: FXR.f.numero },
-  mias.map(r => ({ fecha: r.fecha_registro, documento: r.documento, nombre: r.nombre_aprendiz, situacion: r.situacion, causa: r.causa, escalo: r.escalo, a_quien: r.a_quien, acciones: r.acciones, estado_final: r.estado_final })));
+ const np = rutaNivelPrograma(f);
+ // Las columnas "acciones adelantadas" y "estado al finalizar el trimestre" se dejan en blanco: las llena después quien recibe el caso
+ const zip = await rutaGenerarXlsx(RUTA_PLANTILLA_B64, { instructor: rutaSinTildes(instructor||'').toUpperCase(), programa: np.nombre, nivel: np.nivel, ficha: f.numero },
+  filas.map(r => ({ fecha: r.fecha_registro, documento: r.documento, nombre: r.nombre_aprendiz, situacion: r.situacion, causa: r.causa, escalo: r.escalo, a_quien: r.a_quien, acciones: '', estado_final: '' })));
  const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE', mimeType: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
- return { blob, nombre: `GFPI-F-176_Ruta_desercion_Ficha_${FXR.f.numero}.xlsx` };
+ return { blob, nombre: `GFPI-F-176_Ruta_desercion_Ficha_${f.numero}.xlsx` };
 }
-async function fxRutaDescargar(btn){
+function fxRutaArchivo(deVista){
+ const V = FXR.viendo;
+ if(deVista && V) return fxRutaArchivoDe({...V.f, id: V.r.ficha_id}, V.r.usuario_id, V.r.instructor_nombre);
+ return fxRutaArchivoDe(FXR.f, sesionActual.id, sesionActual.nombre);
+}
+async function fxRutaDescargar(btn, deVista){
  const o = btn ? btn.textContent : ''; if(btn){ btn.disabled = true; btn.textContent = 'Generando...'; }
  try{
-  const A = await fxRutaArchivo();
+  const A = await fxRutaArchivo(deVista);
   const url = URL.createObjectURL(A.blob), a = document.createElement('a');
   a.href = url; a.download = A.nombre; document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 4000);
@@ -7165,11 +7351,10 @@ async function fxRutaDescargar(btn){
 async function fxRutaCompartir(btn){
  const o = btn.textContent; btn.disabled = true; btn.textContent = 'Preparando...';
  try{
-  const A = await fxRutaArchivo(), C = FXR.envio || {};
+  const A = await fxRutaArchivo(true);
   const file = new File([A.blob], A.nombre, { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
   if(!navigator.canShare({ files: [file] })) throw new Error('Este dispositivo no permite compartir archivos. Usa Descargar Excel.');
-  if(C.para && C.para.length) await fxCopiar(C.para.join('; '));
-  await navigator.share({ files: [file], title: C.asunto||A.nombre, text: C.cuerpo||'' });
+  await navigator.share({ files: [file], title: A.nombre });
  }catch(e){ if(e.name !== 'AbortError') alert(e.message); }
  finally{ btn.disabled = false; btn.textContent = o; }
 }

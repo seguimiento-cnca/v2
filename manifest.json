@@ -1,0 +1,31 @@
+{
+  "name": "PRUEBAS — Seguimiento a la Formación",
+  "short_name": "Seguimiento PRUEBAS",
+  "description": "Herramienta para llamados de atención y planes de mejoramiento — Centro Nacional Colombo Alemán",
+  "start_url": "/v2/",
+  "scope": "/v2/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#b45309",
+  "theme_color": "#b45309",
+  "lang": "es",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "education",
+    "productivity"
+  ],
+  "screenshots": []
+}
