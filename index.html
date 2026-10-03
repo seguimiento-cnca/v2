@@ -351,6 +351,41 @@ window.addEventListener('load', ()=>{
  .ap-lat { font-family: 'Work Sans', 'DM Sans', 'Segoe UI', sans-serif; }
  .ap-lat button { font-family: inherit; }
  .ap-menu-global { display: none; }
+
+ /* Sin botones "Volver al inicio": el menú lateral ya lleva a todas partes (el administrador conserva el suyo) */
+ body.con-sesion:not(.modo-admin) #btn-volver-wrap, body.con-sesion:not(.modo-admin) #btn-volver-wrap-planes, body.con-sesion:not(.modo-admin) .fx-nav { display: none !important; }
+ body.con-sesion:not(.modo-admin) .fx-body { padding-top: 22px; }
+ /* Barra de desplazamiento fina en el menú */
+ .ap-lat { scrollbar-width: thin; scrollbar-color: rgba(255,255,255,.35) transparent; }
+ .ap-lat::-webkit-scrollbar { width: 6px; }
+ .ap-lat::-webkit-scrollbar-track { background: transparent; }
+ .ap-lat::-webkit-scrollbar-thumb { background: rgba(255,255,255,.3); border-radius: 3px; }
+ .ap-lat::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,.5); }
+ /* Menú contraído (solo computador): quedan los iconos y se despliega al pasar el cursor */
+ body { --ap-ancho: 280px; }
+ .ap-plegar { display: none; }
+ html[data-vista="pc"] .ap-plegar { display: flex; align-items: center; justify-content: center; flex: 0 0 34px; width: 34px; height: 34px; margin-left: auto; padding: 0; border: none; border-radius: 50%; background: rgba(255,255,255,.14); color: #fff; cursor: pointer; }
+ html[data-vista="pc"] .ap-plegar:hover { background: rgba(255,255,255,.26); }
+ html[data-vista="pc"] .ap-plegar svg { transition: transform .18s ease; }
+ html[data-vista="pc"] body.ap-mini { --ap-ancho: 76px; }
+ html[data-vista="pc"] body.ap-mini .ap-plegar svg { transform: rotate(180deg); }
+ html[data-vista="pc"] .ap-lat { transition: width .18s ease; overflow-x: hidden; z-index: 9550; }
+ #modal-preview { z-index: 9700 !important; }
+ html[data-vista="pc"] body.ap-mini .ap-lat { width: 76px; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:hover, html[data-vista="pc"] body.ap-mini .ap-lat:focus-within { width: 280px; box-shadow: 10px 0 30px rgba(0,0,0,.28); }
+ html[data-vista="pc"] .ap-lat .ap-item, html[data-vista="pc"] .ap-lat .vista-btn, html[data-vista="pc"] .ap-grupo { white-space: nowrap; }
+ html[data-vista="pc"] .ap-marca > span:last-of-type { min-width: 0; overflow: hidden; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) { scrollbar-width: none; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within)::-webkit-scrollbar { display: none; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-marca { padding: 22px 10px 18px; justify-content: center; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-marca > span:last-of-type,
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-plegar,
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-txt { display: none; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-item,
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .vista-btn { justify-content: center; width: 48px; margin: 0 14px; padding: 10px 0; gap: 0; position: relative; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .vista-selector { margin: 0; }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-grupo { font-size: 0; padding: 0; height: 1px; margin: 12px 18px; background: rgba(255,255,255,.22); }
+ html[data-vista="pc"] body.ap-mini .ap-lat:not(:hover):not(:focus-within) .ap-cuenta.con { position: absolute; top: 4px; right: 2px; min-width: 18px; height: 18px; line-height: 18px; font-size: 11px; padding: 0 5px; }
  html[data-vista="movil"] .ap-lat { z-index: 9550; }
  html[data-vista="movil"] body.con-sesion:not(.modo-admin) #barra-sesion .bs-acciones > .bs-btn,
  html[data-vista="movil"] body.con-sesion:not(.modo-admin) #barra-sesion .vista-selector { display: none; }
@@ -359,31 +394,38 @@ window.addEventListener('load', ()=>{
  html[data-vista="movil"] body.con-sesion:not(.modo-admin) .ap-menu-global { display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 40px; flex: 0 0 40px; padding: 0; border: none; border-radius: 50%; background: rgba(255,255,255,.18); color: #fff; cursor: pointer; }
  /* Computador: menú fijo a la izquierda y la herramienta ocupa el espacio restante */
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta,
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) #barra-sesion { margin-left: 280px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) #barra-sesion { margin-left: var(--ap-ancho); transition: margin-left .18s ease; }
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .herramienta { margin-left: 0; }
  /* En computador el menú lateral ya trae el nombre, la contraseña, la vista y salir: la barra de sesión sobra */
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) #barra-sesion { display: none !important; }
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-vista { left: 280px; }
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-top { padding: 14px 32px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-vista { left: var(--ap-ancho); transition: left .18s ease; }
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-nav,
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-tabs,
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-body { max-width: 1104px; padding-left: 32px; padding-right: 32px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-body { max-width: 1136px; padding-left: 48px; padding-right: 48px; }
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .container,
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta .page-wrap,
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) #btn-volver-wrap,
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) #btn-volver-wrap-planes,
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta div[style*="max-width:700px"] { max-width: 1104px !important; padding-left: 32px !important; padding-right: 32px !important; }
- html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header { padding-left: 32px; padding-right: 32px; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .herramienta div[style*="max-width:700px"] { max-width: 1136px !important; padding-left: 48px !important; padding-right: 48px !important; }
+ /* Títulos de las herramientas en computador: sin logo (ya está en el menú), con aire y alineados con el contenido */
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header img,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-top > img { display: none !important; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-top { padding: 24px max(48px, calc((100% - 1136px) / 2 + 48px)); }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header h1,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-titulo { font-size: 22px; letter-spacing: .01em; }
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .page-header p,
+ html[data-vista="pc"] body.con-sesion:not(.modo-admin) .fx-sub { font-size: 13px; margin-top: 4px; }
  html[data-vista="movil"] body.en-inicio #distintivo-pruebas { bottom: 78px !important; }
  /* Computador: menú fijo a la izquierda */
- html[data-vista="pc"] .ap-main { margin-left: 280px; min-height: 100vh; }
- html[data-vista="pc"] .ap-top { background: #fff; border-bottom: 1px solid var(--ap-linea); padding: 14px 32px; }
+ html[data-vista="pc"] .ap-main { margin-left: var(--ap-ancho); min-height: 100vh; transition: margin-left .18s ease; }
+ html[data-vista="pc"] .ap-top { background: #fff; border-bottom: 1px solid var(--ap-linea); padding: 14px 48px; }
  html[data-vista="pc"] .ap-top-tit b { font-size: 18px; color: var(--ap-tinta); }
  html[data-vista="pc"] .ap-top-tit small, html[data-vista="pc"] .ap-btn-menu, html[data-vista="pc"] .ap-top .ap-logo { display: none; }
  html[data-vista="pc"] .ap-top .fx-campana { background: var(--ap-lila); border: none; color: var(--ap-morado); }
  html[data-vista="pc"] .ap-hola { font-size: 15px; color: var(--ap-gris); }
  html[data-vista="pc"] .ap-hola b { color: var(--ap-tinta); }
- html[data-vista="pc"] .ap-cont { padding: 32px; }
+ html[data-vista="pc"] .ap-cont { padding: 32px 48px; max-width: 1136px; }
  html[data-vista="pc"] .ap-banner { padding: 34px; } html[data-vista="pc"] .ap-banner b { font-size: 32px; }
  html[data-vista="pc"] #home .menu-grid { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
  html[data-vista="pc"] #home #mf-sub { grid-template-columns: repeat(auto-fit, minmax(360px, 1fr)); }
@@ -793,7 +835,7 @@ window.addEventListener('load', ()=>{
 
 <div class="ap-fondo" onclick="apMenu(false)"></div>
 <aside class="ap-lat" aria-label="Menú principal">
- <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span></div>
+ <div class="ap-marca"><span class="ap-logo"><img id="logo-inicio" alt="Logo SENA"></span><span><b>Seguimiento a la Formación</b><small>Centro Nacional Colombo Alemán</small></span><button type="button" class="ap-plegar" id="ap-plegar" title="Ocultar el menú" aria-label="Ocultar el menú" onclick="apPlegar()"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M13 6l-6 6 6 6"/><path d="M19 6l-6 6 6 6"/></svg></button></div>
  <button type="button" class="ap-item on" data-ap="inicio" onclick="apInicio()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 11l9-7 9 7"/><path d="M5 10v10h14V10"/></svg><span class="ap-txt">Inicio</span></button>
  <button type="button" class="ap-item" data-ap="alertas" onclick="apIr('alertas')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg><span class="ap-txt">Notificaciones</span><span class="ap-cuenta" data-ap-cuenta></span></button>
  <div class="ap-grupo">PRINCIPAL</div>
@@ -885,7 +927,16 @@ window.addEventListener('load', ()=>{
 </div>
 <script>
 // ── Nuevo inicio: menú lateral, saludo y avisos ──
-function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); }
+function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); if(!abrir && document.activeElement && document.activeElement.closest && document.activeElement.closest('.ap-lat')) document.activeElement.blur(); }
+// Menú contraído en computador: se recuerda en este equipo
+function apPlegar(forzar){
+ const mini = typeof forzar === 'boolean' ? forzar : !document.body.classList.contains('ap-mini');
+ document.body.classList.toggle('ap-mini', mini);
+ try{ localStorage.setItem(ENTORNO.pfx+'menu_mini', mini ? '1' : '0'); }catch(e){}
+ const b = document.getElementById('ap-plegar');
+ if(b){ const t = mini ? 'Dejar el menú fijo' : 'Ocultar el menú'; b.title = t; b.setAttribute('aria-label', t); if(mini) b.blur(); }
+}
+(function(){ let m = false; try{ m = localStorage.getItem(ENTORNO.pfx+'menu_mini') === '1'; }catch(e){} if(m) apPlegar(true); })();
 function apMarcar(clave){ document.querySelectorAll('.ap-lat [data-ap]').forEach(b => b.classList.toggle('on', b.dataset.ap === clave)); }
 function apHerramientaActiva(){ const h = document.querySelector('.herramienta.active'); return h ? h.id : ''; }
 function apFxAbierta(){ const v = document.getElementById('fx-vista'); return !!(v && v.classList.contains('abierta')); }
