@@ -1290,6 +1290,7 @@ function mfAlternar(){
  oninput="this.value=this.value.replace(/[^0-9]/g,'')"></div>
  <div class="field"><label>Fecha de reporte</label>
  <input type="date" id="fecha"></div>
+ <div class="field full" id="ll-grupo-nota" style="display:none;"></div>
  </div>
  </div>
  <div class="actions"><span></span>
@@ -1388,6 +1389,7 @@ function mfAlternar(){
  <div id="panel5" class="panel">
  <div class="card">
  <h2 id="panel5title">Tipo de falta</h2>
+ <div id="faltas-nota" style="font-size:13px;color:var(--muted);margin:-4px 0 12px;line-height:1.5;"></div>
  <div class="opcion-grid" id="faltasContainer"></div>
  </div>
  <div class="actions">
@@ -2348,18 +2350,53 @@ function eliminarRecDisc(i){ recsDisc.splice(i,1); renderRecsDisc(); }
 function restablecerRecsDisc(){ if(!confirm('¿Volver a las recomendaciones originales de esta falta? Se perderán los cambios.')) return; recsDisc = recsDiscPorDefecto(faltaSeleccionada); renderRecsDisc(); }
 function recsDiscFinales(){ const l = recsDisc.map(r => String(r||'').replace(/\s+/g,' ').trim()).filter(Boolean); return l.length ? l : recsDiscPorDefecto(faltaSeleccionada); }
 
-function selectFalta(f){
- faltaSeleccionada=f;
- document.querySelectorAll('[id^="fc-"]').forEach(c=>c.classList.remove('selected'));
- const el=document.getElementById('fc-'+f);
- if(el) el.classList.add('selected');
- setTimeout(()=>goTo(6),300);
+// Un llamado puede reunir varias faltas del mismo tipo. "faltaSeleccionada" sigue siendo la principal
+// (define qué detalles se piden); "faltasSel" guarda todas las marcadas.
+let faltasSel = [];
+function llPool(){ return tipoLlamado==='academico' ? FALTAS_ACAD : FALTAS_DISC; }
+function llFaltas(){ const pool = llPool(); const l = faltasSel.filter(k => pool[k]); return l.length ? l : (faltaSeleccionada && pool[faltaSeleccionada] ? [faltaSeleccionada] : []); }
+function llEsDias(k){ return k==='inasistencia' || k==='impuntualidad'; }
+// La principal es una de días (inasistencia o impuntualidad) si hay alguna; si no, la primera marcada
+function llPrincipal(){ const l = faltasSel.filter(k => llPool()[k]); return l.find(llEsDias) || l[0] || ''; }
+// ¿Además de la principal de días hay faltas que se explican con una descripción?
+function llHayDescriptiva(){ return llEsDias(faltaSeleccionada) && llFaltas().some(k => !llEsDias(k)); }
+function llEtiquetas(){ const pool = llPool(); return llFaltas().map(k => pool[k].label); }
+function llMarcarFaltas(){
+ document.querySelectorAll('[id^="fc-"]').forEach(c => c.classList.toggle('selected', faltasSel.includes(c.id.slice(3))));
+ const n = document.getElementById('faltas-nota');
+ if(n) n.textContent = faltasSel.length > 1 ? `${faltasSel.length} faltas seleccionadas. Todas quedarán en el mismo llamado.` : 'Puedes marcar más de una falta si el aprendiz cometió varias. Luego pulsa Siguiente.';
 }
+function selectFalta(f){
+ if(!llPool()[f]) return;
+ const i = faltasSel.indexOf(f);
+ if(i >= 0) faltasSel.splice(i, 1); else faltasSel.push(f);
+ faltaSeleccionada = llPrincipal();
+ llMarcarFaltas();
+}
+// Texto de la sección 1 del documento: una falta (redacción de siempre) o varias numeradas
+function llSegmentosFalta(persistencia, tipoFaltaTexto){
+ const pool = llPool(), l = llFaltas().map(k => pool[k]);
+ if(l.length <= 1){
+  const falta = l[0] || {};
+  return persistencia
+   ? [{t:'Durante el seguimiento a su proceso formativo, se identificó la persistencia de una '},{t:'falta académica',b:true},{t:' relacionada con el caso '},{t:'"'+(falta.label||'')+'"',b:true},{t:', asociada al '},{t:falta.articulo||'',b:true},{t:', '},{t:falta.parrafo1||'',b:true}]
+   : [{t:'Durante el seguimiento a su proceso formativo, se identificó una '},{t:tipoFaltaTexto,b:true},{t:' relacionada con '},{t:'"'+(falta.label||'')+'"',b:true},{t:', asociada al '},{t:falta.articulo||'',b:true},{t:', '},{t:falta.parrafo1||'',b:true}];
+ }
+ const plural = tipoLlamado==='academico' ? 'faltas académicas' : 'faltas disciplinarias';
+ const seg = [{t:'Durante el seguimiento a su proceso formativo, se identificaron las siguientes '},{t:plural,b:true},{t:': '}];
+ l.forEach((falta, i) => {
+  const ult = i === l.length - 1;
+  seg.push({t:`(${i+1}) `},{t:'"'+falta.label+'"',b:true},{t:', asociada al '},{t:falta.articulo||'',b:true},{t:', '},{t: ult ? (falta.parrafo1||'') : String(falta.parrafo1||'').replace(/\.\s*$/,''), b:true},{t: ult ? '' : '; '});
+ });
+ return seg.filter(x => x.t !== '');
+}
+function llSegmentosHtml(segs){ return segs.map(x => x.b ? `<strong>${x.t}</strong>` : x.t).join(''); }
 
 function renderFaltas(){
  const pool=tipoLlamado==='academico'?FALTAS_ACAD:FALTAS_DISC;
  document.getElementById('faltasContainer').innerHTML=Object.entries(pool).map(([k,f])=>`<div class="opcion-card" onclick="selectFalta('${k}')" id="fc-${k}"><div class="oc-icon">${f.icon}</div><div class="oc-title">${f.label}</div><div class="oc-sub">${f.sub}</div></div>`).join('');
- faltaSeleccionada='';
+ faltasSel = faltasSel.filter(k => pool[k]); faltaSeleccionada = llPrincipal();
+ llMarcarFaltas();
  document.getElementById('panel5title').textContent=tipoLlamado==='academico'?'Tipo de falta académica':'Tipo de falta disciplinaria';
 }
 
@@ -2406,7 +2443,8 @@ function mostrarCampos(){
  document.getElementById('cd-mes').classList.remove('campo-oculto');
  if(bloquesMeses.length===0) agregarMes();
  else renderBloquesMeses();
- // No se muestra descripción libre — los días son la descripción
+ // Los días son la descripción; si hay otras faltas marcadas, se pide además describirlas
+ if(llHayDescriptiva()) document.getElementById('cd-descripcion').classList.remove('campo-oculto');
  } else {
  document.getElementById('cd-descripcion').classList.remove('campo-oculto');
  }
@@ -2494,9 +2532,9 @@ function buildResumen(){
  <div class="preview-row"><span>Programa:</span><span>${v('programa')}</span></div>
  <div class="preview-row"><span>Ficha:</span><span>${v('ficha')}</span></div>
  <div class="preview-row"><span>Tipo de llamado:</span><span>${tipoLabel} — ${numLabel}</span></div>
- <div class="preview-row"><span>Tipo de falta:</span><span>${falta.label||''}</span></div>
+ <div class="preview-row"><span>${llFaltas().length>1?'Faltas ('+llFaltas().length+'):':'Tipo de falta:'}</span><span>${llEtiquetas().join('<br>')}</span></div>
  <div class="preview-row"><span>Instructor(es):</span><span>${v('instructores')}</span></div>
- ${falta.esDias?`<div class="preview-row"><span>Mes:</span><span>${v('mes')}</span></div><div class="preview-row"><span>Días:</span><span>${dias.join(', ')||'[sin días]'}</span></div>`:`<div class="preview-row"><span>Fecha del hecho:</span><span>${ffh}</span></div>`}
+ ${falta.esDias?`<div class="preview-row"><span>Días:</span><span>${(typeof getDiasParaPDF==='function' && getDiasParaPDF())||'[sin días seleccionados]'}</span></div>`:`<div class="preview-row"><span>Fecha del hecho:</span><span>${ffh}</span></div>`}
  ${argVal?`<div class="preview-row"><span>Argumentación:</span><span>${argVal.substring(0,80)}${argVal.length>80?'...':''}</span></div>`:''}
  `;
 }
@@ -2702,26 +2740,7 @@ function generarPDF(){
  const tipoFaltaTexto = tipoLlamado==='academico' ? 'falta académica' : 'falta disciplinaria';
  const esSegundo = numeroLlamado==='segundo';
 
- y=writeJustifiedMixed(
- esSegundo && tipoLlamado==='academico' ? [
- {t:'Durante el seguimiento a su proceso formativo, se identificó la persistencia de una '},
- {t:'falta académica',b:true},
- {t:' relacionada con el caso '},
- {t:'"'+falta.label+'"',b:true},
- {t:', asociada al '},
- {t:falta.articulo||'',b:true},
- {t:', '},
- {t:falta.parrafo1,b:true}
- ] : [
- {t:'Durante el seguimiento a su proceso formativo, se identificó una '},
- {t:tipoFaltaTexto,b:true},
- {t:' relacionada con '},
- {t:'"'+falta.label+'"',b:true},
- {t:', asociada al '},
- {t:falta.articulo||'',b:true},
- {t:', '},
- {t:falta.parrafo1,b:true}
- ]
+ y=writeJustifiedMixed(llSegmentosFalta(esSegundo && tipoLlamado==='academico', tipoFaltaTexto)
  ,y);y+=4;
 
  // SECCIÓN 2 — Descripción de la situación
@@ -2763,6 +2782,12 @@ function generarPDF(){
  {t:diasStr||'[días no seleccionados]',b:true},
  {t:' del presente año. Situación que afecta el desarrollo normal de las actividades de aprendizaje, el cumplimiento de los compromisos adquiridos y el alcance de los resultados de aprendizaje previstos dentro de su programa de formación.'}
  ],y);y+=4;
+ if(llHayDescriptiva()){
+  const pa = desc.split(/\n\n+|\n/).filter(p=>p.trim().length>0);
+  y=checkPage(y,10);
+  y=writeJustifiedMixed([{t:'Adicionalmente, de acuerdo con los reportes realizados por '},{t:instrVal,b:true},{t:', se identificó la siguiente situación: '},{t:pa[0]||'[descripción de la situación]'}],y);y+=4;
+  for(let pi=1;pi<pa.length;pi++){ y=checkPage(y,8); y=writeJustified(pa[pi].trim(),y,false);y+=4; }
+ }
  } else if(faltaSeleccionada!=='actividades'){
  // Primer párrafo con encabezado del instructor
  const parrafos = desc.split(/\n\n+|\n/).filter(p=>p.trim().length>0);
@@ -2976,7 +3001,7 @@ function generarPDF(){
  documento_aprendiz: v('documento')||'',
  ficha: v('ficha')||'',
  programa: v('programa')||'',
- falta: faltaSeleccionada||'',
+ falta: llFaltas().join(',') || faltaSeleccionada || '',
  fecha_documento: v('fecha')||''
  });
 }
@@ -3013,7 +3038,7 @@ function volverInicio(){
  document.getElementById('header-p').textContent = 'Centro Nacional Colombo Alemán — Área Metalmecánica';
  document.getElementById('btn-volver-wrap').style.display='none';
  // Reset estado
- bloquesMeses=[]; tipoLlamado=''; numeroLlamado=''; faltaSeleccionada=''; recsDisc=[]; recsDiscFalta='';
+ bloquesMeses=[]; tipoLlamado=''; numeroLlamado=''; faltaSeleccionada=''; faltasSel=[]; recsDisc=[]; recsDiscFalta='';
  for(let i=1;i<=7;i++){
  const p=document.getElementById('panel'+i);
  if(p){p.classList.remove('active');if(i===1)p.classList.add('active');}
@@ -3106,6 +3131,7 @@ function buildPreviewHTML(){
  } else if(faltaSeleccionada==='inasistencia'||faltaSeleccionada==='impuntualidad'){
  const diasStr = getDiasParaPDF() || '[días no seleccionados]';
  parrafo2 = `De acuerdo con los registros de inasistencia y los reportes realizados por <strong>${instrVal}</strong>, se evidencia que su asistencia ha sido intermitente <strong>${diasStr}</strong> del presente año. Situación que afecta el desarrollo normal de las actividades de aprendizaje, el cumplimiento de los compromisos adquiridos y el alcance de los resultados de aprendizaje previstos dentro de su programa de formación.`;
+ if(llHayDescriptiva()){ const pa2 = (v('descripcionFalta')||'[descripción de la situación]').split(/\n\n+|\n/).filter(p=>p.trim().length>0); parrafo2 += `</p><p style="text-align:justify;margin-bottom:8px;">Adicionalmente, de acuerdo con los reportes realizados por <strong>${instrVal}</strong>, se identificó la siguiente situación: ${pa2.join('</p><p style="text-align:justify;margin-bottom:8px;">')}`; }
  } else if(faltaSeleccionada!=='actividades'){
  const desc = v('descripcionFalta') || '[descripción de la situación]';
  const parrafos = desc.split(/\n\n+|\n/).filter(p=>p.trim().length>0);
@@ -3167,9 +3193,7 @@ ${tipoLlamado==='disciplinario' ? '' : ` <p style="text-align:justify;margin-bot
 
  <p style="text-align:justify;margin-bottom:8px;"><strong>1.&nbsp;&nbsp;&nbsp;Identificación de la falta y fundamento normativo</strong></p>
  <p style="text-align:justify;margin-bottom:14px;">${
- esSegundo && tipoLlamado==='academico'
- ? `Durante el seguimiento a su proceso formativo, se identificó la persistencia de una <strong>falta académica</strong> relacionada con el caso <strong>"${falta.label||''}"</strong>, asociada al <strong>${falta.articulo||''}</strong>, <strong>${falta.parrafo1||''}</strong>`
- : `Durante el seguimiento a su proceso formativo, se identificó una <strong>${tipoFaltaTexto}</strong> relacionada con <strong>"${falta.label||''}"</strong>, asociada al <strong>${falta.articulo||''}</strong>, <strong>${falta.parrafo1||''}</strong>`
+ llSegmentosHtml(llSegmentosFalta(esSegundo && tipoLlamado==='academico', tipoFaltaTexto))
  }</p>
 
  <p style="text-align:justify;margin-bottom:8px;"><strong>2.&nbsp;&nbsp;&nbsp;Descripción de la situación</strong></p>
@@ -7620,6 +7644,7 @@ function fxInfTipoDoc(h){
 const FXA = { prog: '', fichas: [], x: null, form: null };
 const FXA_TRIM = ['primer','segundo','tercer','cuarto','quinto','sexto','séptimo','octavo','noveno','décimo'];
 const FXA_CONCLUSION = 'Se concluye que los resultados de aprendizaje deben ser evaluados oportunamente al finalizar cada trimestre académico, garantizando el adecuado seguimiento al proceso formativo de los aprendices. Asimismo, se acuerda activar la ruta de deserción para aquellos aprendices que presenten novedades, con el fin de implementar las acciones de seguimiento, acompañamiento o cancelación de registro.';
+function fxActaFaltas(t){ const pools = Object.assign({}, typeof FALTAS_DISC !== 'undefined' ? FALTAS_DISC : {}, typeof FALTAS_ACAD !== 'undefined' ? FALTAS_ACAD : {}); return String(t||'').split(',').map(k => k.trim()).filter(Boolean).map(k => (pools[k] && pools[k].label) || k).join('\n'); }
 function fxActaTitulo(f){ return `${String(f.grupo||'').trim() || 'Ficha'} (${f.numero})`; }
 function fxActaClave(){ return ENTORNO.pfx + 'acta_comite_' + fxNorm(FXA.prog).replace(/[^A-Za-z0-9]+/g,'_').slice(0,60); }
 function fxActaFechaLarga(iso){ try{ return new Date(String(iso).slice(0,10)+'T12:00:00').toLocaleDateString('es-CO',{day:'numeric',month:'long',year:'numeric'}); }catch(e){ return iso||''; } }
@@ -7744,7 +7769,7 @@ function fxActaDatos(F){
  const fichas = FXA.fichas.map(f => {
   const x = X.porFicha[f.numero], b = F.fichas[f.numero] || {};
   const med = {};
-  x.medidas.forEach(h => { const t = fxInfTipoDoc(h).toUpperCase(); (med[t] = med[t] || []).push({ aprendiz: String(h.nombre_aprendiz||'').toUpperCase(), fecha: fxActaFechaLarga(h.fecha_documento || h.fecha_generacion), instructor: apNombrePropio(h.quien_reporta || h.nombre_usuario || ''), observacion: h.falta || '' }); });
+  x.medidas.forEach(h => { const t = fxInfTipoDoc(h).toUpperCase(); (med[t] = med[t] || []).push({ aprendiz: String(h.nombre_aprendiz||'').toUpperCase(), fecha: fxActaFechaLarga(h.fecha_documento || h.fecha_generacion), instructor: apNombrePropio(h.quien_reporta || h.nombre_usuario || ''), observacion: fxActaFaltas(h.falta) }); });
   const dest = x.activos.filter(a => (b.dest||[]).includes(a.documento)).map(a => fxNombreApr(a).toUpperCase());
   return {
    titulo: fxActaTitulo(f),
@@ -8282,7 +8307,7 @@ async function fxsMontar(id, alElegir){
  const cont = document.getElementById(id);
  if(FX_EN_DESARROLLO){ if(cont) cont.style.display = 'none'; FXS[id] = { fichas: [] }; return; }
  if(!cont || !sesionActual) return;
- FXS[id] = { alElegir, fichas: [], aps: [], f: null, sel: null, q: '' };
+ FXS[id] = { alElegir, fichas: [], aps: [], f: null, sel: null, q: '', multi: id === 'fx-sel-llam', grupo: [] };
  cont.innerHTML = `<h2>Elegir de mis fichas</h2><div class="fx-muted">Cargando tus fichas...</div>`;
  try{
   const fichas = await fxsMisFichas();
@@ -8321,7 +8346,7 @@ function fxsModo(id, modo){
 }
 function fxsPintar(id){
  const S = FXS[id], cont = document.getElementById(id);
- if(S.sel){
+ if(S.sel && !S.multi){
   const a = S.sel;
   cont.innerHTML = `<h2>Elegir de mis fichas</h2>
    <div style="display:flex;align-items:center;gap:10px;background:#f3faf1;border:1px solid #cfe5c8;border-radius:10px;padding:10px 12px;">
@@ -8341,7 +8366,7 @@ function fxsPintar(id){
 }
 async function fxsElegirFicha(id, fid){
  const S = FXS[id];
- S.f = S.fichas.find(f => f.id===fid) || null; S.aps = []; S.q = '';
+ S.f = S.fichas.find(f => f.id===fid) || null; S.aps = []; S.q = ''; S.grupo = []; if(S.multi){ S.sel = null; if(typeof llAplicarGrupo === 'function') llAplicarGrupo(); }
  const box = document.getElementById(id+'-aps');
  if(!S.f){ box.innerHTML = ''; return; }
  box.innerHTML = '<div class="fx-muted">Cargando aprendices...</div>';
@@ -8374,18 +8399,40 @@ function fxsPintarAprendices(id){
  const lista = S.aps.filter(a => !q || fxNorm(fxNombreApr(a)+' '+a.documento).includes(q));
  box.innerHTML = `<div class="field" style="margin-bottom:8px;"><label>Aprendiz (${S.aps.length})</label>
    <input type="text" placeholder="Buscar por nombre o documento" value="${fxEsc(S.q)}" oninput="FXS['${id}'].q=this.value;fxsPintarLista('${id}')"></div>
-  <div id="${id}-lista" style="max-height:300px;overflow-y:auto;border:1px solid #e2e8e0;border-radius:10px;"></div>`;
+  ${S.multi ? '<div class="fx-muted" style="margin:-2px 0 8px;line-height:1.5;">Marca uno o varios aprendices. Si marcas varios, se genera el mismo llamado para todos, con un PDF aparte para cada uno.</div>' : ''}
+  <div id="${id}-lista" style="max-height:300px;overflow-y:auto;border:1px solid #e2e8e0;border-radius:10px;"></div>
+  ${S.multi ? `<div id="${id}-grupo" style="margin-top:8px;"></div>` : ''}`;
  fxsPintarLista(id);
+ if(S.multi) fxsPintarGrupo(id);
 }
 function fxsPintarLista(id){
  const S = FXS[id], el = document.getElementById(id+'-lista');
  if(!el) return;
  const q = fxNorm(S.q);
  const lista = S.aps.filter(a => !q || fxNorm(fxNombreApr(a)+' '+a.documento).includes(q));
- el.innerHTML = lista.length ? lista.map(a => `<div onclick="fxsElegir('${id}','${fxEsc(a.documento)}')" style="padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;">
-   <div style="font-weight:600;font-size:13px;">${fxEsc(fxNombreApr(a).toUpperCase())}</div>
-   <div class="fx-muted">${fxEsc(a.tipo_doc||'')} ${fxEsc(a.documento)}</div>${fxsResumen(a)}</div>`).join('')
+ el.innerHTML = lista.length ? lista.map(a => { const on = S.multi && S.grupo.some(g => g.documento === a.documento);
+   return `<div onclick="${S.multi ? 'fxsAlternar' : 'fxsElegir'}('${id}','${fxEsc(a.documento)}')" role="${S.multi ? 'checkbox' : 'button'}" ${S.multi ? `aria-checked="${on}"` : ''} style="padding:10px 12px;border-bottom:1px solid #f0f0f0;cursor:pointer;display:flex;gap:10px;align-items:flex-start;${on?'background:#f3faf1;':''}">
+   ${S.multi ? `<span aria-hidden="true" style="flex:0 0 20px;width:20px;height:20px;margin-top:1px;border-radius:5px;border:2px solid ${on?'#15851E':'#b8c4b4'};background:${on?'#15851E':'#fff'};color:#fff;font-size:14px;line-height:16px;text-align:center;font-weight:700;">${on?'✓':''}</span>` : ''}
+   <div style="flex:1;min-width:0;"><div style="font-weight:600;font-size:13px;">${fxEsc(fxNombreApr(a).toUpperCase())}</div>
+   <div class="fx-muted">${fxEsc(a.tipo_doc||'')} ${fxEsc(a.documento)}</div>${fxsResumen(a)}</div></div>`; }).join('')
   : '<div class="fx-muted" style="padding:12px;">No hay aprendices que coincidan.</div>';
+}
+// Llamados: marcar o desmarcar un aprendiz del grupo
+function fxsAlternar(id, doc){
+ const S = FXS[id], a = S.aps.find(x => x.documento === doc);
+ if(!a) return;
+ const i = S.grupo.findIndex(g => g.documento === doc);
+ if(i >= 0) S.grupo.splice(i, 1); else S.grupo.push(a);
+ S.sel = S.grupo[0] || null;
+ fxsPintarLista(id); fxsPintarGrupo(id);
+ if(S.sel){ try{ S.alElegir(S.sel, S.f); }catch(e){ console.error(e); } }
+ if(typeof llAplicarGrupo === 'function') llAplicarGrupo();
+}
+function fxsPintarGrupo(id){
+ const S = FXS[id], el = document.getElementById(id+'-grupo');
+ if(!el) return;
+ el.innerHTML = S.grupo.length ? `<div class="fx-muted" style="font-weight:600;margin-bottom:6px;">${S.grupo.length} seleccionado${S.grupo.length!==1?'s':''}</div><div style="display:flex;flex-wrap:wrap;gap:6px;">` +
+  S.grupo.map(a => `<span style="display:inline-flex;align-items:center;gap:6px;background:#eef6ea;border:1px solid #cfe5c8;border-radius:999px;padding:4px 6px 4px 12px;font-size:12px;font-weight:600;">${fxEsc(fxNombreApr(a).toUpperCase())}<button type="button" onclick="fxsAlternar('${id}','${fxEsc(a.documento)}')" aria-label="Quitar" style="width:22px;height:22px;border:none;border-radius:50%;background:#d6e8cf;color:#27500A;cursor:pointer;font-size:13px;line-height:1;">×</button></span>`).join('') + '</div>' : '';
 }
 function fxsElegir(id, doc){
  const S = FXS[id];
@@ -8404,12 +8451,75 @@ function fxsPonerPrograma(selId, programa){
 }
 
 // ── Llamados de atención ──
+// Grupo de aprendices: el mismo llamado para varios, con un PDF individual para cada uno
+function llGrupo(){ const S = FXS['fx-sel-llam']; return (S && S.multi && S.grupo) ? S.grupo : []; }
+function llAplicarGrupo(){
+ const G = llGrupo(), varios = G.length > 1;
+ ['nombreAprendiz','documento'].forEach(id => { const e = document.getElementById(id), f = e && e.closest('.field'); if(f) f.style.display = varios ? 'none' : ''; });
+ const n = document.getElementById('ll-grupo-nota');
+ if(n){ n.style.display = varios ? '' : 'none'; n.innerHTML = varios ? `<div class="info-card" style="margin:0;"><b>${G.length} aprendices seleccionados.</b> Llenas el llamado una sola vez y se genera un PDF individual para cada uno:<br>${G.map(a => fxEsc(fxNombreApr(a).toUpperCase())).join(' · ')}</div>` : ''; }
+ if(typeof fxHintNumeroLlamado === 'function') fxHintNumeroLlamado();
+}
+function llPrevios(a){ return (a.docs||[]).filter(d => d.tipo_documento==='llamado' && d.tipo_llamado===tipoLlamado); }
+async function llGenerarGrupo(genUno){
+ const G = llGrupo().slice();
+ const t = FX_TXT_TIPO[tipoLlamado] || tipoLlamado;
+ // Cada aprendiz lleva el número de llamado que le corresponde según su historial
+ const numeros = {}; G.forEach(a => numeros[a.documento] = numeroLlamado);
+ let lista = G;
+ if(numeroLlamado === 'primero'){
+  const ya = G.filter(a => llPrevios(a).length);
+  if(ya.length){
+   const nombres = ya.map(a => '• ' + fxNombreApr(a).toUpperCase()).join('\n');
+   if(confirm(`Estos aprendices ya tienen un llamado de atención ${t} registrado:\n\n${nombres}\n\nAceptar: a ellos se les genera como SEGUNDO llamado.\nCancelar: se quitan de este grupo y no se les genera.`)) ya.forEach(a => numeros[a.documento] = 'segundo');
+   else lista = G.filter(a => !ya.includes(a));
+  }
+ } else if(numeroLlamado === 'segundo'){
+  const sin = G.filter(a => !llPrevios(a).length);
+  if(sin.length){
+   const nombres = sin.map(a => '• ' + fxNombreApr(a).toUpperCase()).join('\n');
+   if(confirm(`Estos aprendices no tienen un primer llamado ${t} registrado en la plataforma:\n\n${nombres}\n\nAceptar: a ellos se les genera como PRIMER llamado.\nCancelar: se les genera como segundo, igual que a los demás.`)) sin.forEach(a => numeros[a.documento] = 'primero');
+  }
+ }
+ if(!lista.length){ alert('No quedó ningún aprendiz en el grupo.'); return; }
+ const nomEl = document.getElementById('nombreAprendiz'), docEl = document.getElementById('documento');
+ const orig = { nombre: nomEl.value, doc: docEl.value, numero: numeroLlamado, save: window.jspdf.jsPDF.API.save };
+ const pdfs = [];
+ try{
+  await rutaCargarZip();
+  window.jspdf.jsPDF.API.save = function(nombre){ pdfs.push({ nombre: nombre || 'llamado.pdf', blob: this.output('blob') }); return this; };
+  for(const a of lista){
+   nomEl.value = fxNombreApr(a).toUpperCase();
+   docEl.value = String(a.documento).replace(/[^0-9]/g,'');
+   numeroLlamado = numeros[a.documento];
+   genUno();
+  }
+ }finally{
+  window.jspdf.jsPDF.API.save = orig.save;
+  nomEl.value = orig.nombre; docEl.value = orig.doc; numeroLlamado = orig.numero;
+ }
+ if(!pdfs.length){ alert('No se pudo generar ningún documento.'); return; }
+ const zip = new JSZip(), usados = {};
+ pdfs.forEach((x, i) => { let n = x.nombre.replace(/[\\/:*?"<>|]/g,'_'); if(usados[n]) n = n.replace(/\.pdf$/i, '') + '_' + lista[i].documento + '.pdf'; usados[n] = true; zip.file(n, x.blob); });
+ const blob = await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' });
+ const url = URL.createObjectURL(blob), l = document.createElement('a');
+ l.href = url; l.download = `Llamados_de_atencion_ficha_${(document.getElementById('ficha').value||'').replace(/[^0-9A-Za-z]/g,'')}_${fxHoy()}.zip`;
+ document.body.appendChild(l); l.click(); l.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
+ // el historial de cada aprendiz queda al día para un próximo llamado
+ lista.forEach(a => { (a.docs = a.docs || []).push({ tipo_documento: 'llamado', tipo_llamado: tipoLlamado, numero_llamado: numeros[a.documento], fecha_documento: document.getElementById('fecha').value }); });
+ alert(`Se generaron ${pdfs.length} llamados de atención, uno por cada aprendiz. Se descargaron juntos en un archivo ZIP.`);
+}
 const FX_TXT_TIPO = {disciplinario:'disciplinario', academico:'académico'};
 function fxHintNumeroLlamado(){
  const box = document.getElementById('fx-hint-numero');
  const S = FXS['fx-sel-llam'];
  if(!box) return;
  if(!S || !S.sel || !tipoLlamado){ box.style.display = 'none'; return; }
+ if(S.multi && S.grupo.length > 1){
+  const ya = S.grupo.filter(a => llPrevios(a).length), tt = FX_TXT_TIPO[tipoLlamado] || tipoLlamado;
+  box.innerHTML = ya.length ? `De los ${S.grupo.length} aprendices seleccionados, <b>${ya.length}</b> ya ${ya.length!==1?'tienen':'tiene'} llamado de atención ${tt}: ${ya.map(a => fxEsc(fxNombreApr(a).toUpperCase())).join(', ')}. Al generar podrás decidir qué número de llamado ${ya.length!==1?'les':'le'} corresponde.` : `Ninguno de los ${S.grupo.length} aprendices seleccionados tiene llamados de atención ${tt}s registrados: corresponde el <b>primer llamado</b>.`;
+  box.style.display = ''; return;
+ }
  const prev = S.sel.docs.filter(d => d.tipo_documento==='llamado' && d.tipo_llamado===tipoLlamado);
  const t = FX_TXT_TIPO[tipoLlamado] || tipoLlamado;
  let msg;
@@ -8435,6 +8545,15 @@ function fxHintNumeroLlamado(){
  };
  const tipoOrig = selectTipo;
  selectTipo = function(){ const r = tipoOrig.apply(this, arguments); fxHintNumeroLlamado(); return r; };
+ const genOrig = generarPDF;
+ generarPDF = function(){ if(llGrupo().length > 1) return llGenerarGrupo(genOrig).catch(e => alert('No se pudieron generar los llamados: ' + e.message)); return genOrig.apply(this, arguments); };
+ const resOrig = buildResumen;
+ buildResumen = function(){
+  const r = resOrig.apply(this, arguments); const G = llGrupo();
+  if(G.length > 1){ const box = document.getElementById('resumen'), fila = box && box.querySelector('.preview-row');
+   if(fila) fila.innerHTML = `<span>Aprendices (${G.length}):</span><span>${G.map(a => fxEsc(fxNombreApr(a).toUpperCase())).join('<br>')}<br><em style="font-weight:400;">Se genera un PDF para cada uno. La vista previa muestra el del primero.</em></span>`; }
+  return r;
+ };
 })();
 
 
