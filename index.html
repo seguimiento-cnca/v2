@@ -435,6 +435,15 @@ window.addEventListener('load', ()=>{
  .fxa-comp-fila { display: grid; grid-template-columns: minmax(0, 2fr) 160px minmax(0, 1fr); gap: 8px; margin-bottom: 8px; }
  html[data-vista="movil"] .fxa-comp-fila { grid-template-columns: 1fr; padding-bottom: 8px; border-bottom: 1px solid var(--ap-linea); }
 
+ /* Fechas: los campos muestran día/mes/año aunque el navegador esté en otro idioma */
+ @supports selector(::-webkit-datetime-edit) {
+  input[type="date"][data-dmy] { position: relative; }
+  input[type="date"][data-dmy]::-webkit-datetime-edit { color: transparent; }
+  input[type="date"][data-dmy]::-webkit-date-and-time-value { color: transparent; text-align: left; }
+  input[type="date"][data-dmy]::before { content: attr(data-dmy); position: absolute; left: 0; top: 50%; transform: translateY(-50%); padding-left: inherit; color: inherit; pointer-events: none; white-space: nowrap; }
+  input[type="date"][data-dmy="dd/mm/aaaa"]::before { opacity: .55; }
+ }
+
  /* Mensajes */
  .fx-msj { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit; background: #fff; }
  .fx-msj:hover { border-color: var(--ap-morado); }
@@ -1045,6 +1054,25 @@ window.addEventListener('load', ()=>{
  </nav>
 </div>
 <script>
+// ── Fechas en día/mes/año ──
+// El campo sigue guardando la fecha en su formato interno (aaaa-mm-dd); solo cambia lo que se ve.
+function apFechaDMY(iso){ const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(iso||'')); return m ? `${m[3]}/${m[2]}/${m[1]}` : ''; }
+function apFechaPintar(el){ if(el && el.type === 'date') el.setAttribute('data-dmy', apFechaDMY(el.value) || 'dd/mm/aaaa'); }
+(function(){
+ try{
+  const d = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, 'value');
+  Object.defineProperty(HTMLInputElement.prototype, 'value', { configurable: true, enumerable: d.enumerable, get: d.get,
+   set(v){ d.set.call(this, v); if(this.type === 'date') apFechaPintar(this); } });
+ }catch(e){}
+ const todos = raiz => { if(raiz.querySelectorAll) raiz.querySelectorAll('input[type="date"]').forEach(apFechaPintar); if(raiz.matches && raiz.matches('input[type="date"]')) apFechaPintar(raiz); };
+ document.addEventListener('input', e => apFechaPintar(e.target), true);
+ document.addEventListener('change', e => apFechaPintar(e.target), true);
+ document.addEventListener('click', e => { const t = e.target; if(t && t.type === 'date' && !t.disabled && !t.readOnly && typeof t.showPicker === 'function'){ try{ t.showPicker(); }catch(x){} } }, true);
+ new MutationObserver(ms => ms.forEach(m => m.addedNodes.forEach(n => { if(n.nodeType === 1) todos(n); }))).observe(document.documentElement, {childList: true, subtree: true});
+ document.addEventListener('DOMContentLoaded', () => todos(document));
+ todos(document);
+})();
+
 // ── Nuevo inicio: menú lateral, saludo y avisos ──
 function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); if(!abrir && document.activeElement && document.activeElement.closest && document.activeElement.closest('.ap-lat')) document.activeElement.blur(); }
 // Menú contraído en computador: se recuerda en este equipo
@@ -1583,7 +1611,7 @@ function mfAlternar(){
 
  <div class="card" id="fx-sel-pa"></div>
  <!-- Carga del reporte -->
- <div class="card" id="card-reporte">
+ <div class="card" id="card-reporte" style="display:none !important;">
  <h2>Cargar Reporte de Juicios Evaluativos</h2>
  <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
  Carga el archivo <strong>.xls</strong> del Reporte de Juicios Evaluativos para autocompletar la ficha, programa y lista de aprendices. También puedes llenar el formulario manualmente.
@@ -1912,7 +1940,7 @@ function mfAlternar(){
  <!-- BLOQUE 1: Aprendiz -->
  <div id="dpanel1" class="panel active">
   <div class="card" id="fx-sel-pd"></div>
-  <div class="card">
+  <div class="card" id="d-card-reporte" style="display:none !important;">
    <h2>Cargar Reporte de Juicios Evaluativos</h2>
    <p style="font-size:13px;color:var(--muted);margin-bottom:16px;line-height:1.6;">
     Carga el archivo <strong>.xls</strong> del Reporte de Juicios Evaluativos para autocompletar la ficha, el programa y los datos del aprendiz. También puedes llenar el formulario manualmente.
@@ -6991,7 +7019,7 @@ async function fxQuitarLider(uid, i){
 
 // ═══ REGISTRO DE INASISTENCIA ═══
 function fxHoy(){ return new Date().toLocaleDateString('en-CA',{timeZone:'America/Bogota'}); }
-function fxFechaCorta(d){ try{ return new Date(d+'T12:00:00').toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short'}); }catch(e){ return d; } }
+function fxFechaCorta(d){ try{ return new Date(d+'T12:00:00').toLocaleDateString('es-CO',{weekday:'short',day:'numeric',month:'short',year:'numeric'}); }catch(e){ return d; } }
 const FX_LIMITE_RUTA = 3;
 // ── Ruta de prevención a la deserción ──
 // Se sugiere activarla con 3 fallas CONTINUAS o con 5 fallas en total (continuas o no).
@@ -7254,7 +7282,7 @@ function fxPillEstado(e){
  const act = (e||'EN FORMACION') === 'EN FORMACION';
  return `<span class="fx-pill" style="flex:0 0 auto;${act?'':'background:#fdecea;color:#a93226;'}">${fxEsc(fxTxtEstado(e))}</span>`;
 }
-function fxFechaHora(iso){ try{ return new Date(iso).toLocaleString('es-CO',{day:'numeric',month:'short',hour:'numeric',minute:'2-digit',timeZone:'America/Bogota'}); }catch(e){ return ''; } }
+function fxFechaHora(iso){ try{ return new Date(iso).toLocaleString('es-CO',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit',timeZone:'America/Bogota'}); }catch(e){ return ''; } }
 function fxTarjetaNovedad(x, f, nueva){
  return `<div class="fx-card" style="padding:12px;${nueva?'border-color:#f3c2bc;':''}">
   <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start;"><div style="font-weight:700;font-size:14px;">${fxEsc(x.nombre_aprendiz||x.documento)}</div>${nueva?'<span class="fx-pill" style="background:#fdecea;color:#c0392b;flex:0 0 auto;">Nuevo</span>':''}</div>
@@ -7482,10 +7510,10 @@ function fxInfExcel(btn){
   res.push(['TOTAL', ''].concat(tot));
   const det = [['Ficha','Documento','Aprendiz','Tipo','Fecha','Detalle','Registrado por']];
   fichas.forEach(f => { const x = D.porFicha[f.numero];
-   x.ina.forEach(i => det.push([f.numero, i.documento, i.nombre_aprendiz||'', 'Inasistencia', i.fecha, '', i.instructor_nombre||'']));
-   x.his.forEach(h => det.push([f.numero, h.documento_aprendiz||'', h.nombre_aprendiz||'', 'Medida formativa', h.fecha_documento||String(h.fecha_generacion||'').slice(0,10), fxInfTipoDoc(h), h.nombre_usuario||'']));
-   x.nov.forEach(n => det.push([f.numero, n.documento, n.nombre_aprendiz||'', 'Novedad', String(n.created_at||'').slice(0,10), fxTxtEstado(n.estado_anterior)+' → '+fxTxtEstado(n.estado_nuevo)+(n.observacion?' ('+n.observacion+')':''), n.instructor_nombre||'']));
-   x.rut.forEach(r => det.push([f.numero, r.documento, r.nombre_aprendiz||'', 'Ruta de prevención de la deserción', r.fecha_registro, r.situacion+' — '+r.causa, r.instructor_nombre||'']));
+   x.ina.forEach(i => det.push([f.numero, i.documento, i.nombre_aprendiz||'', 'Inasistencia', apFechaDMY(i.fecha), '', i.instructor_nombre||'']));
+   x.his.forEach(h => det.push([f.numero, h.documento_aprendiz||'', h.nombre_aprendiz||'', 'Medida formativa', apFechaDMY(h.fecha_documento||String(h.fecha_generacion||'').slice(0,10)), fxInfTipoDoc(h), h.nombre_usuario||'']));
+   x.nov.forEach(n => det.push([f.numero, n.documento, n.nombre_aprendiz||'', 'Novedad', apFechaDMY(String(n.created_at||'').slice(0,10)), fxTxtEstado(n.estado_anterior)+' → '+fxTxtEstado(n.estado_nuevo)+(n.observacion?' ('+n.observacion+')':''), n.instructor_nombre||'']));
+   x.rut.forEach(r => det.push([f.numero, r.documento, r.nombre_aprendiz||'', 'Ruta de prevención de la deserción', apFechaDMY(r.fecha_registro), r.situacion+' — '+r.causa, r.instructor_nombre||'']));
   });
   const wb = XLSX.utils.book_new();
   const h1 = XLSX.utils.aoa_to_sheet(res); h1['!cols'] = [{wch:14},{wch:26},{wch:22},{wch:22},{wch:14},{wch:18},{wch:12},{wch:16}];
@@ -8267,9 +8295,9 @@ async function fxsMontar(id, alElegir){
   fxsPintar(id);
  }catch(e){ cont.innerHTML = `<h2>Elegir de mis fichas</h2><div class="fx-aviso fx-err" style="margin:0;">No se pudieron cargar tus fichas. Puedes escribir los datos abajo.</div>`; }
 }
-// En los planes se ofrecen las dos opciones: usar mis fichas o cargar un Reporte de Juicios
+// En los planes ya no se carga el Reporte de Juicios: el aprendiz se elige solo de las fichas asociadas
 function fxsPrepararModos(id){
- if(FX_EN_DESARROLLO) return;
+ return;
  const sel = document.getElementById(id), rep = sel && sel.nextElementSibling;
  if(!sel || !rep || !FXS[id]) return;
  FXS[id].reporteCard = rep;
@@ -8436,9 +8464,7 @@ async function fxsCompetenciasPlan(a, f){
    fxsAvisoPlan(id, `<b>${n.total}</b> resultados de aprendizaje precargados en el paso 3.` + (n.pend ? ` Los <b>${n.pend}</b> que este aprendiz tiene sin aprobar van primero, marcados como <b>Pendiente</b>.` : ''), 'fx-ok');
    return;
   }
-  fxsAvisoPlan(id, `Esta ficha todavía no tiene sus competencias. Sube aquí su Reporte de Juicios Evaluativos y se extraen automáticamente; quedan guardadas para la próxima vez.
-   <label class="fx-drop" style="margin-top:8px;background:#fff;"><strong>Subir Reporte de Juicios de la ficha ${fxEsc(f.numero)}</strong><span class="fx-muted">Formato .xls</span>
-   <input type="file" accept=".xls,.xlsx" style="display:none;" onchange="fxsSubirReportePlan(this)"></label>`);
+  fxsAvisoPlan(id, 'Esta ficha todavía no tiene cargadas sus competencias. El líder de seguimiento del programa las carga con el reporte de juicios; mientras tanto puedes escribir los resultados de aprendizaje en el paso 3.');
  }catch(e){ fxsAvisoPlan(id, 'No se pudieron cargar las competencias: '+fxEsc(e.message), 'fx-err'); }
 }
 async function fxsSubirReportePlan(input){
