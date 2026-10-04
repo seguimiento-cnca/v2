@@ -444,6 +444,17 @@ window.addEventListener('load', ()=>{
   input[type="date"][data-dmy="dd/mm/aaaa"]::before { opacity: .55; }
  }
 
+ /* Elección del mejor aprendiz del trimestre */
+ .ap-elec { display: flex; align-items: center; gap: 20px; background: linear-gradient(100deg, #2B1A6B 0%, var(--ap-morado) 55%, var(--ap-azul) 100%); border-radius: 20px; color: #fff; margin-bottom: 14px; box-shadow: 0 10px 24px rgba(43,40,140,.22); overflow: hidden; }
+ .ap-elec-txt { flex: 1 1 0; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; }
+ .ap-elec .ap-eti { font-size: 12px; font-weight: 700; letter-spacing: .06em; color: #FDC300; }
+ .ap-elec b { font-weight: 700; font-style: italic; line-height: 1.15; }
+ .ap-elec p { font-size: 14px; line-height: 1.5; max-width: 560px; }
+ .ap-elec button { margin-top: 4px; display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 22px; border: none; border-radius: 999px; background: #FDC300; color: #2B1A6B; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; }
+ .ap-podio { flex: 0 0 auto; display: block; }
+ html[data-vista="pc"] .ap-elec { padding: 26px 34px; } html[data-vista="pc"] .ap-elec b { font-size: 28px; } html[data-vista="pc"] .ap-podio { width: 220px; height: 150px; }
+ html[data-vista="movil"] .ap-elec { padding: 18px; flex-direction: column-reverse; align-items: flex-start; gap: 6px; } html[data-vista="movil"] .ap-elec b { font-size: 21px; } html[data-vista="movil"] .ap-podio { width: 150px; height: 102px; align-self: center; }
+
  /* Mensajes */
  .fx-msj { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit; background: #fff; }
  .fx-msj:hover { border-color: var(--ap-morado); }
@@ -984,6 +995,15 @@ window.addEventListener('load', ()=>{
    <section class="ap-sec">
     <h2>Información para ti</h2>
     <p>Avisos y novedades que te pueden servir.</p>
+    <div class="ap-elec" id="ap-eleccion" style="display:none;">
+     <div class="ap-elec-txt">
+      <span class="ap-eti">ELECCIÓN DEL TRIMESTRE</span>
+      <b>Elige a los mejores aprendices del trimestre</b>
+      <p id="ap-elec-det"></p>
+      <button type="button" onclick="fxAbrir('voto')">Votar ahora<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6l6 6-6 6"/></svg></button>
+     </div>
+     <svg class="ap-podio" viewBox="0 0 220 150" role="img" aria-label="Podio con los tres primeros puestos"><path d="M110 6l7.6 15.5 17.1 2.5-12.4 12 2.9 17L110 45l-15.2 8 2.9-17-12.4-12 17.1-2.5z" fill="#FDC300"/><rect x="78" y="62" width="64" height="82" rx="8" fill="#fff"/><rect x="14" y="88" width="60" height="56" rx="8" fill="rgba(255,255,255,.82)"/><rect x="146" y="104" width="60" height="40" rx="8" fill="rgba(255,255,255,.66)"/><text x="110" y="112" text-anchor="middle" font-family="Work Sans,Arial,sans-serif" font-size="38" font-weight="700" fill="#4B1FA6">1</text><text x="44" y="126" text-anchor="middle" font-family="Work Sans,Arial,sans-serif" font-size="28" font-weight="700" fill="#2A62C9">2</text><text x="176" y="133" text-anchor="middle" font-family="Work Sans,Arial,sans-serif" font-size="24" font-weight="700" fill="#0E8FA6">3</text></svg>
+    </div>
     <div class="ap-banner">
      <span class="ap-eti"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>NOVEDADES DE TUS FICHAS</span>
      <b id="ap-banner-tit">Lo que registró tu equipo</b>
@@ -6396,6 +6416,7 @@ async function fxAlIniciar(){
  fxPonerCampanas();
  fxContarAlertas();
  fxContarMensajes();
+ fxCargarElecciones();
  apPintar();
  if(fxEsLider()){
   const c = document.getElementById('bs-cargo');
@@ -6494,6 +6515,7 @@ function fxCerrar(){
  if(typeof apMarcar === 'function'){ const h = document.querySelector('.herramienta.active'); apMarcar(h ? h.id.replace(/^h-/,'') : 'inicio'); }
  fxContarAlertas();
  fxContarMensajes();
+ fxCargarElecciones();
  document.body.style.overflow = '';
 }
 function fxIrTab(tab){
@@ -6505,13 +6527,14 @@ function fxIrTab(tab){
  document.getElementById('fx-tabs').innerHTML = tabs.map(([k,l]) => `<button type="button" class="fx-tab ${k===tab?'on':''}" onclick="fxIrTab('${k}')">${l}</button>`).join('');
  const body = document.getElementById('fx-body');
  body.innerHTML = '<div class="fx-sobre" style="padding:20px;text-align:center;">Cargando...</div>';
- const titulos = {asis:'Registro de inasistencia', nov:'Trámite de novedades', ruta:'Activación de ruta', msj:'Mensajes', mias:'Mis fichas', alertas:'Notificaciones', cargar: FX.modo==='admin' ? 'Líderes y fichas' : 'Cargar reporte de fichas', informe:'Informe de seguimiento', lideres:'Líderes y fichas'};
+ const titulos = {asis:'Registro de inasistencia', nov:'Trámite de novedades', ruta:'Activación de ruta', msj:'Mensajes', voto:'Mejor aprendiz del trimestre', mias:'Mis fichas', alertas:'Notificaciones', cargar: FX.modo==='admin' ? 'Líderes y fichas' : 'Cargar reporte de fichas', informe:'Informe de seguimiento', lideres:'Líderes y fichas'};
  document.getElementById('fx-titulo-txt').textContent = titulos[tab] || 'Registro de inasistencia';
  document.getElementById('fx-vista').scrollTop = 0;
  if(tab==='asis') fxRenderAsis();
  else if(tab==='nov') fxRenderNov();
  else if(tab==='ruta') fxRenderRuta();
  else if(tab==='msj') fxRenderMsj();
+ else if(tab==='voto') fxRenderVoto();
  else if(tab==='mias') fxRenderMias();
  else if(tab==='alertas') fxRenderAlertas();
  else if(tab==='cargar') fxRenderCargar();
@@ -7491,12 +7514,14 @@ async function fxInfCargar(){
     <div style="flex:1 1 280px;min-width:0;"><div style="font-size:17px;font-weight:700;">Acta del Comité de Evaluación y Seguimiento</div><div class="fx-muted" style="margin-top:2px;line-height:1.5;">Formato GOR-F-084. La plataforma escribe lo que ya está registrado de cada ficha; tú completas lo que falta y la descargas en Word.</div></div>
     <button type="button" class="fx-btn fx-btn-p" onclick="fxActaAbrir()">Elaborar acta</button>
    </div>
+   <div class="fx-card" id="fxi-elec" style="border-left:4px solid #FDC300;"><div class="fx-muted">Cargando la elección del trimestre...</div></div>
    <div class="fx-card" style="padding:0;overflow:hidden;">
     <div style="padding:16px 16px 6px;"><div style="font-size:17px;font-weight:700;">Detalle por ficha</div><div class="fx-muted">Abre una ficha para ver qué aprendices tienen inasistencias, medidas formativas, novedades o ruta activa.</div></div>
     <div style="overflow-x:auto;"><table class="fxi-tabla"><thead><tr><th style="text-align:left;">Ficha</th><th>Aprendices</th><th>Inasistencias</th><th>Llamados y planes</th><th>Novedades</th><th>Rutas</th><th></th></tr></thead><tbody>
      ${fichas.map(f => { const x = D.porFicha[f.numero]; return `<tr><td style="text-align:left;"><b>${fxEtiqueta(f)}</b><div class="fx-muted">${f.nIns||0} instructor${(f.nIns||0)!==1?'es':''} asociado${(f.nIns||0)!==1?'s':''}</div></td><td>${x.activos}</td><td>${x.ina.length}</td><td>${x.his.length}</td><td>${x.nov.length}</td><td>${x.rut.length}</td><td><button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxInfDetalle('${fxEsc(f.numero)}')">Ver detalle</button></td></tr>`; }).join('')}
     </tbody></table></div>
    </div>`;
+  fxElecLider();
  }catch(e){ cont.innerHTML = `<div class="fx-aviso fx-err">${fxEsc(e.message)}</div>`; }
 }
 // Reúne por aprendiz todo lo registrado en una ficha
@@ -7657,13 +7682,14 @@ async function fxActaAbrir(){
   FXA.prog = FXI.prog; FXA.fichas = FXI.fichas;
   const ids = '(' + FXA.fichas.map(f => f.id).join(',') + ')', nums = fxEnc(FXA.fichas.map(f => f.numero));
   const d = fxInfDesde(), fd = d ? fxInfIso(d) : '', ts = d ? encodeURIComponent(d.toISOString()) : '';
-  const [equipo, aps, comps, rut, his, contactos] = await Promise.all([
+  const [equipo, aps, comps, rut, his, contactos, elecs] = await Promise.all([
    fxReq(`instructor_fichas?ficha_id=in.${ids}&select=ficha_id,usuario_id,competencia,resultados,usuarios(nombre)`),
    fxReq(`aprendices?ficha_id=in.${ids}&select=ficha_id,documento,nombres,apellidos,estado,pendientes&order=apellidos.asc,nombres.asc`),
    fxReq(`fichas?id=in.${ids}&select=id,competencias`),
    fxReq(`rutas_desercion?ficha_id=in.${ids}${fd?`&fecha_registro=gte.${fd}`:''}&select=id,ficha_numero,documento,nombre_aprendiz,situacion,acciones,instructor_nombre,fecha_registro&order=fecha_registro.asc`),
    fxReq(`historial_documentos?ficha=in.${nums}${ts?`&fecha_generacion=gte.${ts}`:''}&select=ficha,tipo_documento,tipo_llamado,numero_llamado,nombre_aprendiz,documento_aprendiz,fecha_documento,fecha_generacion,nombre_usuario,quien_reporta,falta&order=fecha_generacion.asc`),
-   fxReq('contactos_ruta?rol=eq.coord_academico&select=nombre&order=nombre.asc').catch(() => [])
+   fxReq('contactos_ruta?rol=eq.coord_academico&select=nombre&order=nombre.asc').catch(() => []),
+   fxReq(`elecciones_trimestre?programa=eq.${encodeURIComponent(FXA.prog)}&abierta=is.false&select=periodo,resultados&order=cerrada_at.desc&limit=1`).catch(() => [])
   ]);
   const X = { porFicha: {}, instructores: [] };
   const mapaIns = {};
@@ -7687,6 +7713,8 @@ async function fxActaAbrir(){
   });
   X.instructores = Object.values(mapaIns).sort((a,b) => a.nombre.localeCompare(b.nombre));
   X.coordinador = ((contactos||[])[0]||{}).nombre || '';
+  X.eleccion = (elecs||[])[0] || null;
+  X.ganadores = {}; if(X.eleccion && X.eleccion.resultados) Object.keys(X.eleccion.resultados).forEach(n => X.ganadores[n] = ((X.eleccion.resultados[n]||{}).ganadores||[]).map(g => g.documento));
   FXA.x = X;
   let B = {}; try{ B = JSON.parse(localStorage.getItem(fxActaClave()) || '{}') || {}; }catch(e){ B = {}; }
   const hoy = new Date(), romano = ['I','II','III','IV'][Math.floor(hoy.getMonth()/3)];
@@ -7710,7 +7738,7 @@ async function fxActaAbrir(){
     </div>
     <div style="margin-top:12px;">${lbl('fxa-apertura','Apertura de la reunión')}<textarea id="fxa-apertura" class="fx-input" rows="4" maxlength="1500">${esc(v('apertura', aperturaDef))}</textarea></div>
    </div>
-   ${FXA.fichas.map((f, i) => { const x = X.porFicha[f.numero], b = bf[f.numero] || {}, selRa = b.ras, dest = new Set(b.dest || []);
+   ${FXA.fichas.map((f, i) => { const x = X.porFicha[f.numero], b = bf[f.numero] || {}, selRa = b.ras, dest = new Set(b.dest || X.ganadores[f.numero] || []);
     return `<div class="fx-card" data-ficha="${esc(f.numero)}">
      <div style="font-size:16px;font-weight:700;">${esc(fxActaTitulo(f))}</div>
      <div class="fx-muted" style="margin:2px 0 12px;">${x.activos.length} aprendi${x.activos.length!==1?'ces':'z'} en formación · ${x.rutas.length} ruta${x.rutas.length!==1?'s':''} · ${x.medidas.length} medida${x.medidas.length!==1?'s':''} formativa${x.medidas.length!==1?'s':''} · ${x.novedades.length} novedad${x.novedades.length!==1?'es':''}</div>
@@ -7725,6 +7753,7 @@ async function fxActaAbrir(){
        : '<div class="fx-muted" style="margin-top:8px;">No hay resultados pendientes por evaluar, o la ficha no tiene cargado el reporte de juicios.</div>'}
      </details>
      <details class="fxa-det"><summary>Aprendices destacados para reconocimiento <span class="fx-muted">(${dest.size} seleccionado${dest.size!==1?'s':''})</span></summary>
+      ${(X.ganadores[f.numero]||[]).length ? `<div class="fx-muted" style="margin-top:8px;line-height:1.5;">Viene marcado el mejor aprendiz elegido por votación de los instructores en ${fxEsc(X.eleccion.periodo)}.</div>` : ''}
       <div style="margin-top:8px;">${x.activos.length ? x.activos.map(a => `<label class="fxa-chk"><input type="checkbox" class="fxa-dest" value="${esc(a.documento)}" ${dest.has(a.documento)?'checked':''}><span>${esc(fxNombreApr(a).toUpperCase())}</span></label>`).join('') : '<div class="fx-muted">La ficha no tiene aprendices en formación.</div>'}</div>
      </details>
     </div>`; }).join('')}
@@ -7814,6 +7843,162 @@ async function fxActaDescargar(btn){
   document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(url), 4000);
  }catch(e){ alert('No se pudo generar el acta: ' + e.message); }
  finally{ btn.disabled = false; btn.textContent = o; }
+}
+
+// ═══ MEJOR APRENDIZ DEL TRIMESTRE: elección por votación de los instructores de cada ficha ═══
+// La abre el líder de seguimiento del programa. A cada instructor le queda un aviso fijo en el inicio hasta que vota
+// en todas sus fichas. Gana quien reciba más votos; si hay empate, quedan todos los empatados.
+const FXE = { abiertas: [], votos: [], fichas: [], pendientes: [] };
+async function fxCargarElecciones(){
+ FXE.abiertas = []; FXE.votos = []; FXE.fichas = []; FXE.pendientes = [];
+ try{
+  if(sesionActual && !FX_EN_DESARROLLO){
+   const ab = await fxReq('elecciones_trimestre?abierta=is.true&select=id,programa,periodo,created_at') || [];
+   if(ab.length){
+    const [mias, votos] = await Promise.all([ fxsMisFichas(), fxReq(`votos_trimestre?usuario_id=eq.${sesionActual.id}&eleccion_id=in.(${ab.map(e => e.id).join(',')})&select=eleccion_id,ficha_id,ninguno,seleccion,motivo`) ]);
+    FXE.abiertas = ab; FXE.votos = votos || [];
+    FXE.fichas = mias.map(f => ({ f, e: ab.find(e => e.programa === f.programa) })).filter(x => x.e).map(x => ({...x, voto: FXE.votos.find(v => v.eleccion_id === x.e.id && v.ficha_id === x.f.id) || null }));
+    FXE.pendientes = FXE.fichas.filter(x => !x.voto);
+   }
+  }
+ }catch(e){}
+ apPintarEleccion();
+}
+function fxEtiquetaTxt(f){ return String(f.numero) + (f.grupo ? ' – ' + f.grupo : ''); }
+function apPintarEleccion(){
+ const caja = document.getElementById('ap-eleccion'); if(!caja) return;
+ const n = FXE.pendientes.length;
+ caja.style.display = n ? '' : 'none';
+ if(n){
+  const per = [...new Set(FXE.pendientes.map(x => x.e.periodo))].join(', ');
+  document.getElementById('ap-elec-det').textContent = `Trimestre ${per}. Te falta votar en ${n} ficha${n!==1?'s':''}: ${FXE.pendientes.map(x => fxEtiquetaTxt(x.f)).join(', ')}. Este aviso se quita cuando termines.`;
+ }
+}
+async function fxRenderVoto(){
+ const body = document.getElementById('fx-body');
+ try{
+  await fxCargarElecciones();
+  if(!FXE.fichas.length){ body.innerHTML = '<div class="fx-card fx-vacio"><p>En este momento no hay una elección abierta para tus fichas. El líder de seguimiento de cada programa la abre al cierre del trimestre.</p></div>'; return; }
+  const orden = FXE.fichas.slice().sort((a,b) => (a.voto?1:0) - (b.voto?1:0));
+  body.innerHTML = `<div class="fx-card"><div class="fx-muted" style="line-height:1.6;">En cada ficha puedes elegir hasta tres aprendices, en orden: primero, segundo y tercer puesto. Gana quien reciba más votos entre todos los instructores de la ficha. Tu voto solo lo ve el líder de seguimiento, y lo puedes cambiar mientras la elección esté abierta.</div></div>` +
+   orden.map(x => `<div class="fx-card" style="${x.voto?'':'border-left:4px solid #FDC300;'}">
+     <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;">
+      <div style="flex:1 1 220px;min-width:0;"><div style="font-size:15px;font-weight:700;">Ficha ${fxEtiqueta(x.f)}</div><div class="fx-muted">Trimestre ${fxEsc(x.e.periodo)}</div>
+       <div style="font-size:13px;margin-top:8px;line-height:1.5;">${!x.voto ? '<b style="color:#8a6d00;">Pendiente por votar</b>' : (x.voto.ninguno ? 'Ya votaste: no postulaste a ningún aprendiz.' : 'Ya votaste: ' + (x.voto.seleccion||[]).map(sx => `<b>${sx.puesto}.º</b> ${fxEsc(sx.nombre)}`).join(' · '))}</div></div>
+      <button type="button" class="fx-btn ${x.voto?'fx-btn-s':'fx-btn-p'} fx-btn-sm" onclick="fxVotoAbrir('${x.e.id}','${x.f.id}')">${x.voto ? 'Cambiar voto' : 'Votar'}</button>
+     </div></div>`).join('');
+ }catch(e){ body.innerHTML = `<div class="fx-aviso fx-err">No se pudo cargar la elección. (${fxEsc(e.message)})</div>`; }
+}
+async function fxVotoAbrir(eid, fid){
+ const x = FXE.fichas.find(y => y.e.id === eid && y.f.id === fid); if(!x) return;
+ const body = document.getElementById('fx-body');
+ body.innerHTML = '<div class="fx-sobre" style="padding:20px;text-align:center;">Cargando aprendices...</div>';
+ try{
+  const aps = await fxReq(`aprendices?ficha_id=eq.${fid}&estado=eq.${encodeURIComponent('EN FORMACION')}&select=documento,tipo_doc,nombres,apellidos&order=apellidos.asc,nombres.asc`) || [];
+  FXE.v = { x, aps, sel: (x.voto && !x.voto.ninguno ? (x.voto.seleccion||[]).map(sx => sx.documento).filter(d => aps.some(a => a.documento === d)) : []), motivo: (x.voto && x.voto.motivo) || '' };
+  body.innerHTML = `<button type="button" class="fx-btn fx-btn-s fx-btn-sm" style="margin-bottom:12px;" onclick="fxIrTab('voto')">← Elección del trimestre</button>
+   <div class="fx-card"><div style="font-size:16px;font-weight:700;">Ficha ${fxEtiqueta(x.f)}</div><div class="fx-muted" style="margin-top:2px;line-height:1.5;">Toca a los aprendices en el orden en que los eliges: el primero que toques queda de primer puesto. Puedes elegir uno, dos o tres.</div>
+    <div id="fxv-podio" style="margin-top:12px;"></div></div>
+   <div class="fx-card"><div id="fxv-lista"></div></div>
+   <div class="fx-card">
+    <label class="fx-muted" for="fxv-motivo" style="display:block;margin-bottom:4px;font-weight:600;">¿Por qué los eliges? (opcional)</label>
+    <textarea id="fxv-motivo" class="fx-input" rows="2" maxlength="400" placeholder="Ej.: desempeño en la competencia, liderazgo, compañerismo">${fxEsc(FXE.v.motivo)}</textarea>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;">
+     <button type="button" id="fxv-enviar" class="fx-btn fx-btn-p" onclick="fxVotoEnviar(false)">Enviar mi voto</button>
+     <button type="button" class="fx-btn fx-btn-s" onclick="fxVotoEnviar(true)">No postulo a nadie en esta ficha</button>
+    </div></div>`;
+  fxVotoPintar();
+  document.getElementById('fx-vista').scrollTop = 0;
+ }catch(e){ body.innerHTML = `<div class="fx-aviso fx-err">${fxEsc(e.message)}</div>`; }
+}
+function fxVotoToque(doc){
+ const V = FXE.v, i = V.sel.indexOf(doc);
+ if(i >= 0) V.sel.splice(i, 1);
+ else if(V.sel.length >= 3){ alert('Ya elegiste tres aprendices. Toca uno de los elegidos para quitarlo.'); return; }
+ else V.sel.push(doc);
+ fxVotoPintar();
+}
+function fxVotoPintar(){
+ const V = FXE.v, nombre = d => { const a = V.aps.find(y => y.documento === d); return a ? fxNombreApr(a).toUpperCase() : d; };
+ const col = ['#4B1FA6','#2A62C9','#0E8FA6'];
+ document.getElementById('fxv-podio').innerHTML = [0,1,2].map(i => `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;${i<2?'border-bottom:1px solid #F0F1F6;':''}">
+   <span style="flex:0 0 34px;width:34px;height:34px;border-radius:50%;background:${V.sel[i]?col[i]:'#E6E8F0'};color:${V.sel[i]?'#fff':'#4F5B73'};font-weight:700;display:flex;align-items:center;justify-content:center;">${i+1}</span>
+   <span style="flex:1;min-width:0;font-size:14px;${V.sel[i]?'font-weight:700;':'color:#4F5B73;'}">${V.sel[i] ? fxEsc(nombre(V.sel[i])) : ['Primer puesto','Segundo puesto','Tercer puesto'][i] + ': sin elegir'}</span>
+   ${V.sel[i] ? `<button type="button" class="fx-btn fx-btn-s fx-btn-sm" onclick="fxVotoToque('${fxEsc(V.sel[i])}')">Quitar</button>` : ''}</div>`).join('');
+ document.getElementById('fxv-lista').innerHTML = V.aps.length ? V.aps.map(a => { const p = V.sel.indexOf(a.documento);
+   return `<div class="fx-apr" role="button" tabindex="0" onclick="fxVotoToque('${fxEsc(a.documento)}')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();fxVotoToque('${fxEsc(a.documento)}')}" style="cursor:pointer;justify-content:flex-start;${p>=0?'background:#FBF9FF;':''}">
+    <span style="flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:2px solid ${p>=0?col[p]:'#C9CEDB'};background:${p>=0?col[p]:'#fff'};color:#fff;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;margin-right:10px;">${p>=0?p+1:''}</span>
+    <div class="fx-apr-n"><b>${fxEsc(fxNombreApr(a).toUpperCase())}</b><span class="fx-muted">${fxEsc(a.tipo_doc||'')} ${fxEsc(a.documento)}</span></div></div>`; }).join('')
+  : '<div class="fx-aviso">Esta ficha no tiene aprendices en formación.</div>';
+}
+async function fxVotoEnviar(ninguno){
+ const V = FXE.v; if(!V) return;
+ if(!ninguno && !V.sel.length){ alert('Elige al menos un aprendiz, o pulsa "No postulo a nadie en esta ficha".'); return; }
+ if(ninguno && !confirm('¿Confirmas que no postulas a ningún aprendiz de esta ficha como mejor del trimestre?')) return;
+ const btn = document.getElementById('fxv-enviar'); btn.disabled = true;
+ try{
+  const r = await fxReq('rpc/app_votar_trimestre','POST',{p_eleccion: V.x.e.id, p_ficha: V.x.f.id, p_docs: ninguno ? [] : V.sel, p_motivo: document.getElementById('fxv-motivo').value || ''});
+  const msg = {SESION:'Tu sesión venció. Vuelve a ingresar.', CERRADA:'La elección ya fue cerrada por el líder de seguimiento.', NO_ELECCION:'La elección ya no existe.', NO_FICHA:'La ficha no pertenece a esta elección.', SIN_PERMISO:'Solo votan los instructores asociados a la ficha.', NO_APRENDIZ:'Alguno de los aprendices ya no está en formación en esta ficha.', DATOS:'Revisa la selección: máximo tres aprendices distintos.'};
+  if(r !== 'OK'){ alert(msg[r] || 'No se pudo registrar el voto.'); btn.disabled = false; return; }
+  FXE.v = null;
+  fxIrTab('voto');
+ }catch(e){ alert('No se pudo registrar el voto: ' + e.message); btn.disabled = false; }
+}
+// ── Líder de seguimiento: abrir, seguir y cerrar la elección de su programa ──
+async function fxElecLider(){
+ const caja = document.getElementById('fxi-elec'); if(!caja) return;
+ const prog = FXI.prog, fichas = FXI.fichas;
+ try{
+  const es = await fxReq(`elecciones_trimestre?programa=eq.${encodeURIComponent(prog)}&select=id,periodo,abierta,resultados,created_at,cerrada_at,abierta_por_nombre&order=created_at.desc&limit=1`) || [];
+  const e = es[0] || null;
+  const hoy = new Date(), perDef = hoy.getFullYear() + '-' + ['I','II','III','IV'][Math.floor(hoy.getMonth()/3)];
+  const tit = `<div style="font-size:17px;font-weight:700;">Mejor aprendiz del trimestre</div>`;
+  const abrir = `<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-top:12px;"><div style="flex:0 1 180px;"><label class="fx-muted" for="fxe-per" style="display:block;margin-bottom:4px;font-weight:600;">Trimestre</label><input id="fxe-per" class="fx-input" maxlength="20" value="${fxEsc(perDef)}"></div><button type="button" class="fx-btn fx-btn-p" onclick="fxElecAbrir()">Abrir elección</button></div>`;
+  if(!e){ caja.innerHTML = tit + `<div class="fx-muted" style="margin-top:2px;line-height:1.5;">Al cierre del trimestre, abre la elección para que los instructores de cada ficha voten por los mejores aprendices. A cada uno le queda el aviso en su inicio hasta que vote.</div>` + abrir; return; }
+  if(e.abierta){
+   const ids = '(' + fichas.map(f => f.id).join(',') + ')';
+   const [votos, equipo] = await Promise.all([ fxReq(`votos_trimestre?eleccion_id=eq.${e.id}&select=ficha_id,usuario_id,instructor_nombre,ninguno,seleccion`), fxReq(`instructor_fichas?ficha_id=in.${ids}&select=ficha_id,usuario_id,usuarios(nombre)`) ]);
+   caja.innerHTML = tit + `<div class="fx-muted" style="margin-top:2px;">Elección del trimestre ${fxEsc(e.periodo)} abierta desde el ${fxEsc(rutaFechaLarga(e.created_at))}.</div>` +
+    fichas.map(f => {
+     const vs = (votos||[]).filter(v => v.ficha_id === f.id), eq = (equipo||[]).filter(q => q.ficha_id === f.id);
+     const faltan = eq.filter(q => !vs.some(v => v.usuario_id === q.usuario_id)).map(q => apNombrePropio((q.usuarios||{}).nombre||''));
+     const cuenta = {}; vs.forEach(v => (v.seleccion||[]).forEach(sx => { (cuenta[sx.documento] = cuenta[sx.documento] || {nombre: sx.nombre, n: 0}).n++; }));
+     const rank = Object.values(cuenta).sort((a,b) => b.n - a.n || a.nombre.localeCompare(b.nombre));
+     return `<div style="border-top:1px solid var(--ap-linea);margin-top:12px;padding-top:12px;">
+      <div style="font-weight:700;font-size:14px;">Ficha ${fxEtiqueta(f)}</div>
+      <div class="fx-muted" style="margin-top:2px;line-height:1.5;">Han votado ${vs.length} de ${eq.length} instructor${eq.length!==1?'es':''}.${faltan.length ? ' Faltan: ' + faltan.map(fxEsc).join(', ') + '.' : ''}</div>
+      ${rank.length ? rank.map(r => `<div style="display:flex;gap:10px;align-items:center;font-size:13px;padding:5px 0;"><span style="flex:1;min-width:0;${r.n===rank[0].n?'font-weight:700;':''}">${fxEsc(r.nombre)}</span><span style="flex:0 0 auto;font-variant-numeric:tabular-nums;">${r.n} voto${r.n!==1?'s':''}</span></div>`).join('') : '<div class="fx-muted" style="margin-top:4px;">Todavía no hay aprendices postulados.</div>'}
+     </div>`; }).join('') +
+    `<div style="margin-top:14px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;"><button type="button" class="fx-btn fx-btn-p" onclick="fxElecCerrar('${e.id}')">Cerrar elección y publicar resultados</button><span class="fx-muted" style="flex:1 1 220px;line-height:1.5;">Al cerrar ya nadie puede votar y el resultado le llega al equipo de cada ficha por Mensajes.</span></div>`;
+   return;
+  }
+  const R = e.resultados || {};
+  caja.innerHTML = tit + `<div class="fx-muted" style="margin-top:2px;">Resultado del trimestre ${fxEsc(e.periodo)}, cerrado el ${fxEsc(rutaFechaLarga(e.cerrada_at))}. Estos nombres ya vienen marcados en el acta del comité.</div>` +
+   fichas.map(f => { const r = R[f.numero]; const g = (r && r.ganadores) || [];
+    return `<div style="border-top:1px solid var(--ap-linea);margin-top:12px;padding-top:12px;"><div style="font-weight:700;font-size:14px;">Ficha ${fxEtiqueta(f)}</div>
+     ${g.length ? g.map(x => `<div style="font-size:14px;margin-top:4px;"><span style="color:#B8860B;" aria-hidden="true">★</span> <b>${fxEsc(x.nombre)}</b> <span class="fx-muted">· ${x.votos} voto${x.votos!==1?'s':''}</span></div>`).join('') : '<div class="fx-muted" style="margin-top:4px;">Sin aprendices postulados.</div>'}
+     ${r ? `<div class="fx-muted" style="margin-top:4px;">Votaron ${r.votaron} de ${r.instructores} instructores.</div>` : ''}</div>`; }).join('') +
+   `<details class="fxa-det"><summary>Abrir una nueva elección</summary>${abrir}</details>`;
+ }catch(err){ caja.innerHTML = `<div class="fx-aviso fx-err">No se pudo cargar la elección del trimestre. (${fxEsc(err.message)})</div>`; }
+}
+async function fxElecAbrir(){
+ const per = (document.getElementById('fxe-per').value || '').trim();
+ if(!per){ alert('Escribe el trimestre, por ejemplo 2026-IV.'); return; }
+ if(!confirm(`¿Abrir la elección del mejor aprendiz del trimestre ${per} para todas las fichas de este programa? A los instructores les aparecerá el aviso hasta que voten.`)) return;
+ try{
+  const r = await fxReq('rpc/app_abrir_eleccion','POST',{p_programa: FXI.prog, p_periodo: per});
+  const msg = {SESION:'Tu sesión venció.', SIN_PERMISO:'Solo el líder de seguimiento del programa puede abrir la elección.', DATOS:'Escribe el trimestre.', SIN_FICHAS:'El programa no tiene fichas cargadas.', YA_ABIERTA:'Ya hay una elección abierta para este programa.'};
+  if(r !== 'OK') alert(msg[r] || 'No se pudo abrir la elección.');
+  await fxElecLider(); fxCargarElecciones();
+ }catch(e){ alert('No se pudo abrir la elección: ' + e.message); }
+}
+async function fxElecCerrar(eid){
+ if(!confirm('¿Cerrar la elección? Ya nadie podrá votar y el resultado se enviará al equipo de cada ficha.')) return;
+ try{
+  const r = await fxReq('rpc/app_cerrar_eleccion','POST',{p_eleccion: eid});
+  if(r !== 'OK') alert({SESION:'Tu sesión venció.', SIN_PERMISO:'Solo el líder de seguimiento del programa puede cerrarla.', CERRADA:'La elección ya estaba cerrada.'}[r] || 'No se pudo cerrar la elección.');
+  await fxElecLider(); fxCargarElecciones(); fxContarMensajes();
+ }catch(e){ alert('No se pudo cerrar la elección: ' + e.message); }
 }
 
 // ═══ MENSAJES: bandeja interna de la plataforma ═══
