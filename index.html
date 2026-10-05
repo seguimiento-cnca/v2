@@ -464,6 +464,20 @@ window.addEventListener('load', ()=>{
  html[data-vista="pc"] .ap-elec { padding: 26px 34px; } html[data-vista="pc"] .ap-elec b { font-size: 28px; } html[data-vista="pc"] .ap-podio { width: 220px; height: 150px; }
  html[data-vista="movil"] .ap-elec { padding: 18px; flex-direction: column-reverse; align-items: flex-start; gap: 6px; } html[data-vista="movil"] .ap-elec b { font-size: 21px; } html[data-vista="movil"] .ap-podio { width: 150px; height: 102px; align-self: center; }
 
+ /* El título de cada herramienta queda fijo arriba mientras se desliza el contenido */
+ body.con-sesion:not(.modo-admin) .page-header { position: sticky !important; top: var(--ap-barra-h, 0px); z-index: 700; }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) .page-header { padding: 10px 14px; gap: 10px; box-shadow: 0 2px 8px rgba(30,30,90,.06); }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) .page-header img { width: 34px; height: 34px; }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) .page-header h1 { font-size: 16px; }
+ html[data-vista="movil"] body.con-sesion:not(.modo-admin) .page-header p { display: none; }
+ /* Los campos no se salen de su tarjeta en pantallas angostas (el de fecha se desbordaba en iPhone) */
+ .herramienta .field, .fx-vista .field { min-width: 0; }
+ .herramienta input[type="date"], .fx-vista input[type="date"] { min-width: 0; width: 100%; max-width: 100%; box-sizing: border-box; }
+ @supports (-webkit-touch-callout: none) { .herramienta input[type="date"], .fx-vista input[type="date"] { -webkit-appearance: none; appearance: none; min-height: 44px; text-align: left; } }
+ /* Aviso breve al pulsar atrás en el inicio */
+ #ap-aviso-atras { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 100003; background: rgba(11,37,69,.94); color: #fff; font: 600 14px/1.3 'Work Sans', system-ui, sans-serif; padding: 12px 18px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .2s; white-space: nowrap; }
+ #ap-aviso-atras.ver { opacity: 1; }
+
  /* Mensajes */
  .fx-msj { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit; background: #fff; }
  .fx-msj:hover { border-color: var(--ap-morado); }
@@ -1129,8 +1143,59 @@ function apTitulo(){
  const sec = AP_SECCIONES[apSeccion] || '';
  document.title = (n ? '(' + (n > 99 ? '99+' : n) + ') ' : '') + (sec ? sec + ' · ' + (ENTORNO.pruebas ? 'Pruebas' : 'Seguimiento') : base);
 }
+// ── Botón "atrás" del navegador o del teléfono ──
+// En vez de sacar al usuario de la plataforma, retrocede un paso dentro de ella: cierra la ventana abierta,
+// vuelve al paso o a la lista anterior, y de ahí al inicio. Solo en el inicio, y pulsando dos veces, se sale.
+let apTrampa = false, apSalirHasta = 0;
+function apBarraAlto(){
+ const b = document.getElementById('barra-sesion');
+ document.documentElement.style.setProperty('--ap-barra-h', (b && getComputedStyle(b).display !== 'none' ? b.offsetHeight : 0) + 'px');
+}
+function apActivarAtras(){
+ if(apTrampa || !window.history || !history.pushState) return;
+ try{ history.pushState({ap: 1}, ''); apTrampa = true; }catch(e){}
+}
+function apAvisoAtras(txt){
+ let a = document.getElementById('ap-aviso-atras');
+ if(!a){ a = document.createElement('div'); a.id = 'ap-aviso-atras'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
+ a.textContent = txt; a.classList.add('ver');
+ clearTimeout(apAvisoAtras.t); apAvisoAtras.t = setTimeout(() => a.classList.remove('ver'), 2400);
+}
+// Devuelve true si retrocedió algo dentro de la plataforma
+function apAtras(){
+ const visible = e => e && e.offsetParent !== null;
+ if(document.body.classList.contains('ap-menu-abierto')){ apMenu(false); return true; }
+ const mp = document.getElementById('modal-preview'); if(mp && mp.style.display && mp.style.display !== 'none'){ if(typeof cerrarPreview === 'function') cerrarPreview(); else mp.style.display = 'none'; return true; }
+ for(const id of ['modal-correo','modal-cambio-pwd']){ const m = document.getElementById(id); if(m && m.style.display === 'flex' && !m.classList.contains('forzado')){ if(id === 'modal-correo') cerrarMiCorreo(); else if(typeof cerrarCambioPassword === 'function') cerrarCambioPassword(); if(m.style.display !== 'flex') return true; } }
+ const hoja = document.getElementById('fx-hoja'); if(hoja && hoja.classList.contains('abierta')){ fxCerrarHoja(); return true; }
+ if(apFxAbierta()){
+  const volver = [...document.querySelectorAll('#fx-body button')].find(b => visible(b) && /^\s*←/.test(b.textContent));
+  if(volver){ volver.click(); return true; }
+  apInicio(); return true;
+ }
+ const h = document.querySelector('.herramienta.active');
+ if(h){
+  // En planes, las subpantallas (menú, académico, disciplinario) se muestran u ocultan dentro de la misma herramienta
+  const sub = h.id === 'h-planes' ? ([...h.querySelectorAll(':scope > .herramienta, :scope .herramienta')].find(visible) || h) : h;
+  const ant = [...sub.querySelectorAll('.panel.active button, .panel.active .btn')].find(b => visible(b) && /^\s*←/.test(b.textContent));
+  if(ant){ ant.click(); return true; }
+  if(h.id === 'h-planes' && sub !== h && sub.id !== 'h-planes-menu'){ apHerramienta('planes'); return true; }
+  apInicio(); return true;
+ }
+ return false;
+}
+window.addEventListener('popstate', () => {
+ if(!apTrampa || typeof sesionActual === 'undefined' || !sesionActual || document.body.classList.contains('modo-admin')) return;
+ let hizo = false; try{ hizo = apAtras(); }catch(e){}
+ if(hizo){ try{ history.pushState({ap: 1}, ''); }catch(e){} return; }
+ if(Date.now() < apSalirHasta){ apTrampa = false; history.back(); return; }
+ apSalirHasta = Date.now() + 2500;
+ apAvisoAtras('Pulsa atrás otra vez para salir');
+ try{ history.pushState({ap: 1}, ''); }catch(e){}
+});
 function apMarcar(clave){
  if(clave) apSeccion = clave;
+ requestAnimationFrame(apBarraAlto);
  apTitulo();
  document.querySelectorAll('.ap-lat [data-ap]').forEach(b => b.classList.toggle('on', b.dataset.ap === clave));
  // Un grupo (Medidas formativas) se abre solo cuando una de sus opciones está activa
@@ -1162,6 +1227,7 @@ function apHerramienta(id){
  if(apFxAbierta()) fxCerrar();
  if(apHerramientaActiva()) volverInicio();
  abrirHerramienta(id);
+ if(id === 'planes'){ const ph = document.getElementById('ap-planes-h1'); if(ph) ph.textContent = 'Planes de Mejoramiento'; }
  window.scrollTo(0, 0);
 }
 // Quién está trabajando: nombre, cargo y rol, visibles arriba a la derecha en todas las pantallas
@@ -1214,6 +1280,7 @@ function apPintar(){
  apMontarQuien();
  if(typeof fxPintarCampanas === 'function') fxPintarCampanas();
  apPintarMensajes();
+ apActivarAtras(); apBarraAlto();
 }
 function apPintarMensajes(){
  const n = (typeof FX !== 'undefined' && FX.nMensajes) || 0, txt = n > 99 ? '99+' : String(n);
@@ -1234,7 +1301,7 @@ function apPintarAvisos(){
  const sinc = () => document.body.classList.toggle('en-inicio', home.classList.contains('active'));
  new MutationObserver(sinc).observe(home, {attributes: true, attributeFilter: ['class']});
  sinc();
- window.addEventListener('resize', () => { if(typeof sesionActual !== 'undefined' && sesionActual) apPintar(); });
+ window.addEventListener('resize', () => { if(typeof sesionActual !== 'undefined' && sesionActual) apPintar(); if(typeof apBarraAlto === 'function') apBarraAlto(); });
 })();
 function mfAlternar(){
  const sub = document.getElementById('mf-sub'), fl = document.getElementById('mf-flecha');
@@ -4526,6 +4593,7 @@ function abrirSubherramienta(id){
  document.getElementById('h-'+id).style.display='block';
  document.getElementById('header-h1').textContent = id==='plan-academico' ? 'Plan de Mejoramiento Académico' : (id==='plan-disciplinario' ? 'Plan de Mejoramiento Disciplinario' : 'Plan de Mejoramiento');
  document.getElementById('header-p').textContent = 'Régimen de Medidas Formativas — Acuerdo 0009 de 2024';
+ { const ph = document.getElementById('ap-planes-h1'); if(ph) ph.textContent = document.getElementById('header-h1').textContent; }
  if(id==='plan-academico'){
  initPlan();
  }
