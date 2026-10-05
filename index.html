@@ -478,6 +478,10 @@ window.addEventListener('load', ()=>{
  #ap-aviso-atras { position: fixed; left: 50%; bottom: 96px; transform: translateX(-50%); z-index: 100003; background: rgba(11,37,69,.94); color: #fff; font: 600 14px/1.3 'Work Sans', system-ui, sans-serif; padding: 12px 18px; border-radius: 999px; box-shadow: 0 6px 20px rgba(0,0,0,.3); opacity: 0; pointer-events: none; transition: opacity .2s; white-space: nowrap; }
  #ap-aviso-atras.ver { opacity: 1; }
 
+ /* Botón para desplegar u ocultar la lista de aprendices */
+ .fxs-desplegar { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 52px; padding: 10px 14px; border: 1px solid #D9CCF3; border-radius: 12px; background: #FBF9FF; color: var(--ap-tinta, #0B2545); font: inherit; font-size: 14px; cursor: pointer; }
+ .fxs-desplegar:hover { border-color: var(--ap-morado, #4B1FA6); }
+
  /* Mensajes */
  .fx-msj { display: flex; flex-direction: column; gap: 4px; width: 100%; text-align: left; cursor: pointer; font-family: inherit; color: inherit; background: #fff; }
  .fx-msj:hover { border-color: var(--ap-morado); }
@@ -1117,7 +1121,7 @@ function apFechaPintar(el){ if(el && el.type === 'date') el.setAttribute('data-d
 })();
 
 // ── Nuevo inicio: menú lateral, saludo y avisos ──
-function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); if(!abrir && document.activeElement && document.activeElement.closest && document.activeElement.closest('.ap-lat')) document.activeElement.blur(); }
+function apMenu(abrir){ document.body.classList.toggle('ap-menu-abierto', !!abrir); if(typeof apSincPronto === 'function') apSincPronto(); if(!abrir && document.activeElement && document.activeElement.closest && document.activeElement.closest('.ap-lat')) document.activeElement.blur(); }
 // Menú contraído en computador: se recuerda en este equipo
 function apPlegar(forzar){
  const mini = typeof forzar === 'boolean' ? forzar : !document.body.classList.contains('ap-mini');
@@ -1146,15 +1150,49 @@ function apTitulo(){
 // ── Botón "atrás" del navegador o del teléfono ──
 // En vez de sacar al usuario de la plataforma, retrocede un paso dentro de ella: cierra la ventana abierta,
 // vuelve al paso o a la lista anterior, y de ahí al inicio. Solo en el inicio, y pulsando dos veces, se sale.
-let apTrampa = false, apSalirHasta = 0;
+// Se guarda una entrada de historial por cada nivel en el que está el usuario (herramienta, paso, ventana). Así, cuando el
+// teléfono muestra la pantalla anterior durante el gesto de deslizar, es de verdad la anterior y no el inicio.
+let apTrampa = false, apSalirHasta = 0, apNivel = 0, apIgnorar = 0, apSincT = null;
 function apBarraAlto(){
  const b = document.getElementById('barra-sesion');
  document.documentElement.style.setProperty('--ap-barra-h', (b && getComputedStyle(b).display !== 'none' ? b.offsetHeight : 0) + 'px');
 }
 function apActivarAtras(){
  if(apTrampa || !window.history || !history.pushState) return;
- try{ history.pushState({ap: 1}, ''); apTrampa = true; }catch(e){}
+ try{ if('scrollRestoration' in history) history.scrollRestoration = 'manual'; history.pushState({ap: 1}, ''); apTrampa = true; apNivel = 1; }catch(e){}
+ setInterval(apSincronizar, 600);
 }
+// Qué tan adentro está el usuario: 0 = inicio
+function apProfundidad(){
+ const visible = e => e && e.offsetParent !== null;
+ const paso = (cont, pref) => { const p = cont.querySelector('.panel.active'); const m = p && new RegExp('^' + pref + '(\\d+)$').exec(p.id); return m ? +m[1] : 1; };
+ let d = 0;
+ if(apFxAbierta()) d = 1 + ([...document.querySelectorAll('#fx-body button')].some(b => visible(b) && /^\s*←/.test(b.textContent)) ? 1 : 0);
+ else {
+  const h = document.querySelector('.herramienta.active');
+  if(h){
+   if(h.id === 'h-llamados') d = paso(h, 'panel');
+   else if(h.id === 'h-planes'){
+    const sub = [...h.querySelectorAll('.herramienta')].find(visible);
+    d = (!sub || sub.id === 'h-planes-menu') ? 1 : 1 + paso(sub, sub.id === 'h-plan-academico' ? 'ppanel' : 'dpanel');
+   } else d = 1;
+  }
+ }
+ const hoja = document.getElementById('fx-hoja'); if(hoja && hoja.classList.contains('abierta')) d++;
+ const mp = document.getElementById('modal-preview'); if(mp && mp.style.display && mp.style.display !== 'none') d++;
+ if(document.body.classList.contains('ap-menu-abierto')) d++;
+ return d;
+}
+// Iguala el historial del navegador con el nivel real de la plataforma
+function apSincronizar(){
+ if(!apTrampa || apIgnorar > 0 || typeof sesionActual === 'undefined' || !sesionActual || document.body.classList.contains('modo-admin')) return;
+ const objetivo = apProfundidad() + 1;
+ try{
+  while(apNivel < objetivo){ history.pushState({ap: apNivel + 1}, ''); apNivel++; }
+  if(apNivel > objetivo){ const n = apNivel - objetivo; apNivel = objetivo; apIgnorar++; history.go(-n); }
+ }catch(e){}
+}
+function apSincPronto(){ clearTimeout(apSincT); apSincT = setTimeout(apSincronizar, 40); }
 function apAvisoAtras(txt){
  let a = document.getElementById('ap-aviso-atras');
  if(!a){ a = document.createElement('div'); a.id = 'ap-aviso-atras'; a.setAttribute('role', 'status'); document.body.appendChild(a); }
@@ -1185,17 +1223,21 @@ function apAtras(){
  return false;
 }
 window.addEventListener('popstate', () => {
+ if(apIgnorar > 0){ apIgnorar--; return; }
  if(!apTrampa || typeof sesionActual === 'undefined' || !sesionActual || document.body.classList.contains('modo-admin')) return;
+ apNivel = Math.max(0, apNivel - 1);
  let hizo = false; try{ hizo = apAtras(); }catch(e){}
- if(hizo){ try{ history.pushState({ap: 1}, ''); }catch(e){} return; }
+ if(hizo){ apSincronizar(); return; }
+ // Ya estaba en el inicio: se sale solo si se pulsa atrás dos veces seguidas
  if(Date.now() < apSalirHasta){ apTrampa = false; history.back(); return; }
  apSalirHasta = Date.now() + 2500;
  apAvisoAtras('Pulsa atrás otra vez para salir');
- try{ history.pushState({ap: 1}, ''); }catch(e){}
+ try{ history.pushState({ap: 1}, ''); apNivel = 1; }catch(e){}
 });
 function apMarcar(clave){
  if(clave) apSeccion = clave;
  requestAnimationFrame(apBarraAlto);
+ apSincPronto();
  apTitulo();
  document.querySelectorAll('.ap-lat [data-ap]').forEach(b => b.classList.toggle('on', b.dataset.ap === clave));
  // Un grupo (Medidas formativas) se abre solo cuando una de sus opciones está activa
@@ -6904,11 +6946,13 @@ async function fxRetirar(aid, fid){
 
 // ── Hoja inferior ──
 function fxAbrirHoja(tit, cuerpo){
+ if(typeof apSincPronto === 'function') apSincPronto();
  document.getElementById('fx-hoja-tit').innerHTML = tit;
  document.getElementById('fx-hoja-cuerpo').innerHTML = cuerpo;
  document.getElementById('fx-hoja').classList.add('abierta');
 }
 function fxCerrarHoja(){
+ if(typeof apSincPronto === 'function') apSincPronto();
  document.getElementById('fx-hoja').classList.remove('abierta');
  if(FX.volverA){ const t = FX.volverA; FX.volverA = null; fxIrTab(t); }
 }
@@ -8643,7 +8687,7 @@ function fxsPintar(id){
 }
 async function fxsElegirFicha(id, fid){
  const S = FXS[id];
- S.f = S.fichas.find(f => f.id===fid) || null; S.aps = []; S.q = ''; S.grupo = []; if(S.multi){ S.sel = null; if(typeof llAplicarGrupo === 'function') llAplicarGrupo(); }
+ S.f = S.fichas.find(f => f.id===fid) || null; S.aps = []; S.q = ''; S.grupo = []; S.abierta = true; if(S.multi){ S.sel = null; if(typeof llAplicarGrupo === 'function') llAplicarGrupo(); }
  const box = document.getElementById(id+'-aps');
  if(!S.f){ box.innerHTML = ''; return; }
  box.innerHTML = '<div class="fx-muted">Cargando aprendices...</div>';
@@ -8672,15 +8716,34 @@ function fxsResumen(a){
 function fxsPintarAprendices(id){
  const S = FXS[id], box = document.getElementById(id+'-aps');
  if(!box) return;
- const q = fxNorm(S.q);
- const lista = S.aps.filter(a => !q || fxNorm(fxNombreApr(a)+' '+a.documento).includes(q));
- box.innerHTML = `<div class="field" style="margin-bottom:8px;"><label>Aprendiz (${S.aps.length})</label>
-   <input type="text" placeholder="Buscar por nombre o documento" value="${fxEsc(S.q)}" oninput="FXS['${id}'].q=this.value;fxsPintarLista('${id}')"></div>
-  ${S.multi ? '<div class="fx-muted" style="margin:-2px 0 8px;line-height:1.5;">Marca uno o varios aprendices. Si marcas varios, se genera el mismo llamado para todos, con un PDF aparte para cada uno.</div>' : ''}
-  <div id="${id}-lista" style="max-height:300px;overflow-y:auto;border:1px solid #e2e8e0;border-radius:10px;"></div>
-  ${S.multi ? `<div id="${id}-grupo" style="margin-top:8px;"></div>` : ''}`;
+ if(!S.multi){
+  box.innerHTML = `<div class="field" style="margin-bottom:8px;"><label>Aprendiz (${S.aps.length})</label>
+    <input type="text" placeholder="Buscar por nombre o documento" value="${fxEsc(S.q)}" oninput="FXS['${id}'].q=this.value;fxsPintarLista('${id}')"></div>
+   <div id="${id}-lista" style="max-height:300px;overflow-y:auto;border:1px solid #e2e8e0;border-radius:10px;"></div>`;
+  fxsPintarLista(id);
+  return;
+ }
+ // Llamados: la lista se despliega para elegir y se recoge para no ocupar espacio mientras se llena el documento
+ const n = S.grupo.length, ab = S.abierta !== false;
+ box.innerHTML = `<button type="button" class="fxs-desplegar" aria-expanded="${ab}" onclick="fxsDesplegar('${id}')">
+    <span style="flex:1;min-width:0;text-align:left;"><b>${ab ? 'Ocultar la lista de aprendices' : 'Desplegar la lista de aprendices'}</b><span class="fx-muted" style="display:block;margin-top:2px;">${S.aps.length} aprendi${S.aps.length!==1?'ces':'z'} en la ficha · ${n ? n + ' seleccionado' + (n!==1?'s':'') : 'ninguno seleccionado'}</span></span>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex:0 0 20px;transition:transform .18s;${ab?'transform:rotate(180deg);':''}"><path d="M6 9l6 6 6-6"/></svg>
+   </button>
+   <div id="${id}-panel" style="${ab?'':'display:none;'}margin-top:8px;">
+    <input type="text" placeholder="Buscar por nombre o documento" value="${fxEsc(S.q)}" oninput="FXS['${id}'].q=this.value;fxsPintarLista('${id}')" aria-label="Buscar aprendiz" style="margin-bottom:8px;">
+    <div class="fx-muted" style="margin:0 0 8px;line-height:1.5;">Marca uno o varios aprendices. Si marcas varios, se genera el mismo llamado para todos, con un PDF aparte para cada uno.</div>
+    <div id="${id}-lista" style="max-height:340px;overflow-y:auto;border:1px solid #e2e8e0;border-radius:10px;"></div>
+    <button type="button" class="fx-btn fx-btn-p fx-btn-sm" style="margin-top:10px;" onclick="fxsDesplegar('${id}', false)">Listo, ocultar la lista</button>
+   </div>
+   <div id="${id}-grupo" style="margin-top:8px;"></div>`;
  fxsPintarLista(id);
- if(S.multi) fxsPintarGrupo(id);
+ fxsPintarGrupo(id);
+}
+function fxsDesplegar(id, abrir){
+ const S = FXS[id]; if(!S) return;
+ S.abierta = typeof abrir === 'boolean' ? abrir : S.abierta === false;
+ if(!S.abierta) S.q = '';
+ fxsPintarAprendices(id);
 }
 function fxsPintarLista(id){
  const S = FXS[id], el = document.getElementById(id+'-lista');
@@ -8701,7 +8764,7 @@ function fxsAlternar(id, doc){
  const i = S.grupo.findIndex(g => g.documento === doc);
  if(i >= 0) S.grupo.splice(i, 1); else S.grupo.push(a);
  S.sel = S.grupo[0] || null;
- fxsPintarLista(id); fxsPintarGrupo(id);
+ { const sc = (document.getElementById(id+'-lista')||{}).scrollTop || 0; fxsPintarAprendices(id); const l = document.getElementById(id+'-lista'); if(l) l.scrollTop = sc; }
  if(S.sel){ try{ S.alElegir(S.sel, S.f); }catch(e){ console.error(e); } }
  if(typeof llAplicarGrupo === 'function') llAplicarGrupo();
 }
@@ -8822,6 +8885,8 @@ function fxHintNumeroLlamado(){
  };
  const tipoOrig = selectTipo;
  selectTipo = function(){ const r = tipoOrig.apply(this, arguments); fxHintNumeroLlamado(); return r; };
+ const goOrig = goTo;
+ goTo = function(n){ const r = goOrig.apply(this, arguments); try{ const S = FXS['fx-sel-llam']; if(S && S.multi && S.grupo.length && S.abierta !== false && n > 1 && !document.getElementById('panel1').classList.contains('active')){ S.abierta = false; S.q = ''; fxsPintarAprendices('fx-sel-llam'); } }catch(e){} return r; };
  const genOrig = generarPDF;
  generarPDF = function(){ if(llGrupo().length > 1) return llGenerarGrupo(genOrig).catch(e => alert('No se pudieron generar los llamados: ' + e.message)); return genOrig.apply(this, arguments); };
  const resOrig = buildResumen;
