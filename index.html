@@ -403,6 +403,9 @@ window.addEventListener('load', ()=>{
 
  /* Identificación del instructor arriba a la derecha, igual en todas las pantallas (computador) */
  .ap-quien { display: none; }
+ .ap-admin-btn { border: 1px solid var(--ap-linea); background: #fff; color: var(--ap-morado); font: 600 12px 'Work Sans', system-ui, sans-serif; padding: 7px 12px; border-radius: 999px; cursor: pointer; white-space: nowrap; }
+ .ap-admin-btn:hover { background: var(--ap-lila); }
+ #btn-volver-admin { display: none !important; }
  html[data-vista="pc"] body.con-sesion:not(.modo-admin) .ap-quien { display: flex; align-items: center; gap: 14px; margin-left: auto; flex: 0 0 auto; padding-left: 16px; }
  .ap-quien-txt { text-align: right; line-height: 1.25; min-width: 0; }
  .ap-quien-txt b { display: block; font-size: 14px; font-weight: 700; color: var(--ap-tinta); white-space: nowrap; }
@@ -1057,6 +1060,7 @@ function lgVerClave(){
  <button type="button" class="ap-item" onclick="apMenu(false);abrirCambioPassword()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="8" cy="15" r="4"/><path d="M11 12l9-9M17 6l3 3"/></svg><span class="ap-txt">Contraseña</span></button>
  <div class="vista-selector"><button type="button" class="vista-btn" onclick="toggleMenuVista(this)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="2"/><path d="M9 20h6M12 16v4"/></svg><span class="ap-txt">Vista: <span class="vista-actual">Automática</span></span></button><div class="vista-menu"></div></div>
  <div class="ap-espacio"></div>
+ <button type="button" class="ap-item" id="ap-item-admin" style="display:none" onclick="apAdmin()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3l7 3v5c0 4.6-3 8.4-7 10-4-1.6-7-5.4-7-10V6z"/><path d="M9 12l2.2 2.2L15 10"/></svg><span class="ap-txt">Administrador</span></button>
  <button type="button" class="ap-item" onclick="cerrarSesion()"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 4H5v16h5"/><path d="M14 8l4 4-4 4M18 12H9"/></svg><span class="ap-txt">Salir</span></button>
 </aside>
 <div class="home active" id="home">
@@ -1355,10 +1359,21 @@ function apMontarQuien(){
   let em = q.querySelector('em'); if(!em){ em = document.createElement('em'); q.querySelector('.ap-quien-txt').appendChild(em); }
   em.textContent = U.rol; em.title = U.rolTitulo; em.style.display = U.rol ? '' : 'none';
   q.querySelector('.ap-avatar').textContent = U.iniciales;
+  let ba = q.querySelector('.ap-admin-btn');
+  if(sesionActual.es_admin && !ba){ ba = document.createElement('button'); ba.type = 'button'; ba.className = 'ap-admin-btn'; ba.title = 'Abrir el Panel de Control'; ba.textContent = 'Administrador'; ba.onclick = apAdmin; q.insertBefore(ba, q.firstChild); }
+  if(ba) ba.style.display = sesionActual.es_admin ? '' : 'none';
  });
+}
+function apAdmin(){
+ apMenu(false);
+ if(apFxAbierta()) fxCerrar();
+ if(apHerramientaActiva()) volverInicio();
+ volverAlAdmin();
+ window.scrollTo(0, 0);
 }
 function apPintar(){
  if(!sesionActual) return;
+ { const ia = document.getElementById('ap-item-admin'); if(ia) ia.style.display = sesionActual.es_admin ? '' : 'none'; }
  const U = apDatosUsuario();
  document.getElementById('ap-saludo-cel').textContent = U.primero ? 'Hola, ' + U.primero : '';
  const lc = document.getElementById('logo-inicio-cel'); if(lc && !lc.getAttribute('src') && typeof LOGO_B64 !== 'undefined') lc.src = 'data:image/jpeg;base64,'+LOGO_B64;
@@ -3633,12 +3648,28 @@ function limpiarFormUsuario(){
  const fc = document.getElementById('form-correo'); if(fc) fc.value='';
 }
 
+const USR_ERRORES = {SESION:'Tu sesión venció. Sal e ingresa de nuevo.', SIN_PERMISO:'Solo un administrador puede hacer esto.', EXISTE:'Ese usuario ya existe.', DATOS:'Revisa el nombre y el usuario.', NO_EXISTE:'Ese usuario ya no existe.'};
+// Las cuentas se crean en el servidor, que es quien genera la clave temporal
+async function usrCrear(u){
+ const r = await sbRpc('app_crear_usuario', {p_nombre: u.nombre, p_usuario: u.usuario, p_cargo: u.cargo, p_es_admin: !!u.es_admin, p_correo: u.correo || null});
+ if(!r || r.error) throw new Error(USR_ERRORES[r && r.error] || 'No se pudo crear el usuario.');
+ return r;
+}
 async function restablecerPwd(id, nombre, usuario){
- const nueva = prompt(`Restablecer contraseña de ${nombre} (${usuario}).\n\nEscribe la nueva contraseña:`);
- if(!nueva||nueva.length<4){ if(nueva!==null) alert('Contraseña muy corta (mínimo 4 caracteres)'); return; }
+ if(!confirm(`¿Restablecer la contraseña de ${nombre} (${usuario})?\n\nSe le genera una clave temporal nueva, se cierran sus sesiones abiertas y deberá cambiarla al ingresar.`)) return;
  try{
- await sbFetch(`usuarios?id=eq.${id}`, 'PATCH', {password_hash: nueva, debe_cambiar_password: true});
- alert(` Contraseña de ${nombre} actualizada. Deberá cambiarla la próxima vez que ingrese.`);
+ const r = await sbRpc('app_restablecer_clave', {p_id: id});
+ if(!r || r.error){ alert(USR_ERRORES[r && r.error] || 'No se pudo restablecer la contraseña.'); return; }
+ mostrarCredenciales([{nombre, usuario, clave: r.clave}], 'Contraseña restablecida');
+ cargarUsuarios();
+ }catch(e){ alert('Error: '+e.message); }
+}
+async function desbloquearUsuario(id, nombre){
+ try{
+ const r = await sbRpc('app_desbloquear', {p_id: id});
+ if(r !== 'OK'){ alert(USR_ERRORES[r] || 'No se pudo desbloquear.'); return; }
+ await cargarUsuarios();
+ alert(nombre+' ya puede volver a ingresar.');
  }catch(e){ alert('Error: '+e.message); }
 }
 
@@ -3880,6 +3911,7 @@ function mostrarAppPrincipal(){
  document.getElementById('admin-nombre-header').textContent = headerNombre;
  document.getElementById('logo-admin').src = 'data:image/jpeg;base64,'+LOGO_B64;
  cargarDashboardAdmin();
+ irAHerramienta(); // lo principal son las herramientas; el Panel de Control se abre con el botón "Administrador"
  } else {
  // Instructor ve la herramienta normal
  document.getElementById('app-principal') && (document.getElementById('app-principal').style.display='block');
@@ -3999,7 +4031,7 @@ function getHTMLUsuarios(){
  <div><label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Usuario</label>
  <input id="form-usuario" type="text" placeholder="Se genera con el nombre" readonly style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#f3f6f9;color:#1565c0;font-weight:600;"></div>
  <div><label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Contraseña inicial</label>
- <div id="form-password-info" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#f3f6f9;font-weight:600;">Sena2026*</div>
+ <div id="form-password-info" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;background:#f3f6f9;font-weight:600;">Se genera al guardar</div>
  <input id="form-password" type="hidden"></div>
  <div><label style="font-size:12px;color:#555;display:block;margin-bottom:3px;">Cargo</label>
  <select id="form-cargo" style="width:100%;box-sizing:border-box;padding:8px 10px;border:1px solid #ddd;border-radius:6px;font-size:13px;">
@@ -4139,7 +4171,6 @@ function getHTMLConfig(){
  </div>`;
 }
 
-const CLAVE_POR_DEFECTO = 'Sena2026*';
 function correoLimpio(c){ return String(c||'').trim().toLowerCase(); }
 function correoValido(c){ return /^[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$/.test(correoLimpio(c)); }
 // Correo del usuario: se pide una vez al ingresar si todavía no lo tiene; después se puede corregir desde la barra superior
@@ -4222,7 +4253,6 @@ async function guardarNuevaPassword(){
  if(nueva.length < 6){ err.textContent='La nueva contraseña debe tener al menos 6 caracteres.'; err.style.display='block'; return; }
  if(nueva !== confirma){ err.textContent='Las contraseñas no coinciden.'; err.style.display='block'; return; }
  if(nueva === actual){ err.textContent='La nueva contraseña debe ser diferente a la actual.'; err.style.display='block'; return; }
- if(nueva === CLAVE_POR_DEFECTO){ err.textContent='No puedes usar la contraseña asignada por defecto.'; err.style.display='block'; return; }
  const modal = document.getElementById('modal-cambio-pwd');
  const forzado = modal.classList.contains('forzado');
  try{
@@ -4277,14 +4307,14 @@ function previsualizarUsuario(){
   }catch(e){}
  }, 300);
 }
-function mostrarCredenciales(lista){
- const txt = lista.map(u => `${u.nombre}\nUsuario: ${u.usuario}\nContraseña: Sena2026*`).join('\n\n');
+function mostrarCredenciales(lista, titulo){
+ const txt = lista.map(u => `${u.nombre}\nUsuario: ${u.usuario}\nContraseña temporal: ${u.clave}`).join('\n\n');
  let m = document.getElementById('modal-credenciales');
  if(!m){ m = document.createElement('div'); m.id = 'modal-credenciales'; document.body.appendChild(m); }
  m.style.cssText = 'position:fixed;inset:0;z-index:100002;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px;';
  m.innerHTML = `<div style="background:#fff;border-radius:14px;padding:20px;max-width:420px;width:100%;max-height:85vh;overflow:auto;">
-  <div style="font-weight:700;font-size:16px;margin-bottom:6px;">${lista.length===1?'Usuario creado':'Usuarios creados ('+lista.length+')'}</div>
-  <div style="font-size:12px;color:#666;margin-bottom:12px;">Envíale estos datos al instructor. Al primer ingreso, la plataforma le pedirá cambiar la contraseña.</div>
+  <div style="font-weight:700;font-size:16px;margin-bottom:6px;">${titulo || (lista.length===1?'Usuario creado':'Usuarios creados ('+lista.length+')')}</div>
+  <div style="font-size:12px;color:#666;margin-bottom:12px;">Copia estos datos ahora y entrégaselos a la persona: <b>la clave temporal no se vuelve a mostrar</b>. Al ingresar, la plataforma le pedirá cambiarla.</div>
   <pre id="cred-txt" style="white-space:pre-wrap;background:#f3f6f9;border-radius:8px;padding:12px;font-size:13px;font-family:inherit;margin:0 0 14px;">${txt.replace(/</g,'&lt;')}</pre>
   <div style="display:flex;gap:8px;">
    <button type="button" onclick="navigator.clipboard&&navigator.clipboard.writeText(document.getElementById('cred-txt').textContent).then(()=>{this.textContent='¡Copiado!'})" style="flex:1;padding:10px;border:none;border-radius:8px;background:#1565c0;color:#fff;font-weight:600;cursor:pointer;">Copiar</button>
@@ -4330,7 +4360,7 @@ function descargarPlantilla(){
  [' IMPORTANTE:'],
  ['- No elimines la fila de encabezados (fila 1)'],
  ['- Solo escribe el nombre completo: el usuario se crea solo (ej: Juan Carlos Pérez Gómez → jperezgom)'],
- ['- La contraseña inicial de todos es Sena2026* y la cambian en su primer ingreso'],
+ ['- Al importar, la plataforma le genera a cada persona una clave temporal distinta y te la muestra una sola vez'],
  ['- Si el nombre ya existe en la plataforma, solo se actualizan su cargo y si es administrador'],
  ['- Puedes agregar tantas filas como necesites debajo del ejemplo'],
  ];
@@ -4386,7 +4416,7 @@ function procesarExcelUsuarios(input){
   const base = generarUsuarioBase(nombre); if(!base) continue;
   const usuario = usuarioLibre(base, ocupados); ocupados.add(usuario);
   porNombre[normNombreUsuario(nombre)] = {id:null, nombre, usuario};
-  usuariosPendientes.push({ nombre, usuario, password_hash: CLAVE_POR_DEFECTO, cargo, es_admin, activo: true, debe_cambiar_password: true, correo: correo || null });
+  usuariosPendientes.push({ nombre, usuario, cargo, es_admin, correo: correo || null });
  }
  }
  mostrarPreviewCarga();
@@ -4426,8 +4456,8 @@ async function confirmarCargaMasiva(){
  if(u._existe){
   await sbFetch(`usuarios?id=eq.${u._existe}`, 'PATCH', u.correo ? {cargo: u.cargo, es_admin: u.es_admin, correo: u.correo} : {cargo: u.cargo, es_admin: u.es_admin});
  } else {
-  await sbFetch('usuarios', 'POST', u);
-  creados.push({nombre: u.nombre, usuario: u.usuario});
+  const r = await usrCrear(u);
+  creados.push({nombre: u.nombre, usuario: r.usuario, clave: r.clave});
  }
  ok++;
  } catch(e){ errores++; }
@@ -5519,7 +5549,15 @@ async function login(){
  try{
  // La contraseña se verifica en el servidor (cifrada); nunca viaja de vuelta al navegador
  const res = await sbRpc('app_login', {p_usuario: usr, p_clave: pwd});
- if(!res || !res.token){ err.textContent='Usuario o contraseña incorrectos.'; err.style.display='block'; return; }
+ if(res && res.bloqueado){
+ const m = res.minutos||15, t = m >= 60 ? (Math.round(m/60*10)/10)+' hora'+(m>=120?'s':'') : m+' minuto'+(m===1?'':'s');
+ err.textContent='Esta cuenta quedó bloqueada por varios intentos fallidos. Vuelve a intentar en '+t+', o pide al administrador que la desbloquee.'; err.style.display='block'; return;
+ }
+ if(!res || !res.token){
+ const q = res && typeof res.restantes === 'number' ? res.restantes : null;
+ err.textContent='Usuario o contraseña incorrectos.' + (q !== null && q <= 2 ? ' Te queda'+(q===1?'':'n')+' '+q+' intento'+(q===1?'':'s')+' antes de que la cuenta se bloquee.' : '');
+ err.style.display='block'; return;
+ }
  sbSetToken(res.token);
  const u = res.usuario;
  sesionActual = u;
@@ -5643,7 +5681,7 @@ function cerrarAdmin(){ document.getElementById('modal-admin').style.display='no
 
 async function cargarUsuarios(){
  try{
- const data = await sbFetch('usuarios?order=nombre.asc&select=id,nombre,usuario,cargo,activo,es_admin,created_at,updated_at,debe_cambiar_password,correo');
+ const data = await sbFetch('usuarios?order=nombre.asc&select=id,nombre,usuario,cargo,activo,es_admin,created_at,updated_at,debe_cambiar_password,correo,bloqueado_hasta');
  const tbody = document.getElementById('admin-tabla-usuarios');
  window._usrPorId = {}; (data||[]).forEach(u => window._usrPorId[u.id] = u);
  tbody.innerHTML = data.map(u=>`
@@ -5654,9 +5692,12 @@ async function cargarUsuarios(){
  <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">${u.es_admin?'Admin':'Usuario'}</td>
  <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">
  <span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:${u.activo?'#e8f5e9':'#fce4e4'};color:${u.activo?'#2e7d32':'#c62828'};">${u.activo?'Activo':'Inactivo'}</span>
+ ${usrBloqueado(u)?'<div style="margin-top:4px;"><span style="display:inline-block;padding:2px 8px;border-radius:10px;font-size:11px;background:#fff3e0;color:#b45309;">Bloqueado</span></div>':''}
  </td>
  <td style="padding:6px 8px;border-bottom:1px solid #eee;text-align:center;">
- <button onclick="editarUsuario('${u.id}','${u.nombre}','${u.usuario}','${u.cargo}','${u.es_admin}')" style="font-size:11px;padding:3px 8px;border:1px solid #2d6cdf;color:#2d6cdf;background:#fff;border-radius:4px;cursor:pointer;margin-right:4px;">Editar</button>
+ <button onclick="editarUsuario('${u.id}','${u.nombre}','${u.usuario}','${u.cargo}','${u.es_admin}')" style="font-size:11px;padding:3px 8px;border:1px solid #2d6cdf;color:#2d6cdf;background:#fff;border-radius:4px;cursor:pointer;margin:0 4px 4px 0;">Editar</button>
+ <button onclick="restablecerPwd('${u.id}','${String(u.nombre).replace(/'/g,"\\'")}','${u.usuario}')" style="font-size:11px;padding:3px 8px;border:1px solid #e65100;color:#e65100;background:#fff;border-radius:4px;cursor:pointer;margin:0 4px 4px 0;">Restablecer</button>
+ ${usrBloqueado(u)?`<button onclick="desbloquearUsuario('${u.id}','${String(u.nombre).replace(/'/g,"\\'")}')" style="font-size:11px;padding:3px 8px;border:1px solid #b45309;color:#fff;background:#b45309;border-radius:4px;cursor:pointer;margin:0 4px 4px 0;">Desbloquear</button>`:''}
  <button onclick="toggleActivo('${u.id}',${u.activo})" style="font-size:11px;padding:3px 8px;border:1px solid #e53935;color:#e53935;background:#fff;border-radius:4px;cursor:pointer;">${u.activo?'Desactivar':'Activar'}</button>
  </td>
  </tr>`).join('');
@@ -5680,8 +5721,9 @@ async function cargarHistorial(){
  } catch(e){ console.error(e); }
 }
 
+function usrBloqueado(u){ return !!u.bloqueado_hasta && new Date(u.bloqueado_hasta) > new Date(); }
 async function guardarUsuario(){
- // Solo se escribe el nombre: el usuario se genera solo y la contraseña inicial es Sena2026*
+ // Solo se escribe el nombre: el usuario se genera solo y el servidor asigna una clave temporal
  const id = document.getElementById('form-usuario-id').value;
  const nombre = document.getElementById('form-nombre').value.replace(/\s+/g,' ').trim();
  const cargo = document.getElementById('form-cargo').value;
@@ -5701,9 +5743,9 @@ async function guardarUsuario(){
    const base = generarUsuarioBase(nombre);
    if(!base){ alert('No se pudo generar el usuario con ese nombre.'); return; }
    const usuario = usuarioLibre(base, new Set(existentes.map(u => u.usuario)));
-   await sbFetch('usuarios', 'POST', {nombre, usuario, cargo, es_admin: admin, activo: true, password_hash: CLAVE_POR_DEFECTO, debe_cambiar_password: true, correo: correo || null});
+   const r = await usrCrear({nombre, usuario, cargo, es_admin: admin, correo});
    _usrOcupados = null;
-   mostrarCredenciales([{nombre, usuario}]);
+   mostrarCredenciales([{nombre, usuario: r.usuario, clave: r.clave}]);
   }
   document.getElementById('form-usuario-id').value='';
   document.getElementById('form-nombre').value='';
@@ -5712,7 +5754,7 @@ async function guardarUsuario(){
   document.getElementById('form-admin').checked=false;
   { const fc = document.getElementById('form-correo'); if(fc) fc.value=''; }
   document.getElementById('form-titulo').textContent='Nuevo usuario';
-  const pi = document.getElementById('form-password-info'); if(pi) pi.textContent = CLAVE_POR_DEFECTO;
+  const pi = document.getElementById('form-password-info'); if(pi) pi.textContent = 'Se genera al guardar';
   await cargarUsuarios();
   if(id) alert('Usuario actualizado.');
  } catch(e){ alert('Error: '+e.message); }
