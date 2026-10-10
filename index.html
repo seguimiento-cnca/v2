@@ -949,54 +949,74 @@ function lgVerClave(){
 
  <!-- Situación general de la plataforma: fichas y aprendices -->
  <style>
- #admg{background:#fff;border-radius:16px;padding:18px 18px 16px;margin-bottom:16px;color:#0b2545;font-family:inherit;position:relative}
- #admg h3{margin:0;font-size:17px;font-weight:700;color:#0b2545}
- #admg .g-sub{font-size:12.5px;color:#52514e;margin:2px 0 12px}
- #admg h4{margin:0 0 8px;font-size:13.5px;font-weight:700;color:#0b2545}
- #admg .g-foco{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eef4fd;border-radius:10px;padding:9px 12px;margin-bottom:12px;min-height:40px;box-sizing:border-box}
- #admg .g-foco b{font-size:13.5px;line-height:1.3;font-weight:700;color:#0b2545;flex:1 1 100%;min-width:0;height:2.6em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+ #admg{background:#fff;border-radius:18px;padding:22px 20px 18px;margin-bottom:16px;color:#0b2545;font-family:inherit;position:relative;box-shadow:0 12px 32px rgba(6,24,74,.18)}
+ #admg h3{margin:0;font-size:19px;font-weight:700;color:#0b2545}
+ #admg .g-sub{font-size:13px;color:#52514e;margin:3px 0 14px;line-height:1.4}
+ #admg h4{margin:0 0 12px;font-size:14px;font-weight:700;color:#0b2545}
+ #admg .g-foco{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:linear-gradient(100deg,#4B1FA6 0%,#2A62C9 70%,#12B5CE 130%);border-radius:14px;padding:12px 16px;margin-bottom:14px;box-sizing:border-box}
+ #admg .g-foco small{display:block;flex:1 1 100%;font-size:11px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.78);margin-bottom:-4px}
+ #admg .g-foco b{font-size:15px;line-height:1.3;font-weight:700;color:#fff;flex:1 1 100%;min-width:0;height:2.6em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
  html[data-vista="pc"] #admg .g-foco b{flex:1;height:auto;max-height:2.6em}
- #admg .g-foco button{border:1px solid #c9d6ea;background:#fff;color:#0b2545;font:600 12px inherit;font-family:inherit;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
- #admg .g-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
- html[data-vista="pc"] #admg .g-datos{grid-template-columns:repeat(4,1fr)}
- #admg .g-dato{background:#f4f5fa;border-radius:10px;padding:10px 12px}
- #admg .g-dato b{display:block;font-size:24px;font-weight:700;color:#0b2545;line-height:1.15;font-variant-numeric:tabular-nums}
+ #admg .g-foco button{border:none;background:#fff;color:#2E1A7A;font:600 12.5px inherit;font-family:inherit;padding:8px 14px;border-radius:999px;cursor:pointer;white-space:nowrap}
+ #admg .g-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:8px}
+ html[data-vista="pc"] #admg .g-datos{grid-template-columns:repeat(4,1fr);gap:12px}
+ #admg .g-dato{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #e6e8f0;border-radius:14px;padding:12px 14px;min-width:0}
+ #admg .g-dato .g-ico{flex:0 0 40px;height:40px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin:0}
+ #admg .g-ico svg{width:21px;height:21px}
+ #admg .g-dato div{min-width:0}
+ #admg .g-dato b{display:block;font-size:25px;font-weight:700;color:#0b2545;line-height:1.1;font-variant-numeric:tabular-nums}
  #admg .g-dato span{font-size:12px;color:#52514e;line-height:1.3;display:block;margin-top:2px}
  #admg .g-nota{font-size:12px;line-height:1.4;color:#52514e;height:2.8em;overflow:hidden;margin-bottom:8px}
  html[data-vista="pc"] #admg .g-nota{height:1.4em;margin-bottom:12px}
- #admg .g-dos{display:grid;grid-template-columns:1fr;gap:20px}
- html[data-vista="pc"] #admg .g-dos{grid-template-columns:1fr 1fr;gap:28px}
- #admg .g-lista{display:flex;flex-direction:column;gap:2px}
- #admg .g-it{padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .12s,opacity .12s}
- #admg .g-it .g-nom{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;line-height:1.3;color:#0b2545;margin-bottom:4px}
+ #admg .g-dos{display:grid;grid-template-columns:1fr;gap:14px}
+ html[data-vista="pc"] #admg .g-dos{grid-template-columns:1fr 1fr;gap:16px;align-items:start}
+ #admg .g-der{display:flex;flex-direction:column;gap:14px}
+ html[data-vista="pc"] #admg .g-der{gap:16px}
+ #admg .g-caja{border:1px solid #e6e8f0;border-radius:16px;padding:16px 14px 14px;min-width:0}
+ #admg .g-lista{display:flex;flex-direction:column;gap:4px}
+ #admg .g-it{padding:9px 10px 10px;border-radius:12px;cursor:pointer;border-left:3px solid transparent;transition:background .15s,opacity .15s}
+ #admg .g-it:hover{background:#f4f5fa}
+ #admg .g-it .g-nom{display:flex;justify-content:space-between;gap:12px;font-size:13px;line-height:1.3;color:#0b2545;margin-bottom:7px}
  #admg .g-it .g-nom span:first-child{min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
- #admg .g-it .g-nom b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+ #admg .g-it .g-nom b{font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
  #admg .g-it .g-nom small{font-size:11.5px;color:#52514e;font-weight:400}
- #admg .g-pista{height:10px}
- #admg .g-barra{height:10px;border-radius:0 4px 4px 0;background:#2a78d6;min-width:3px;transition:width .2s}
- #admg .g-barra.g-in{background:#eb6834}
- #admg .g-lista.g-con-foco .g-it{opacity:.45}
- #admg .g-lista.g-con-foco .g-it.g-on,#admg .g-it:hover{opacity:1;background:#eef4fd}
- #admg .g-ley{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#52514e;margin-bottom:6px}
+ #admg .g-pista{height:12px;border-radius:999px;background:#eef0f6;overflow:hidden}
+ #admg .g-barra{height:12px;border-radius:999px;background:linear-gradient(90deg,#4B1FA6,#2A78D6);transform-origin:left center;animation:g-crece .45s cubic-bezier(.2,.7,.2,1) both}
+ #admg .g-barra.g-in{background:linear-gradient(90deg,#eb6834,#f39a4a)}
+ #admg .g-lista.g-con-foco .g-it{opacity:.5}
+ #admg .g-lista.g-con-foco .g-it:hover{opacity:.85}
+ #admg .g-lista.g-con-foco .g-it.g-on{opacity:1;background:#f1ecfb;border-left-color:#4B1FA6}
+ #admg .g-lista.g-con-foco .g-it.g-on .g-nom span:first-child{font-weight:700}
+ #admg #admg-f.g-con-foco .g-it.g-on{background:#fdf1ea;border-left-color:#eb6834}
+ #admg .g-cab{display:flex;justify-content:space-between;align-items:baseline;gap:8px 14px;flex-wrap:wrap;margin-bottom:10px}
+ #admg .g-cab h4{margin:0}
+ #admg .g-ley{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:#52514e}
  #admg .g-ley i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
- #admg .g-plot{display:flex;align-items:flex-end;gap:8px;height:150px;border-bottom:1px solid #d9dbe3;padding-top:18px}
- #admg .g-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:default}
- #admg .g-col:hover .g-pila{filter:brightness(1.08)}
- #admg .g-pila{width:62%;max-width:46px;display:flex;flex-direction:column;gap:2px}
- #admg .g-seg{min-height:3px;transition:height .2s}
- #admg .g-pila .g-seg:first-child{border-radius:4px 4px 0 0}
- #admg .g-tot{font-size:12px;font-weight:600;color:#0b2545;margin-bottom:4px}
- #admg .g-ejes{display:flex;gap:8px;margin-top:6px}
+ #admg .g-graf{display:flex;gap:8px}
+ #admg .g-eje-y{display:flex;flex-direction:column;justify-content:space-between;height:170px;font-size:11px;color:#8a8f9c;text-align:right;min-width:14px;font-variant-numeric:tabular-nums}
+ #admg .g-eje-y span{line-height:1;transform:translateY(-50%)}
+ #admg .g-eje-y span:last-child{transform:translateY(50%)}
+ #admg .g-zona{flex:1;min-width:0}
+ #admg .g-plot{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid #cfd3df;background:linear-gradient(#eceef4,#eceef4) 0 0/100% 1px no-repeat,linear-gradient(#eceef4,#eceef4) 0 50%/100% 1px no-repeat}
+ #admg .g-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:default;border-radius:8px 8px 0 0;transition:background .15s}
+ #admg .g-col:hover{background:rgba(42,120,214,.07)}
+ #admg .g-pila{width:60%;max-width:44px;display:flex;flex-direction:column;gap:2px;transform-origin:center bottom;animation:g-sube .45s cubic-bezier(.2,.7,.2,1) both}
+ #admg .g-seg{min-height:3px}
+ #admg .g-pila .g-seg:first-child{border-radius:6px 6px 0 0}
+ #admg .g-tot{font-size:12px;font-weight:700;color:#0b2545;margin-bottom:5px}
+ #admg .g-ejes{display:flex;gap:8px;margin-top:7px}
  #admg .g-ejes span{flex:1;min-width:0;text-align:center;font-size:11.5px;color:#52514e;text-transform:capitalize}
- #admg .g-vacio{font-size:13px;color:#52514e;padding:8px}
- #admg .g-bloque{margin-top:20px}
+ #admg .g-vacio{font-size:13px;color:#52514e;padding:8px 10px;line-height:1.45}
  #admg details{margin-top:14px;font-size:12.5px;color:#52514e}
  #admg summary{cursor:pointer}
  #admg .g-tabla{overflow-x:auto}
  #admg table{border-collapse:collapse;margin-top:8px;width:100%}
- #admg th,#admg td{text-align:right;padding:4px 8px;border-bottom:1px solid #e6e8f0;font-size:12.5px}
+ #admg th,#admg td{text-align:right;padding:5px 8px;border-bottom:1px solid #e6e8f0;font-size:12.5px}
  #admg th:first-child,#admg td:first-child{text-align:left}
- #admg-tip{position:absolute;display:none;pointer-events:none;background:#0b2545;color:#fff;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:8px;z-index:5;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+ #admg-tip{position:absolute;display:none;pointer-events:none;background:#0b2545;color:#fff;font-size:12px;line-height:1.5;padding:8px 11px;border-radius:10px;z-index:5;white-space:nowrap;box-shadow:0 8px 22px rgba(0,0,0,.28)}
+ @keyframes g-crece{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+ @keyframes g-sube{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+ @media (prefers-reduced-motion:reduce){#admg .g-barra,#admg .g-pila{animation:none}}
  </style>
  <div id="admg">
  <h3>Situación general</h3>
@@ -4036,43 +4056,36 @@ async function admgPintar(){
  progs.forEach(p => { p.apr = p.fichas.reduce((s,f) => s+f.apr, 0); p.fichas.sort((a,b) => b.inas-a.inas || b.apr-a.apr); });
  progs.sort((a,b) => b.apr-a.apr || a.nombre.localeCompare(b.nombre));
  ADMG.d = {fichas: Object.values(F), F, progs, P, docs, meses, hayInas: !!inas}; ADMG.prog = null; ADMG.ficha = null;
- sub.textContent = progs.length ? 'Pasa el cursor (o toca) un programa o una ficha y todo lo demás cambia para mostrar solo sus datos.' : 'Todavía no hay fichas cargadas. Abajo se ve el movimiento de documentos.';
+ sub.textContent = progs.length ? 'Haz clic en un programa para ver sus fichas, y en una ficha para ver solo sus datos. Otro clic sobre lo mismo quita la selección.' : 'Todavía no hay fichas cargadas. Abajo se ve el movimiento de documentos.';
  const tope = Math.max(1, ...progs.map(p => p.apr));
  cuerpo.innerHTML = `
-  <div class="g-foco"><b id="admg-foco"></b><button type="button" id="admg-todos" style="visibility:hidden">Ver todos los programas</button></div>
+  <div class="g-foco"><small>Estás viendo</small><b id="admg-foco"></b><button type="button" id="admg-todos" style="visibility:hidden">Ver todos los programas</button></div>
   <div class="g-datos" id="admg-t"></div>
   <div class="g-nota" id="admg-nota"></div>
   <div class="g-dos">
-   <div><h4>Aprendices en formación por programa</h4><div class="g-lista" id="admg-p">${progs.length ? progs.map(p => `<div class="g-it" data-prog="${admgEsc(p.k)}"><div class="g-nom"><span>${admgEsc(p.nombre)}</span><b>${p.apr} <small>· ${p.fichas.length} ficha${p.fichas.length===1?'':'s'}</small></b></div><div class="g-pista"><div class="g-barra" style="width:${Math.max(1, Math.round(p.apr/tope*100))}%"></div></div></div>`).join('') : '<div class="g-vacio">Cuando un líder cargue los reportes de fichas, aquí aparecen los programas.</div>'}</div></div>
-   <div>
-    <h4 id="admg-ft"></h4><div class="g-lista" id="admg-f"></div>
-    <div class="g-bloque"><h4 id="admg-mt"></h4>
-     <div class="g-ley"><span><i style="background:${ADMG_COLOR.llamado}"></i>Llamados de atención</span><span><i style="background:${ADMG_COLOR.plan}"></i>Planes de mejoramiento</span></div>
-     <div class="g-plot" id="admg-m"></div><div class="g-ejes">${meses.map(x => `<span>${x.corto}</span>`).join('')}</div>
+   <div class="g-caja"><h4>Aprendices en formación por programa</h4><div class="g-lista" id="admg-p">${progs.length ? progs.map(p => `<div class="g-it" data-prog="${admgEsc(p.k)}"><div class="g-nom"><span>${admgEsc(p.nombre)}</span><b>${p.apr} <small>· ${p.fichas.length} ficha${p.fichas.length===1?'':'s'}</small></b></div><div class="g-pista"><div class="g-barra" style="width:${Math.max(2, Math.round(p.apr/tope*100))}%"></div></div></div>`).join('') : '<div class="g-vacio">Cuando un líder cargue los reportes de fichas, aquí aparecen los programas.</div>'}</div></div>
+   <div class="g-der">
+    <div class="g-caja"><h4 id="admg-ft"></h4><div class="g-lista" id="admg-f"></div></div>
+    <div class="g-caja"><div class="g-cab"><h4 id="admg-mt"></h4>
+     <div class="g-ley"><span><i style="background:${ADMG_COLOR.llamado}"></i>Llamados</span><span><i style="background:${ADMG_COLOR.plan}"></i>Planes</span></div></div>
+     <div class="g-graf"><div class="g-eje-y" id="admg-y"></div><div class="g-zona"><div class="g-plot" id="admg-m"></div><div class="g-ejes">${meses.map(x => `<span>${x.corto}</span>`).join('')}</div></div></div>
     </div>
    </div>
   </div>
   <details><summary>Ver los datos en tabla</summary><div class="g-tabla"><table><tr><th>Programa</th><th>Fichas</th><th>En formación</th><th>Fuera de formación</th><th>Inasistencias (30 días)</th><th>Documentos (6 meses)</th></tr>${progs.map(p => `<tr><td>${admgEsc(p.nombre)}</td><td>${p.fichas.length}</td><td>${p.apr}</td><td>${p.fichas.reduce((s,f)=>s+f.fuera,0)}</td><td>${inas ? p.fichas.reduce((s,f)=>s+f.inas,0) : '—'}</td><td>${docs.filter(d => d.prog === p.k).length}</td></tr>`).join('')}</table></div></details>`;
  // Un solo juego de eventos para todo el bloque
  const fijar = (prog, ficha) => { if(ADMG.prog === prog && ADMG.ficha === ficha) return; const cambiaProg = ADMG.prog !== prog; ADMG.prog = prog; ADMG.ficha = ficha; admgActualizar(cambiaProg); };
- const sobre = e => {
-  const f = e.target.closest('[data-ficha]'); if(f){ fijar(ADMG.prog, f.dataset.ficha); return; }
-  const p = e.target.closest('[data-prog]'); if(p){ fijar(p.dataset.prog, null); return; }
-  const c = e.target.closest('.g-col'); if(c) admgTip(c);
- };
- cuerpo.onmouseover = sobre;
- cuerpo.ontouchstart = () => { ADMG.tactil = true; };
  cuerpo.onclick = e => {
   if(e.target.closest('#admg-todos')){ fijar(null, null); return; }
-  sobre(e);
+  const f = e.target.closest('[data-ficha]');
+  if(f){ fijar(ADMG.prog, ADMG.ficha === f.dataset.ficha ? null : f.dataset.ficha); return; }
+  const p = e.target.closest('[data-prog]');
+  if(p){ fijar(ADMG.prog === p.dataset.prog && !ADMG.ficha ? null : p.dataset.prog, null); return; }
   const c = e.target.closest('.g-col'), tip = document.getElementById('admg-tip');
-  if(c){ clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); }
+  if(c){ admgTip(c); clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); }
  };
- cuerpo.onmouseout = e => {
-  if(e.target.closest('.g-col')) document.getElementById('admg-tip').style.display = 'none';
-  const lf = document.getElementById('admg-f');
-  if(!ADMG.tactil && ADMG.ficha && lf && lf.contains(e.target) && !lf.contains(e.relatedTarget)) fijar(ADMG.prog, null);
- };
+ cuerpo.onmouseover = e => { const c = e.target.closest('.g-col'); if(c) admgTip(c); };
+ cuerpo.onmouseout = e => { if(e.target.closest('.g-col')) document.getElementById('admg-tip').style.display = 'none'; };
  admgActualizar(true);
 }
 // Recalcula cifras, fichas y meses según el programa o la ficha que esté en foco
@@ -4085,9 +4098,14 @@ function admgActualizar(rehacerFichas){
  document.getElementById('admg-foco').textContent = Fi ? nomFicha(Fi) + ' — ' + D.P[Fi.prog].nombre : (P ? P.nombre : 'Todos los programas');
  document.getElementById('admg-todos').style.visibility = (P || Fi) ? 'visible' : 'hidden';
  const suma = c => grupo.reduce((s,f) => s + f[c], 0), nAp = suma('apr'), nFu = suma('fuera');
- const dato = (v, t) => `<div class="g-dato"><b>${v}</b><span>${t}</span></div>`;
- document.getElementById('admg-t').innerHTML = dato(Fi ? 1 : grupo.length, Fi ? 'ficha seleccionada' : 'fichas cargadas') + dato(nAp, 'aprendices en formación')
-  + dato(D.hayInas ? suma('inas') : '—', 'inasistencias en los últimos 30 días') + dato(docs.length, 'llamados y planes en 6 meses');
+ const ico = {
+  ficha: '<path d="M4 6a2 2 0 0 1 2-2h4l2 2.5h6a2 2 0 0 1 2 2V18a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2z"/>',
+  apr: '<circle cx="9" cy="8" r="3.2"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6"/><path d="M16 5.2a3.2 3.2 0 0 1 0 5.6M18 14.3c1.8.9 3 2.9 3 5.7"/>',
+  inas: '<rect x="4" y="5" width="16" height="15" rx="2.5"/><path d="M8 3v4M16 3v4M4 10h16M10 13.5l4 4M14 13.5l-4 4"/>',
+  doc: '<path d="M7 3h7l5 5v13H7z"/><path d="M14 3v5h5M10 13h6M10 17h6"/>'};
+ const dato = (v, t, i, fondo, tinta) => `<div class="g-dato"><span class="g-ico" style="background:${fondo};color:${tinta}"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ico[i]}</svg></span><div><b>${v}</b><span>${t}</span></div></div>`;
+ document.getElementById('admg-t').innerHTML = dato(Fi ? 1 : grupo.length, Fi ? 'ficha seleccionada' : 'fichas cargadas', 'ficha', '#efe8fb', '#4B1FA6') + dato(nAp, 'aprendices en formación', 'apr', '#e6f0fc', '#1f5fb8')
+  + dato(D.hayInas ? suma('inas') : '—', 'inasistencias en los últimos 30 días', 'inas', '#fdeee6', '#c2470f') + dato(docs.length, 'llamados y planes en 6 meses', 'doc', '#e5f6f0', '#0f7a55');
  document.getElementById('admg-nota').textContent = nFu ? nFu + ' aprendiz' + (nFu===1?'':'es') + ' fuera de formación (retiro, cancelación, aplazamiento o traslado).' : '';
  const lp = document.getElementById('admg-p');
  lp.classList.toggle('g-con-foco', !!ADMG.prog);
@@ -4096,8 +4114,8 @@ function admgActualizar(rehacerFichas){
  if(rehacerFichas){
   const lista = (P ? P.fichas.slice() : D.fichas.slice().sort((a,b) => b.inas-a.inas || b.apr-a.apr).slice(0, 6));
   const tope = Math.max(1, ...lista.map(f => f.inas));
-  document.getElementById('admg-ft').textContent = P ? 'Fichas del programa: inasistencias en 30 días' : 'Fichas con más inasistencias en 30 días';
-  lf.innerHTML = lista.length ? lista.map(f => `<div class="g-it" data-ficha="${admgEsc(f.id)}"><div class="g-nom"><span>${admgEsc(nomFicha(f))} <small>· ${f.apr} aprendices</small></span><b>${D.hayInas ? f.inas : '—'}</b></div><div class="g-pista"><div class="g-barra g-in" style="width:${f.inas ? Math.max(2, Math.round(f.inas/tope*100)) : 0}%;min-width:${f.inas?3:0}px"></div></div></div>`).join('') : '<div class="g-vacio">Sin fichas para mostrar.</div>';
+  document.getElementById('admg-ft').textContent = P ? 'Fichas de este programa · inasistencias en 30 días' : 'Fichas con más inasistencias en 30 días';
+  lf.innerHTML = lista.length ? lista.map(f => `<div class="g-it" data-ficha="${admgEsc(f.id)}"><div class="g-nom"><span>${admgEsc(nomFicha(f))} <small>· ${f.apr} aprendices</small></span><b>${D.hayInas ? f.inas : '—'}</b></div><div class="g-pista"><div class="g-barra g-in" style="width:${f.inas ? Math.max(3, Math.round(f.inas/tope*100)) : 0}%"></div></div></div>`).join('') : '<div class="g-vacio">Sin fichas para mostrar.</div>';
  }
  lf.classList.toggle('g-con-foco', !!Fi);
  lf.querySelectorAll('.g-it').forEach(el => el.classList.toggle('g-on', !!Fi && el.dataset.ficha === Fi.id));
@@ -4105,10 +4123,11 @@ function admgActualizar(rehacerFichas){
  const cuenta = D.meses.map(() => ({llamado: 0, plan: 0}));
  docs.forEach(d => { cuenta[d.i][d.plan ? 'plan' : 'llamado']++; });
  ADMG.cuenta = cuenta;
- const tope = Math.max(1, ...cuenta.map(x => x.llamado + x.plan));
- document.getElementById('admg-mt').textContent = 'Llamados y planes por mes' + (Fi ? ' de la ficha ' + Fi.numero : (P ? ' del programa' : ''));
+ const maxi = Math.max(1, ...cuenta.map(x => x.llamado + x.plan)), tope = maxi <= 4 ? 4 : Math.ceil(maxi/2)*2;
+ document.getElementById('admg-y').innerHTML = `<span>${tope}</span><span>${tope/2}</span><span>0</span>`;
+ document.getElementById('admg-mt').textContent = 'Llamados y planes por mes' + (Fi ? ' · ficha ' + Fi.numero : (P ? ' · este programa' : ''));
  document.getElementById('admg-m').innerHTML = cuenta.map((x,i) => {
-  const t = x.llamado + x.plan, seg = (n, c) => n ? `<div class="g-seg" style="height:${Math.max(3, Math.round(n/tope*108))}px;background:${c}"></div>` : '';
+  const t = x.llamado + x.plan, seg = (n, c) => n ? `<div class="g-seg" style="height:${Math.max(3, Math.round(n/tope*144))}px;background:${c}"></div>` : '';
   return `<div class="g-col" data-i="${i}">${t ? `<div class="g-tot">${t}</div>` : ''}<div class="g-pila">${seg(x.plan, ADMG_COLOR.plan)}${seg(x.llamado, ADMG_COLOR.llamado)}</div></div>`;
  }).join('');
 }
