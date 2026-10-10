@@ -947,6 +947,49 @@ function lgVerClave(){
  </div>
  </div>
 
+ <!-- Situación general de la plataforma -->
+ <style>
+ #admg{background:#fff;border-radius:16px;padding:18px 18px 16px;margin-bottom:16px;color:#0b2545;font-family:inherit;position:relative}
+ #admg h3{margin:0;font-size:17px;font-weight:700;color:#0b2545}
+ #admg .g-sub{font-size:12.5px;color:#52514e;margin:2px 0 14px}
+ #admg h4{margin:0 0 8px;font-size:13.5px;font-weight:700;color:#0b2545}
+ #admg .g-ley{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#52514e;margin-bottom:6px}
+ #admg .g-ley i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+ #admg .g-plot{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid #d9dbe3;padding-top:18px}
+ #admg .g-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:default;position:relative}
+ #admg .g-col:hover .g-pila{filter:brightness(1.08)}
+ #admg .g-pila{width:62%;max-width:46px;display:flex;flex-direction:column;gap:2px}
+ #admg .g-seg{min-height:3px}
+ #admg .g-pila .g-seg:first-child{border-radius:4px 4px 0 0}
+ #admg .g-tot{font-size:12px;font-weight:600;color:#0b2545;margin-bottom:4px}
+ #admg .g-ejes{display:flex;gap:8px;margin-top:6px}
+ #admg .g-ejes span{flex:1;min-width:0;text-align:center;font-size:11.5px;color:#52514e;text-transform:capitalize}
+ #admg .g-dos{display:grid;grid-template-columns:1fr;gap:18px;margin-top:20px}
+ html[data-vista="pc"] #admg .g-dos{grid-template-columns:1.25fr 1fr;gap:28px}
+ #admg .g-fila{display:grid;grid-template-columns:minmax(0,42%) 1fr auto;align-items:center;gap:10px;font-size:13px;margin-bottom:8px}
+ #admg .g-fila span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0b2545}
+ #admg .g-barra{height:12px;border-radius:0 4px 4px 0;background:#2a78d6;min-width:3px}
+ #admg .g-fila b{font-weight:600;font-variant-numeric:tabular-nums}
+ #admg .g-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+ #admg .g-dato{background:#f4f5fa;border-radius:10px;padding:10px 12px}
+ #admg .g-dato b{display:block;font-size:22px;font-weight:700;color:#0b2545;line-height:1.15}
+ #admg .g-dato span{font-size:12px;color:#52514e;line-height:1.3;display:block;margin-top:2px}
+ #admg .g-vacio{font-size:13px;color:#52514e;padding:8px 0}
+ #admg details{margin-top:14px;font-size:12.5px;color:#52514e}
+ #admg summary{cursor:pointer}
+ #admg table{border-collapse:collapse;margin-top:8px;width:100%;max-width:420px}
+ #admg th,#admg td{text-align:right;padding:4px 8px;border-bottom:1px solid #e6e8f0;font-size:12.5px}
+ #admg th:first-child,#admg td:first-child{text-align:left}
+ #admg-tip{position:absolute;display:none;pointer-events:none;background:#0b2545;color:#fff;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:8px;z-index:5;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+ </style>
+ <div id="admg">
+ <h3>Situación general</h3>
+ <div class="g-sub" id="admg-sub">Cargando…</div>
+ <div id="admg-cuerpo"></div>
+ <div id="admg-tip"></div>
+ </div>
+ <div id="adash-ranking" style="display:none"></div>
+
  <!-- Menú de opciones admin -->
  <div class="adm-menu" style="display:flex;flex-direction:column;gap:10px;margin-bottom:16px;">
 
@@ -964,15 +1007,6 @@ function lgVerClave(){
  <div style="flex:1;">
  <div style="font-size:15px;font-weight:600;color:#1a1a1a;">Historial de documentos</div>
  <div style="font-size:12px;color:#666;">Filtrar por aprendiz, instructor, fecha, tipo de falta</div>
- </div>
- <span style="color:#1565c0;font-size:18px;">›</span>
- </button>
-
- <button class="adm-opt" onclick="adminIrA('novedades')" style="background:#fff;border:none;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;width:100%;">
- <span style="font-size:24px;"></span>
- <div style="flex:1;">
- <div style="font-size:15px;font-weight:600;color:#1a1a1a;">Novedades y anuncios</div>
- <div style="font-size:12px;color:#666;">Publicar comunicados, ofertas y actualizaciones</div>
  </div>
  <span style="color:#1565c0;font-size:18px;">›</span>
  </button>
@@ -995,12 +1029,6 @@ function lgVerClave(){
  <span style="color:rgba(255,255,255,0.6);font-size:18px;">›</span>
  </button>
 
- </div>
-
- <!-- Top instructores rápido -->
- <div class="adm-rank" style="background:rgba(255,255,255,0.1);border-radius:12px;padding:14px;border:1px solid rgba(255,255,255,0.15);">
- <div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:10px;"> Más activos este mes</div>
- <div id="adash-ranking" style="font-size:13px;color:rgba(255,255,255,0.85);"></div>
  </div>
 
  </div>
@@ -3921,6 +3949,7 @@ function mostrarAppPrincipal(){
 }
 
 async function cargarDashboardAdmin(){
+ admgPintar();
  try{
  const [hist, usrs] = await Promise.all([
  sbFetch('historial_documentos?select=nombre_usuario,fecha_generacion,created_at'),
@@ -3943,6 +3972,82 @@ async function cargarDashboardAdmin(){
  }catch(e){ console.warn(e); }
 }
 
+
+// ═══ Panel de Control · Situación general (gráfico de uso de la plataforma) ═══
+const ADMG_COLOR = {llamado:'#2a78d6', plan:'#eb6834'};
+async function admgPintar(){
+ const cuerpo = document.getElementById('admg-cuerpo'), sub = document.getElementById('admg-sub');
+ if(!cuerpo) return;
+ const pedir = async ruta => { try{ return await sbFetch(ruta); }catch(e){ return null; } };
+ const hace30 = new Date(Date.now() - 30*864e5).toISOString().slice(0,10);
+ let [hist, usrs, fichas, apr, inas] = await Promise.all([
+  pedir('historial_documentos?select=nombre_usuario,tipo_documento,fecha_generacion,created_at'),
+  pedir('usuarios?activo=eq.true&select=nombre'),
+  pedir('fichas?select=id'),
+  pedir('aprendices?select=estado'),
+  pedir('inasistencias?fecha=gte.'+hace30+'&select=id')
+ ]);
+ if(!apr) apr = await pedir('aprendices?select=id');
+ if(!hist){ sub.textContent = 'No se pudieron cargar los datos. Revisa tu conexión.'; cuerpo.innerHTML = ''; return; }
+ const esc = t => String(t==null?'':t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+ const fechaDe = h => new Date(h.fecha_generacion || h.created_at);
+ const hoy = new Date();
+ // Últimos 6 meses, del más antiguo al actual
+ const meses = [];
+ for(let i = 5; i >= 0; i--){
+  const d = new Date(hoy.getFullYear(), hoy.getMonth()-i, 1);
+  meses.push({a: d.getFullYear(), m: d.getMonth(), llamado: 0, plan: 0,
+   corto: d.toLocaleDateString('es-CO', {month:'short'}).replace('.',''), largo: (t => t.charAt(0).toUpperCase() + t.slice(1))(d.toLocaleDateString('es-CO', {month:'long', year:'numeric'}))});
+ }
+ const conteo = {}; let delMes = new Set();
+ hist.forEach(h => {
+  const f = fechaDe(h); if(isNaN(f)) return;
+  const k = meses.find(x => x.a === f.getFullYear() && x.m === f.getMonth());
+  if(k){ if(h.tipo_documento === 'plan') k.plan++; else k.llamado++; conteo[h.nombre_usuario] = (conteo[h.nombre_usuario]||0) + 1; }
+  if(f.getFullYear() === hoy.getFullYear() && f.getMonth() === hoy.getMonth()) delMes.add(h.nombre_usuario);
+ });
+ const total6 = meses.reduce((s,x) => s + x.llamado + x.plan, 0);
+ const tope = Math.max(1, ...meses.map(x => x.llamado + x.plan));
+ sub.textContent = 'Documentos generados en los últimos 6 meses: ' + total6;
+ const cols = meses.map((x,i) => {
+  const t = x.llamado + x.plan;
+  const seg = (n, c) => n ? `<div class="g-seg" style="height:${Math.max(3, Math.round(n/tope*128))}px;background:${c}"></div>` : '';
+  return `<div class="g-col" data-i="${i}">${t ? `<div class="g-tot">${t}</div>` : ''}<div class="g-pila">${seg(x.plan, ADMG_COLOR.plan)}${seg(x.llamado, ADMG_COLOR.llamado)}</div></div>`;
+ }).join('');
+ const top = Object.entries(conteo).sort((a,b) => b[1]-a[1]).slice(0,5);
+ const topMax = top.length ? top[0][1] : 1;
+ const nUsr = usrs ? usrs.length : null;
+ const enForm = apr ? apr.filter(a => !a.estado || a.estado === 'EN FORMACION').length : null;
+ const dato = (v, t) => `<div class="g-dato"><b>${v === null || v === undefined ? '—' : v}</b><span>${t}</span></div>`;
+ cuerpo.innerHTML = `
+  <div class="g-ley"><span><i style="background:${ADMG_COLOR.llamado}"></i>Llamados de atención</span><span><i style="background:${ADMG_COLOR.plan}"></i>Planes de mejoramiento</span></div>
+  <div class="g-plot">${cols}</div>
+  <div class="g-ejes">${meses.map(x => `<span>${x.corto}</span>`).join('')}</div>
+  <div class="g-dos">
+   <div><h4>Instructores con más documentos (6 meses)</h4>${top.length ? top.map(([n,c]) => `<div class="g-fila"><span title="${esc(n)}">${esc(n)}</span><div><div class="g-barra" style="width:${Math.max(2, Math.round(c/topMax*100))}%"></div></div><b>${c}</b></div>`).join('') : '<div class="g-vacio">Todavía no hay documentos en este periodo.</div>'}</div>
+   <div><h4>Uso y seguimiento</h4><div class="g-datos">
+    ${dato(nUsr === null ? null : delMes.size + ' de ' + nUsr, 'instructores usaron la plataforma este mes')}
+    ${dato(fichas ? fichas.length : null, 'fichas cargadas')}
+    ${dato(enForm, 'aprendices en formación')}
+    ${dato(inas ? inas.length : null, 'inasistencias en los últimos 30 días')}
+   </div></div>
+  </div>
+  <details><summary>Ver los datos en tabla</summary><table><tr><th>Mes</th><th>Llamados</th><th>Planes</th><th>Total</th></tr>${meses.map(x => `<tr><td>${x.largo}</td><td>${x.llamado}</td><td>${x.plan}</td><td>${x.llamado+x.plan}</td></tr>`).join('')}</table></details>`;
+ // Detalle al pasar el cursor o tocar una barra
+ const caja = document.getElementById('admg'), tip = document.getElementById('admg-tip');
+ const ver = col => {
+  const x = meses[+col.dataset.i], rc = col.getBoundingClientRect(), rb = caja.getBoundingClientRect();
+  tip.innerHTML = `<b>${x.largo}</b><br>Llamados: ${x.llamado}<br>Planes: ${x.plan}<br>Total: ${x.llamado+x.plan}`;
+  tip.style.display = 'block';
+  const izq = Math.min(Math.max(8, rc.left - rb.left + rc.width/2 - tip.offsetWidth/2), rb.width - tip.offsetWidth - 8);
+  tip.style.left = izq + 'px'; tip.style.top = Math.max(8, rc.top - rb.top - 6) + 'px';
+ };
+ cuerpo.querySelectorAll('.g-col').forEach(col => {
+  col.onmouseenter = () => ver(col); col.onmouseleave = () => tip.style.display = 'none';
+  col.onclick = () => { ver(col); clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); };
+ });
+}
+
 function irAHerramienta(){
  document.getElementById('pantalla-admin').style.display='none';
  document.getElementById('subpanel-admin').style.display='none';
@@ -3961,6 +4066,7 @@ function irAHerramienta(){
 }
 
 function volverAlAdmin(){
+ admgPintar();
  const btn = document.getElementById('btn-volver-admin');
  if(btn) btn.style.display='none';
  document.getElementById('pantalla-admin').style.display='block';
@@ -3969,6 +4075,7 @@ function volverAlAdmin(){
 }
 
 function volverDashAdmin(){
+ admgPintar();
  document.getElementById('subpanel-admin').style.display='none';
  document.getElementById('pantalla-admin').style.display='block';
 }
@@ -6709,14 +6816,6 @@ function fxPintarBotonAdmin(){
  b.style.cssText = 'background:#fff;border:none;border-radius:12px;padding:16px 18px;display:flex;align-items:center;gap:14px;cursor:pointer;text-align:left;width:100%;';
  b.innerHTML = `<span style="font-size:24px;"></span><div style="flex:1;"><div style="font-size:15px;font-weight:600;color:#1a1a1a;">Líderes y fichas</div><div style="font-size:12px;color:#666;">Designar líderes por programa, cargar y eliminar fichas</div></div><span style="color:#1565c0;font-size:18px;">›</span>`;
  ref.parentNode.insertBefore(b, ref);
- const m = document.createElement('button');
- m.id = 'fx-btn-admin-mias';
- m.className = 'adm-opt';
- m.onclick = () => FX_EN_DESARROLLO ? fxAvisoDesarrollo() : fxAbrir('asis');
- if(FX_EN_DESARROLLO) m.style.opacity = '0.6';
- m.style.cssText = b.style.cssText;
- m.innerHTML = `<span style="font-size:24px;"></span><div style="flex:1;"><div id="fx-adm-asis-tit" style="font-size:15px;font-weight:600;color:#1a1a1a;">Registro de inasistencia${FX_EN_DESARROLLO?FX_BADGE_DESARROLLO:''}</div><div style="font-size:12px;color:#666;">Inasistencias y mis fichas</div></div><span style="color:#1565c0;font-size:18px;">›</span>`;
- ref.parentNode.insertBefore(m, b);
 }
 
 // ── Vista principal ──
