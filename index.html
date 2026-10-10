@@ -947,37 +947,53 @@ function lgVerClave(){
  </div>
  </div>
 
- <!-- Situación general de la plataforma -->
+ <!-- Situación general de la plataforma: fichas y aprendices -->
  <style>
  #admg{background:#fff;border-radius:16px;padding:18px 18px 16px;margin-bottom:16px;color:#0b2545;font-family:inherit;position:relative}
  #admg h3{margin:0;font-size:17px;font-weight:700;color:#0b2545}
- #admg .g-sub{font-size:12.5px;color:#52514e;margin:2px 0 14px}
+ #admg .g-sub{font-size:12.5px;color:#52514e;margin:2px 0 12px}
  #admg h4{margin:0 0 8px;font-size:13.5px;font-weight:700;color:#0b2545}
+ #admg .g-foco{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#eef4fd;border-radius:10px;padding:9px 12px;margin-bottom:12px;min-height:40px;box-sizing:border-box}
+ #admg .g-foco b{font-size:13.5px;line-height:1.3;font-weight:700;color:#0b2545;flex:1 1 100%;min-width:0;height:2.6em;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+ html[data-vista="pc"] #admg .g-foco b{flex:1;height:auto;max-height:2.6em}
+ #admg .g-foco button{border:1px solid #c9d6ea;background:#fff;color:#0b2545;font:600 12px inherit;font-family:inherit;padding:6px 12px;border-radius:999px;cursor:pointer;white-space:nowrap}
+ #admg .g-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:6px}
+ html[data-vista="pc"] #admg .g-datos{grid-template-columns:repeat(4,1fr)}
+ #admg .g-dato{background:#f4f5fa;border-radius:10px;padding:10px 12px}
+ #admg .g-dato b{display:block;font-size:24px;font-weight:700;color:#0b2545;line-height:1.15;font-variant-numeric:tabular-nums}
+ #admg .g-dato span{font-size:12px;color:#52514e;line-height:1.3;display:block;margin-top:2px}
+ #admg .g-nota{font-size:12px;line-height:1.4;color:#52514e;height:2.8em;overflow:hidden;margin-bottom:8px}
+ html[data-vista="pc"] #admg .g-nota{height:1.4em;margin-bottom:12px}
+ #admg .g-dos{display:grid;grid-template-columns:1fr;gap:20px}
+ html[data-vista="pc"] #admg .g-dos{grid-template-columns:1fr 1fr;gap:28px}
+ #admg .g-lista{display:flex;flex-direction:column;gap:2px}
+ #admg .g-it{padding:6px 8px;border-radius:8px;cursor:pointer;transition:background .12s,opacity .12s}
+ #admg .g-it .g-nom{display:flex;justify-content:space-between;gap:10px;font-size:12.5px;line-height:1.3;color:#0b2545;margin-bottom:4px}
+ #admg .g-it .g-nom span:first-child{min-width:0;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+ #admg .g-it .g-nom b{font-weight:600;white-space:nowrap;font-variant-numeric:tabular-nums}
+ #admg .g-it .g-nom small{font-size:11.5px;color:#52514e;font-weight:400}
+ #admg .g-pista{height:10px}
+ #admg .g-barra{height:10px;border-radius:0 4px 4px 0;background:#2a78d6;min-width:3px;transition:width .2s}
+ #admg .g-barra.g-in{background:#eb6834}
+ #admg .g-lista.g-con-foco .g-it{opacity:.45}
+ #admg .g-lista.g-con-foco .g-it.g-on,#admg .g-it:hover{opacity:1;background:#eef4fd}
  #admg .g-ley{display:flex;gap:16px;flex-wrap:wrap;font-size:12.5px;color:#52514e;margin-bottom:6px}
  #admg .g-ley i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:6px;vertical-align:-1px}
- #admg .g-plot{display:flex;align-items:flex-end;gap:8px;height:170px;border-bottom:1px solid #d9dbe3;padding-top:18px}
- #admg .g-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:default;position:relative}
+ #admg .g-plot{display:flex;align-items:flex-end;gap:8px;height:150px;border-bottom:1px solid #d9dbe3;padding-top:18px}
+ #admg .g-col{flex:1;min-width:0;height:100%;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;cursor:default}
  #admg .g-col:hover .g-pila{filter:brightness(1.08)}
  #admg .g-pila{width:62%;max-width:46px;display:flex;flex-direction:column;gap:2px}
- #admg .g-seg{min-height:3px}
+ #admg .g-seg{min-height:3px;transition:height .2s}
  #admg .g-pila .g-seg:first-child{border-radius:4px 4px 0 0}
  #admg .g-tot{font-size:12px;font-weight:600;color:#0b2545;margin-bottom:4px}
  #admg .g-ejes{display:flex;gap:8px;margin-top:6px}
  #admg .g-ejes span{flex:1;min-width:0;text-align:center;font-size:11.5px;color:#52514e;text-transform:capitalize}
- #admg .g-dos{display:grid;grid-template-columns:1fr;gap:18px;margin-top:20px}
- html[data-vista="pc"] #admg .g-dos{grid-template-columns:1.25fr 1fr;gap:28px}
- #admg .g-fila{display:grid;grid-template-columns:minmax(0,42%) 1fr auto;align-items:center;gap:10px;font-size:13px;margin-bottom:8px}
- #admg .g-fila span:first-child{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#0b2545}
- #admg .g-barra{height:12px;border-radius:0 4px 4px 0;background:#2a78d6;min-width:3px}
- #admg .g-fila b{font-weight:600;font-variant-numeric:tabular-nums}
- #admg .g-datos{display:grid;grid-template-columns:1fr 1fr;gap:10px}
- #admg .g-dato{background:#f4f5fa;border-radius:10px;padding:10px 12px}
- #admg .g-dato b{display:block;font-size:22px;font-weight:700;color:#0b2545;line-height:1.15}
- #admg .g-dato span{font-size:12px;color:#52514e;line-height:1.3;display:block;margin-top:2px}
- #admg .g-vacio{font-size:13px;color:#52514e;padding:8px 0}
+ #admg .g-vacio{font-size:13px;color:#52514e;padding:8px}
+ #admg .g-bloque{margin-top:20px}
  #admg details{margin-top:14px;font-size:12.5px;color:#52514e}
  #admg summary{cursor:pointer}
- #admg table{border-collapse:collapse;margin-top:8px;width:100%;max-width:420px}
+ #admg .g-tabla{overflow-x:auto}
+ #admg table{border-collapse:collapse;margin-top:8px;width:100%}
  #admg th,#admg td{text-align:right;padding:4px 8px;border-bottom:1px solid #e6e8f0;font-size:12.5px}
  #admg th:first-child,#admg td:first-child{text-align:left}
  #admg-tip{position:absolute;display:none;pointer-events:none;background:#0b2545;color:#fff;font-size:12px;line-height:1.5;padding:7px 10px;border-radius:8px;z-index:5;white-space:nowrap;box-shadow:0 6px 18px rgba(0,0,0,.25)}
@@ -3973,79 +3989,136 @@ async function cargarDashboardAdmin(){
 }
 
 
-// ═══ Panel de Control · Situación general (gráfico de uso de la plataforma) ═══
+// ═══ Panel de Control · Situación general: fichas y aprendices (gráficos enlazados) ═══
 const ADMG_COLOR = {llamado:'#2a78d6', plan:'#eb6834'};
+const ADMG = {d: null, prog: null, ficha: null};
+function admgNorm(t){ return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/\s+/g,' ').trim(); }
+function admgEsc(t){ return String(t==null?'':t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
 async function admgPintar(){
  const cuerpo = document.getElementById('admg-cuerpo'), sub = document.getElementById('admg-sub');
  if(!cuerpo) return;
  const pedir = async ruta => { try{ return await sbFetch(ruta); }catch(e){ return null; } };
  const hace30 = new Date(Date.now() - 30*864e5).toISOString().slice(0,10);
- let [hist, usrs, fichas, apr, inas] = await Promise.all([
-  pedir('historial_documentos?select=nombre_usuario,tipo_documento,fecha_generacion,created_at'),
-  pedir('usuarios?activo=eq.true&select=nombre'),
-  pedir('fichas?select=id'),
-  pedir('aprendices?select=estado'),
-  pedir('inasistencias?fecha=gte.'+hace30+'&select=id')
+ let [fichas, apr, inas, hist] = await Promise.all([
+  pedir('fichas?select=id,numero,programa,grupo'),
+  pedir('aprendices?select=ficha_id,estado'),
+  pedir('inasistencias?fecha=gte.'+hace30+'&select=ficha_id'),
+  pedir('historial_documentos?select=tipo_documento,programa,ficha,fecha_generacion,created_at')
  ]);
- if(!apr) apr = await pedir('aprendices?select=id');
- if(!hist){ sub.textContent = 'No se pudieron cargar los datos. Revisa tu conexión.'; cuerpo.innerHTML = ''; return; }
- const esc = t => String(t==null?'':t).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const fechaDe = h => new Date(h.fecha_generacion || h.created_at);
- const hoy = new Date();
- // Últimos 6 meses, del más antiguo al actual
- const meses = [];
+ if(!fichas) fichas = await pedir('fichas?select=id,numero,programa');
+ if(!apr) apr = await pedir('aprendices?select=ficha_id');
+ if(!fichas && !hist){ sub.textContent = 'No se pudieron cargar los datos. Revisa tu conexión.'; cuerpo.innerHTML = ''; return; }
+ fichas = fichas || []; apr = apr || []; hist = hist || [];
+ const hoy = new Date(), meses = [];
  for(let i = 5; i >= 0; i--){
   const d = new Date(hoy.getFullYear(), hoy.getMonth()-i, 1);
-  meses.push({a: d.getFullYear(), m: d.getMonth(), llamado: 0, plan: 0,
-   corto: d.toLocaleDateString('es-CO', {month:'short'}).replace('.',''), largo: (t => t.charAt(0).toUpperCase() + t.slice(1))(d.toLocaleDateString('es-CO', {month:'long', year:'numeric'}))});
+  meses.push({a: d.getFullYear(), m: d.getMonth(), corto: d.toLocaleDateString('es-CO', {month:'short'}).replace('.',''),
+   largo: (t => t.charAt(0).toUpperCase() + t.slice(1))(d.toLocaleDateString('es-CO', {month:'long', year:'numeric'}))});
  }
- const conteo = {}; let delMes = new Set();
- hist.forEach(h => {
-  const f = fechaDe(h); if(isNaN(f)) return;
-  const k = meses.find(x => x.a === f.getFullYear() && x.m === f.getMonth());
-  if(k){ if(h.tipo_documento === 'plan') k.plan++; else k.llamado++; conteo[h.nombre_usuario] = (conteo[h.nombre_usuario]||0) + 1; }
-  if(f.getFullYear() === hoy.getFullYear() && f.getMonth() === hoy.getMonth()) delMes.add(h.nombre_usuario);
+ const F = {}, porNumero = {}, P = {};
+ fichas.forEach(f => {
+  const nombre = String(f.programa||'Sin programa').replace(/\s+/g,' ').trim(), k = admgNorm(nombre);
+  const o = F[f.id] = {id: String(f.id), numero: String(f.numero||''), grupo: String(f.grupo||'').trim(), prog: k, apr: 0, fuera: 0, inas: 0};
+  porNumero[o.numero] = o;
+  (P[k] = P[k] || {k, nombre, fichas: []}).fichas.push(o);
  });
- const total6 = meses.reduce((s,x) => s + x.llamado + x.plan, 0);
- const tope = Math.max(1, ...meses.map(x => x.llamado + x.plan));
- sub.textContent = 'Documentos generados en los últimos 6 meses: ' + total6;
- const cols = meses.map((x,i) => {
-  const t = x.llamado + x.plan;
-  const seg = (n, c) => n ? `<div class="g-seg" style="height:${Math.max(3, Math.round(n/tope*128))}px;background:${c}"></div>` : '';
+ apr.forEach(a => { const f = F[a.ficha_id]; if(!f) return; if(!a.estado || a.estado === 'EN FORMACION') f.apr++; else f.fuera++; });
+ (inas||[]).forEach(i => { const f = F[i.ficha_id]; if(f) f.inas++; });
+ // Cada documento se ubica por el número de ficha; si la ficha no está cargada, por el nombre del programa
+ const docs = [];
+ hist.forEach(h => {
+  const d = new Date(h.fecha_generacion || h.created_at); if(isNaN(d)) return;
+  const i = meses.findIndex(x => x.a === d.getFullYear() && x.m === d.getMonth()); if(i < 0) return;
+  const f = porNumero[String(h.ficha||'').trim()], kp = admgNorm(h.programa);
+  docs.push({i, plan: h.tipo_documento === 'plan', ficha: f ? f.id : null, prog: f ? f.prog : (P[kp] ? kp : null)});
+ });
+ const progs = Object.values(P);
+ progs.forEach(p => { p.apr = p.fichas.reduce((s,f) => s+f.apr, 0); p.fichas.sort((a,b) => b.inas-a.inas || b.apr-a.apr); });
+ progs.sort((a,b) => b.apr-a.apr || a.nombre.localeCompare(b.nombre));
+ ADMG.d = {fichas: Object.values(F), F, progs, P, docs, meses, hayInas: !!inas}; ADMG.prog = null; ADMG.ficha = null;
+ sub.textContent = progs.length ? 'Pasa el cursor (o toca) un programa o una ficha y todo lo demás cambia para mostrar solo sus datos.' : 'Todavía no hay fichas cargadas. Abajo se ve el movimiento de documentos.';
+ const tope = Math.max(1, ...progs.map(p => p.apr));
+ cuerpo.innerHTML = `
+  <div class="g-foco"><b id="admg-foco"></b><button type="button" id="admg-todos" style="visibility:hidden">Ver todos los programas</button></div>
+  <div class="g-datos" id="admg-t"></div>
+  <div class="g-nota" id="admg-nota"></div>
+  <div class="g-dos">
+   <div><h4>Aprendices en formación por programa</h4><div class="g-lista" id="admg-p">${progs.length ? progs.map(p => `<div class="g-it" data-prog="${admgEsc(p.k)}"><div class="g-nom"><span>${admgEsc(p.nombre)}</span><b>${p.apr} <small>· ${p.fichas.length} ficha${p.fichas.length===1?'':'s'}</small></b></div><div class="g-pista"><div class="g-barra" style="width:${Math.max(1, Math.round(p.apr/tope*100))}%"></div></div></div>`).join('') : '<div class="g-vacio">Cuando un líder cargue los reportes de fichas, aquí aparecen los programas.</div>'}</div></div>
+   <div>
+    <h4 id="admg-ft"></h4><div class="g-lista" id="admg-f"></div>
+    <div class="g-bloque"><h4 id="admg-mt"></h4>
+     <div class="g-ley"><span><i style="background:${ADMG_COLOR.llamado}"></i>Llamados de atención</span><span><i style="background:${ADMG_COLOR.plan}"></i>Planes de mejoramiento</span></div>
+     <div class="g-plot" id="admg-m"></div><div class="g-ejes">${meses.map(x => `<span>${x.corto}</span>`).join('')}</div>
+    </div>
+   </div>
+  </div>
+  <details><summary>Ver los datos en tabla</summary><div class="g-tabla"><table><tr><th>Programa</th><th>Fichas</th><th>En formación</th><th>Fuera de formación</th><th>Inasistencias (30 días)</th><th>Documentos (6 meses)</th></tr>${progs.map(p => `<tr><td>${admgEsc(p.nombre)}</td><td>${p.fichas.length}</td><td>${p.apr}</td><td>${p.fichas.reduce((s,f)=>s+f.fuera,0)}</td><td>${inas ? p.fichas.reduce((s,f)=>s+f.inas,0) : '—'}</td><td>${docs.filter(d => d.prog === p.k).length}</td></tr>`).join('')}</table></div></details>`;
+ // Un solo juego de eventos para todo el bloque
+ const fijar = (prog, ficha) => { if(ADMG.prog === prog && ADMG.ficha === ficha) return; const cambiaProg = ADMG.prog !== prog; ADMG.prog = prog; ADMG.ficha = ficha; admgActualizar(cambiaProg); };
+ const sobre = e => {
+  const f = e.target.closest('[data-ficha]'); if(f){ fijar(ADMG.prog, f.dataset.ficha); return; }
+  const p = e.target.closest('[data-prog]'); if(p){ fijar(p.dataset.prog, null); return; }
+  const c = e.target.closest('.g-col'); if(c) admgTip(c);
+ };
+ cuerpo.onmouseover = sobre;
+ cuerpo.ontouchstart = () => { ADMG.tactil = true; };
+ cuerpo.onclick = e => {
+  if(e.target.closest('#admg-todos')){ fijar(null, null); return; }
+  sobre(e);
+  const c = e.target.closest('.g-col'), tip = document.getElementById('admg-tip');
+  if(c){ clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); }
+ };
+ cuerpo.onmouseout = e => {
+  if(e.target.closest('.g-col')) document.getElementById('admg-tip').style.display = 'none';
+  const lf = document.getElementById('admg-f');
+  if(!ADMG.tactil && ADMG.ficha && lf && lf.contains(e.target) && !lf.contains(e.relatedTarget)) fijar(ADMG.prog, null);
+ };
+ admgActualizar(true);
+}
+// Recalcula cifras, fichas y meses según el programa o la ficha que esté en foco
+function admgActualizar(rehacerFichas){
+ const D = ADMG.d; if(!D) return;
+ const P = ADMG.prog ? D.P[ADMG.prog] : null, Fi = ADMG.ficha ? D.F[ADMG.ficha] : null;
+ const grupo = Fi ? [Fi] : (P ? P.fichas : D.fichas);
+ const docs = D.docs.filter(d => Fi ? d.ficha === Fi.id : (P ? d.prog === P.k : true));
+ const nomFicha = f => 'Ficha ' + f.numero + (f.grupo ? ' · ' + f.grupo : '');
+ document.getElementById('admg-foco').textContent = Fi ? nomFicha(Fi) + ' — ' + D.P[Fi.prog].nombre : (P ? P.nombre : 'Todos los programas');
+ document.getElementById('admg-todos').style.visibility = (P || Fi) ? 'visible' : 'hidden';
+ const suma = c => grupo.reduce((s,f) => s + f[c], 0), nAp = suma('apr'), nFu = suma('fuera');
+ const dato = (v, t) => `<div class="g-dato"><b>${v}</b><span>${t}</span></div>`;
+ document.getElementById('admg-t').innerHTML = dato(Fi ? 1 : grupo.length, Fi ? 'ficha seleccionada' : 'fichas cargadas') + dato(nAp, 'aprendices en formación')
+  + dato(D.hayInas ? suma('inas') : '—', 'inasistencias en los últimos 30 días') + dato(docs.length, 'llamados y planes en 6 meses');
+ document.getElementById('admg-nota').textContent = nFu ? nFu + ' aprendiz' + (nFu===1?'':'es') + ' fuera de formación (retiro, cancelación, aplazamiento o traslado).' : '';
+ const lp = document.getElementById('admg-p');
+ lp.classList.toggle('g-con-foco', !!ADMG.prog);
+ lp.querySelectorAll('.g-it').forEach(el => el.classList.toggle('g-on', el.dataset.prog === ADMG.prog));
+ const lf = document.getElementById('admg-f');
+ if(rehacerFichas){
+  const lista = (P ? P.fichas.slice() : D.fichas.slice().sort((a,b) => b.inas-a.inas || b.apr-a.apr).slice(0, 6));
+  const tope = Math.max(1, ...lista.map(f => f.inas));
+  document.getElementById('admg-ft').textContent = P ? 'Fichas del programa: inasistencias en 30 días' : 'Fichas con más inasistencias en 30 días';
+  lf.innerHTML = lista.length ? lista.map(f => `<div class="g-it" data-ficha="${admgEsc(f.id)}"><div class="g-nom"><span>${admgEsc(nomFicha(f))} <small>· ${f.apr} aprendices</small></span><b>${D.hayInas ? f.inas : '—'}</b></div><div class="g-pista"><div class="g-barra g-in" style="width:${f.inas ? Math.max(2, Math.round(f.inas/tope*100)) : 0}%;min-width:${f.inas?3:0}px"></div></div></div>`).join('') : '<div class="g-vacio">Sin fichas para mostrar.</div>';
+ }
+ lf.classList.toggle('g-con-foco', !!Fi);
+ lf.querySelectorAll('.g-it').forEach(el => el.classList.toggle('g-on', !!Fi && el.dataset.ficha === Fi.id));
+ // Documentos por mes del foco actual
+ const cuenta = D.meses.map(() => ({llamado: 0, plan: 0}));
+ docs.forEach(d => { cuenta[d.i][d.plan ? 'plan' : 'llamado']++; });
+ ADMG.cuenta = cuenta;
+ const tope = Math.max(1, ...cuenta.map(x => x.llamado + x.plan));
+ document.getElementById('admg-mt').textContent = 'Llamados y planes por mes' + (Fi ? ' de la ficha ' + Fi.numero : (P ? ' del programa' : ''));
+ document.getElementById('admg-m').innerHTML = cuenta.map((x,i) => {
+  const t = x.llamado + x.plan, seg = (n, c) => n ? `<div class="g-seg" style="height:${Math.max(3, Math.round(n/tope*108))}px;background:${c}"></div>` : '';
   return `<div class="g-col" data-i="${i}">${t ? `<div class="g-tot">${t}</div>` : ''}<div class="g-pila">${seg(x.plan, ADMG_COLOR.plan)}${seg(x.llamado, ADMG_COLOR.llamado)}</div></div>`;
  }).join('');
- const top = Object.entries(conteo).sort((a,b) => b[1]-a[1]).slice(0,5);
- const topMax = top.length ? top[0][1] : 1;
- const nUsr = usrs ? usrs.length : null;
- const enForm = apr ? apr.filter(a => !a.estado || a.estado === 'EN FORMACION').length : null;
- const dato = (v, t) => `<div class="g-dato"><b>${v === null || v === undefined ? '—' : v}</b><span>${t}</span></div>`;
- cuerpo.innerHTML = `
-  <div class="g-ley"><span><i style="background:${ADMG_COLOR.llamado}"></i>Llamados de atención</span><span><i style="background:${ADMG_COLOR.plan}"></i>Planes de mejoramiento</span></div>
-  <div class="g-plot">${cols}</div>
-  <div class="g-ejes">${meses.map(x => `<span>${x.corto}</span>`).join('')}</div>
-  <div class="g-dos">
-   <div><h4>Instructores con más documentos (6 meses)</h4>${top.length ? top.map(([n,c]) => `<div class="g-fila"><span title="${esc(n)}">${esc(n)}</span><div><div class="g-barra" style="width:${Math.max(2, Math.round(c/topMax*100))}%"></div></div><b>${c}</b></div>`).join('') : '<div class="g-vacio">Todavía no hay documentos en este periodo.</div>'}</div>
-   <div><h4>Uso y seguimiento</h4><div class="g-datos">
-    ${dato(nUsr === null ? null : delMes.size + ' de ' + nUsr, 'instructores usaron la plataforma este mes')}
-    ${dato(fichas ? fichas.length : null, 'fichas cargadas')}
-    ${dato(enForm, 'aprendices en formación')}
-    ${dato(inas ? inas.length : null, 'inasistencias en los últimos 30 días')}
-   </div></div>
-  </div>
-  <details><summary>Ver los datos en tabla</summary><table><tr><th>Mes</th><th>Llamados</th><th>Planes</th><th>Total</th></tr>${meses.map(x => `<tr><td>${x.largo}</td><td>${x.llamado}</td><td>${x.plan}</td><td>${x.llamado+x.plan}</td></tr>`).join('')}</table></details>`;
- // Detalle al pasar el cursor o tocar una barra
- const caja = document.getElementById('admg'), tip = document.getElementById('admg-tip');
- const ver = col => {
-  const x = meses[+col.dataset.i], rc = col.getBoundingClientRect(), rb = caja.getBoundingClientRect();
-  tip.innerHTML = `<b>${x.largo}</b><br>Llamados: ${x.llamado}<br>Planes: ${x.plan}<br>Total: ${x.llamado+x.plan}`;
-  tip.style.display = 'block';
-  const izq = Math.min(Math.max(8, rc.left - rb.left + rc.width/2 - tip.offsetWidth/2), rb.width - tip.offsetWidth - 8);
-  tip.style.left = izq + 'px'; tip.style.top = Math.max(8, rc.top - rb.top - 6) + 'px';
- };
- cuerpo.querySelectorAll('.g-col').forEach(col => {
-  col.onmouseenter = () => ver(col); col.onmouseleave = () => tip.style.display = 'none';
-  col.onclick = () => { ver(col); clearTimeout(tip._t); tip._t = setTimeout(() => tip.style.display = 'none', 2500); };
- });
+}
+function admgTip(col){
+ const caja = document.getElementById('admg'), tip = document.getElementById('admg-tip'), i = +col.dataset.i, x = ADMG.cuenta[i];
+ tip.innerHTML = `<b>${ADMG.d.meses[i].largo}</b><br>Llamados: ${x.llamado}<br>Planes: ${x.plan}<br>Total: ${x.llamado+x.plan}`;
+ tip.style.display = 'block';
+ const rc = col.getBoundingClientRect(), rb = caja.getBoundingClientRect();
+ tip.style.left = Math.min(Math.max(8, rc.left - rb.left + rc.width/2 - tip.offsetWidth/2), rb.width - tip.offsetWidth - 8) + 'px';
+ tip.style.top = Math.max(8, rc.top - rb.top - tip.offsetHeight + 10) + 'px';
 }
 
 function irAHerramienta(){
