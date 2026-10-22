@@ -1727,9 +1727,8 @@ function mfAlternar(){
  </div>
 
  <div class="field full campo-oculto" id="cd-mes">
- <label>Inasistencias por mes</label>
+ <label>Días de la falta, por mes</label>
  <div id="bloques-meses"></div>
- <button class="btn btn-secondary" onclick="agregarMes()" style="margin-top:10px;width:100%">+ Agregar otro mes</button>
  </div>
  <div class="field full campo-oculto" id="cd-descripcion">
  <label>Descripción de la situación</label>
@@ -1757,7 +1756,7 @@ function mfAlternar(){
  <!-- Vista previa texto base (segundo académico) -->
  <div id="cd-desc-preview-base" style="display:none;background:#f0faf0;border:1px solid #c0dd97;border-radius:8px;padding:10px 14px;font-size:13px;color:#27500A;line-height:1.6;">
  <strong>Vista previa:</strong><br>
- De acuerdo con el seguimiento realizado por <strong id="ctx-quien-base">[quien reporta]</strong>, se evidencia que, a pesar de las orientaciones brindadas y del Primer Llamado de Atención Académico previamente realizado, persisten incumplimientos relacionados con el desarrollo y la entrega de actividades de aprendizaje, así como la presentación incompleta o extemporánea de evidencias requeridas dentro del proceso formativo. Esta situación ha impactado el avance de su proceso de aprendizaje y el logro oportuno de los resultados de aprendizaje establecidos en el programa de formación.
+ De acuerdo con el seguimiento realizado por <strong id="ctx-quien-base">[quien reporta]</strong>, se evidencia que, <span id="ctx-base-tail">a pesar de las orientaciones brindadas y del Primer Llamado de Atención Académico previamente realizado, persisten incumplimientos relacionados con el desarrollo y la entrega de actividades de aprendizaje, así como la presentación incompleta o extemporánea de evidencias requeridas dentro del proceso formativo. Esta situación ha impactado el avance de su proceso de aprendizaje y el logro oportuno de los resultados de aprendizaje establecidos en el programa de formación.</span>
  </div>
 
  <!-- Inicio fijo + campo libre (segundo académico) -->
@@ -1796,6 +1795,15 @@ function mfAlternar(){
  <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
   <button type="button" class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="agregarRecDisc()">+ Agregar recomendación</button>
   <button type="button" class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="restablecerRecsDisc()">Restablecer las de esta falta</button>
+ </div>
+ </div>
+ <div class="card" id="card-recs-acad" style="display:none;">
+ <h2>Orientaciones académicas</h2>
+ <p style="font-size:12px;color:var(--muted);margin:-4px 0 12px;line-height:1.5;">Se cargan según la(s) falta(s) seleccionada(s). Marca o desmarca la casilla para incluirlas o no, edita el texto como necesites, elimínalas o agrega otras; así saldrán en el segundo llamado.</p>
+ <div id="lista-recs-acad"></div>
+ <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:8px;">
+  <button type="button" class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="agregarRecAcad()">+ Agregar orientación</button>
+  <button type="button" class="btn btn-secondary" style="padding:8px 14px;font-size:13px;" onclick="restablecerRecsAcad()">Restablecer las de esta falta</button>
  </div>
  </div>
  <div class="actions">
@@ -2368,39 +2376,29 @@ const { jsPDF } = window.jspdf;
 // CALENDARIO MULTI-MES 
 const MESES = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
 const DIAS_SEMANA = ['Lu','Ma','Mi','Ju','Vi','Sá','Do'];
-let bloquesMeses = [];
+let bloquesMeses = []; // (compatibilidad) el calendario real es por falta: bloquesPorFalta
+let bloquesPorFalta = {};
 let tipoLlamado = '', numeroLlamado = '', faltaSeleccionada = '';
 
-function agregarMes(){
- const anioActual = new Date().getFullYear();
- bloquesMeses.push({ mes: '', anio: anioActual, diasSel: new Set() });
+function bloquesDe(k){ return bloquesPorFalta[k] || (bloquesPorFalta[k] = []); }
+function nuevoBloqueMes(){ return { mes: '', anio: new Date().getFullYear(), diasSel: new Set() }; }
+function agregarMes(k){
+ if(!k) k = (typeof diasFaltasActuales==='function' && diasFaltasActuales()[0]) || 'inasistencia';
+ bloquesDe(k).push(nuevoBloqueMes());
  renderBloquesMeses();
 }
-
-function quitarMes(idx){
- bloquesMeses.splice(idx, 1);
+function quitarMes(k, idx){ bloquesDe(k).splice(idx, 1); renderBloquesMeses(); }
+function cambiarMes(k, idx, val){ const b = bloquesDe(k)[idx]; b.mes = val; b.diasSel = new Set(); renderBloquesMeses(); }
+function toggleDia(k, idx, dia){
+ const b = bloquesDe(k)[idx];
+ if(b.diasSel.has(dia)) b.diasSel.delete(dia); else b.diasSel.add(dia);
  renderBloquesMeses();
 }
-
-function cambiarMes(idx, val){
- bloquesMeses[idx].mes = val;
- bloquesMeses[idx].diasSel = new Set();
- renderBloquesMeses();
-}
-
-function toggleDia(idx, dia){
- const b = bloquesMeses[idx];
- if(b.diasSel.has(dia)) b.diasSel.delete(dia);
- else b.diasSel.add(dia);
- renderBloquesMeses();
-}
-
 function diasEnMes(mesNombre, anio){
  const m = MESES.indexOf(mesNombre);
  if(m < 0) return 31;
  return new Date(anio, m+1, 0).getDate();
 }
-
 function primerDiaSemana(mesNombre, anio){
  const m = MESES.indexOf(mesNombre);
  if(m < 0) return 0;
@@ -2408,15 +2406,17 @@ function primerDiaSemana(mesNombre, anio){
  const d = new Date(anio, m, 1).getDay();
  return d === 0 ? 6 : d - 1;
 }
-
+function tituloDiasFalta(k){ return k==='impuntualidad' ? 'Días de impuntualidad, por mes' : 'Días de inasistencia, por mes'; }
+// Cada falta de días (impuntualidad / inasistencia) tiene su propio calendario
+function asegurarBloquesDias(){ diasFaltasActuales().forEach(k => { if(bloquesDe(k).length === 0) bloquesDe(k).push(nuevoBloqueMes()); }); }
 function renderBloquesMeses(){
  const cont = document.getElementById('bloques-meses');
  if(!cont) return;
- if(bloquesMeses.length === 0){
- cont.innerHTML = '<span style="font-size:13px;color:#6b7a6b">Presiona el botón para agregar un mes</span>';
- return;
- }
- cont.innerHTML = bloquesMeses.map((b, idx) => {
+ const ks = diasFaltasActuales();
+ if(ks.length === 0){ cont.innerHTML = ''; return; }
+ cont.innerHTML = ks.map(k => {
+ const bl = bloquesDe(k);
+ const bloques = bl.length === 0 ? '<span style="font-size:13px;color:#6b7a6b">Presiona el botón para agregar un mes</span>' : bl.map((b, idx) => {
  const totalDias = b.mes ? diasEnMes(b.mes, b.anio) : 0;
  const offset = b.mes ? primerDiaSemana(b.mes, b.anio) : 0;
  const headers = DIAS_SEMANA.map(d => `<div class="cal-header-day">${d}</div>`).join('');
@@ -2424,16 +2424,15 @@ function renderBloquesMeses(){
  const celdas = totalDias ? Array.from({length: totalDias}, (_,i) => {
  const dia = i+1;
  const sel = b.diasSel.has(dia) ? 'sel' : '';
- return `<div class="cal-day ${sel}" onmousedown="toggleDia(${idx},${dia})">${dia}</div>`;
+ return `<div class="cal-day ${sel}" onmousedown="toggleDia('${k}',${idx},${dia})">${dia}</div>`;
  }).join('') : '';
-
  return `<div class="bloque-mes">
  <div class="bloque-mes-header">
- <select onchange="cambiarMes(${idx},this.value)">
+ <select onchange="cambiarMes('${k}',${idx},this.value)">
  <option value="">Seleccionar mes...</option>
  ${MESES.map(m=>`<option value="${m}" ${b.mes===m?'selected':''}>${m.charAt(0).toUpperCase()+m.slice(1)}</option>`).join('')}
  </select>
- <button onmousedown="quitarMes(${idx})" title="Quitar mes"></button>
+ <button onmousedown="quitarMes('${k}',${idx})" title="Quitar mes"></button>
  </div>
  ${b.mes ? `<div class="cal-grid">${headers}${vacios}${celdas}</div>
  <div style="margin-top:8px;font-size:12px;color:#27500A;">
@@ -2441,10 +2440,17 @@ function renderBloquesMeses(){
  </div>` : ''}
  </div>`;
  }).join('');
+ return `<div style="margin-bottom:16px;">
+ ${ks.length>1 ? `<div style="font-weight:700;color:var(--green-mid);margin-bottom:6px;">${tituloDiasFalta(k)}</div>` : ''}
+ ${bloques}
+ <button class="btn btn-secondary" onclick="agregarMes('${k}')" style="margin-top:10px;width:100%">+ Agregar otro mes</button>
+ </div>`;
+ }).join('');
 }
 
-function getDiasParaPDF(){
- return bloquesMeses
+function getDiasParaPDF(k){
+ if(!k) k = diasFaltasActuales()[0];
+ return bloquesDe(k)
  .filter(b => b.mes && b.diasSel.size > 0)
  .map(b => {
  const diasOrdenados = [...b.diasSel].sort((a,b)=>a-b).join(', ');
@@ -2478,8 +2484,8 @@ const FALTAS_DISC = {
  parrafo1:'el cual establece el deber de reportar o informar oportunamente ante el instructor como primera instancia, y en segunda instancia al coordinador académico, las situaciones que se presenten en la ejecución de la formación que afecten el desarrollo de la misma.',
  esDias:false },
  actividades_sena: {
- icon:'', label:'Incumplimiento en actividades programadas por el SENA', sub:'Cap. 3, Art. 8, #8',
- articulo:'Capítulo 3, Artículo 8, numeral 8 del Reglamento del Aprendiz SENA',
+ icon:'', label:'Incumplimiento en actividades programadas por el SENA', sub:'Cap. 3, Art. 8, #9',
+ articulo:'Capítulo 3, Artículo 8, numeral 9 del Reglamento del Aprendiz SENA',
  parrafo1:'el cual establece el deber de cumplir con la reglamentación y directrices que se emitan para su participación en actividades programadas por el SENA o en las que represente a la entidad, como salidas, pasantías técnicas, intercambios de aprendices a nivel nacional e internacional, así como en las demás de carácter lúdico-pedagógico.',
  esDias:false },
  ambientes: {
@@ -2505,9 +2511,17 @@ const FALTAS_DISC = {
 };
 
 const FALTAS_ACAD = {
- evidencias: { icon:'', label:'Incumplimiento en el desarrollo de las actividades de aprendizaje', sub:'Cap. 3, Art. 8, Num. 3',
- articulo:'Capítulo 3, Artículo 8, Numeral 3',
+ evidencias: { icon:'', label:'Incumplimiento en el desarrollo de las actividades de aprendizaje', sub:'Cap. 3, Art. 8, Num. 6',
+ articulo:'Capítulo 3, Artículo 8, Numeral 6',
  parrafo1:'el cual establece que el aprendiz debe cumplir con todas las actividades de su proceso formativo, presentando las evidencias según la planeación pedagógica, guías de aprendizaje y cronograma, en los plazos o en la oportunidad que estas deban presentarse o reportarse, a través de los medios dispuestos para ello.',
+ esDias:false },
+ plagio: { icon:'', label:'Plagio y apropiación indebida de trabajos académicos', sub:'Cap. 3, Art. 8, Num. 12',
+ articulo:'Capítulo 3, Artículo 8, Numeral 12',
+ parrafo1:'el cual establece el deber de respetar los derechos de autor y demás derechos de propiedad intelectual en los materiales, trabajos, proyectos y demás documentos entregados o generados en el proceso formativo.',
+ esDias:false },
+ suplantacion: { icon:'', label:'Suplantación de autoría en actividades y evidencias de aprendizaje', sub:'Cap. 3, Art. 8, Num. 13',
+ articulo:'Capítulo 3, Artículo 8, Numeral 13',
+ parrafo1:'el cual establece el deber de realizar personalmente las evaluaciones, investigaciones, actividades y prácticas de formación, haciendo uso de sus conocimientos, su esfuerzo personal, creatividad y autoría propia, absteniéndose de presentar como propios escritos, documentos, ideas o resultados que no sean de su autoría.',
  esDias:false }
 };
 
@@ -2630,6 +2644,105 @@ function eliminarRecDisc(i){ recsDisc.splice(i,1); renderRecsDisc(); }
 function restablecerRecsDisc(){ if(!confirm('¿Volver a las recomendaciones originales de esta falta? Se perderán los cambios.')) return; recsDisc = recsDiscPorDefecto(faltaSeleccionada); renderRecsDisc(); }
 function recsDiscFinales(){ const l = recsDisc.map(r => String(r||'').replace(/\s+/g,' ').trim()).filter(Boolean); return l.length ? l : recsDiscPorDefecto(faltaSeleccionada); }
 
+// ===== Textos independientes por falta de días (impuntualidad / inasistencia) =====
+function esFaltaDias(k){ return k==='inasistencia' || k==='impuntualidad'; }
+function diasFaltasActuales(){ return llFaltas().filter(esFaltaDias); }
+const CIERRE_DIAS = ' el desarrollo normal de las actividades de aprendizaje, el cumplimiento de los compromisos adquiridos y el alcance de los resultados de aprendizaje previstos dentro de su programa de formación.';
+// Devuelve los segmentos {t,b} del párrafo de una falta de días. idx/total: posición entre las faltas de días del llamado.
+function segmentosDiasFalta(k, instr, dias, idx, total){
+ const ini = idx===0 ? 'De acuerdo con' : 'Así mismo, de acuerdo con';
+ const seg = [];
+ if(k==='impuntualidad'){
+  seg.push({t:ini+' los registros de asistencia y los reportes realizados por '},{t:instr,b:true},{t:', se evidencia que el aprendiz ha llegado de manera impuntual a las actividades de formación '},{t:dias,b:true},{t:' del presente año.'});
+ } else {
+  seg.push({t:ini+' los registros de inasistencia y los reportes realizados por '},{t:instr,b:true},{t:', se evidencia que el aprendiz presenta inasistencia continua o intermitente '},{t:dias,b:true},{t:' del presente año, sin que se haya justificado debidamente su incumplimiento en las actividades de la formación.'});
+ }
+ if(idx===total-1) seg.push({t:(total>1?' Situaciones que afectan':' Situación que afecta')+CIERRE_DIAS});
+ return seg;
+}
+function htmlDiasFalta(k, instr, dias, idx, total){
+ return segmentosDiasFalta(k, instr, dias, idx, total).map(x=>x.b?`<strong>${x.t}</strong>`:x.t).join('');
+}
+
+// ===== Orientaciones académicas por falta (segundo llamado académico) =====
+const REC_ACAD_ACTA = 'Como evidencia del conocimiento y aceptación de las orientaciones académicas antes descritas, el aprendiz deberá firmar un Acta de Compromiso Académico, comprometiéndose a cumplir las acciones de mejora establecidas para corregir las situaciones evidenciadas.';
+const RECS_ACAD_POR_FALTA = {
+ evidencias: [
+  'Cumplir con el desarrollo y la entrega oportuna de las actividades de aprendizaje programadas.',
+  'Presentar las evidencias de aprendizaje pendientes dentro de los plazos acordados con el instructor.',
+  'Realizar seguimiento permanente a las guías de aprendizaje, cronogramas y compromisos académicos establecidos.',
+  'Participar activamente en las actividades de formación y en las estrategias de acompañamiento definidas por el equipo ejecutor.',
+  'Atender las recomendaciones y orientaciones brindadas por los instructores para fortalecer el logro de los resultados de aprendizaje.',
+  'Mantener comunicación oportuna con el instructor cuando se presenten situaciones que puedan afectar el cumplimiento de sus compromisos académicos.'
+ ],
+ plagio: [
+  'Respetar los derechos de autor y la propiedad intelectual en los trabajos y evidencias que presente, citando siempre las fuentes consultadas.',
+  'Elaborar nuevamente las evidencias cuestionadas con trabajo propio, dentro del plazo que defina el instructor.',
+  'Aplicar las normas de citación y referenciación indicadas por el instructor en todos los trabajos y evidencias de aprendizaje.',
+  'Consultar al instructor, antes de entregar sus trabajos, cualquier duda sobre el uso y la citación de fuentes.',
+  'Participar en las actividades de orientación sobre integridad académica y uso responsable de fuentes de información que defina el equipo ejecutor.'
+ ],
+ suplantacion: [
+  'Realizar personalmente las evaluaciones y actividades de aprendizaje, haciendo uso de sus conocimientos, esfuerzo y autoría propios.',
+  'Abstenerse de presentar como propio el trabajo de otra persona y de permitir que un tercero desarrolle sus evidencias de aprendizaje.',
+  'Presentar nuevamente la actividad cuestionada, desarrollada directamente por el aprendiz, en el plazo que defina el instructor.',
+  'Sustentar ante el instructor el contenido y el desarrollo de sus evidencias de aprendizaje cuando así se le solicite.',
+  'Solicitar acompañamiento al instructor cuando tenga dificultades con una actividad, en lugar de recurrir a terceros.'
+ ]
+};
+// Texto base del segundo llamado académico, según la(s) falta(s) elegida(s)
+const BASE_ACAD_POR_FALTA = {
+ evidencias: {
+  sit: 'incumplimientos relacionados con el desarrollo y la entrega de actividades de aprendizaje, así como la presentación incompleta o extemporánea de evidencias requeridas dentro del proceso formativo',
+  imp: 'Esta situación ha impactado el avance de su proceso de aprendizaje y el logro oportuno de los resultados de aprendizaje establecidos en el programa de formación.'
+ },
+ plagio: {
+  sit: 'situaciones relacionadas con la presentación de trabajos o evidencias que no corresponden a su propia elaboración, o en las que no se reconoce adecuadamente la autoría de las fuentes consultadas, vulnerando los derechos de autor y la propiedad intelectual',
+  imp: 'Esta situación compromete la integridad de su proceso de aprendizaje y el logro de los resultados de aprendizaje establecidos en el programa de formación.'
+ },
+ suplantacion: {
+  sit: 'situaciones relacionadas con la presentación de actividades o evidencias de aprendizaje desarrolladas total o parcialmente por otra persona, o que no corresponden a su propia autoría',
+  imp: 'Esta situación compromete la integridad de su proceso de aprendizaje y el logro de los resultados de aprendizaje establecidos en el programa de formación.'
+ }
+};
+function faltasAcadActuales(){ const l = (llFaltas()).filter(k => RECS_ACAD_POR_FALTA[k]); return l.length ? l : ['evidencias']; }
+function tailBaseAcad(){
+ const l = faltasAcadActuales().map(k => BASE_ACAD_POR_FALTA[k]);
+ return 'a pesar de las orientaciones brindadas y del Primer Llamado de Atención Académico previamente realizado, persisten ' + l.map(x=>x.sit).join('; así mismo, persisten ') + '. ' + [...new Set(l.map(x=>x.imp))].join(' ');
+}
+function recsAcadPorDefecto(){
+ const out = [];
+ faltasAcadActuales().forEach(k => RECS_ACAD_POR_FALTA[k].forEach(r => { if(!out.includes(r)) out.push(r); }));
+ return out.concat([REC_ACAD_ACTA]).map(t => ({t, on:true}));
+}
+let recsAcad = [], recsAcadClave = '';
+function prepararRecsAcad(){
+ const card = document.getElementById('card-recs-acad');
+ const aplica = tipoLlamado==='academico' && numeroLlamado==='segundo';
+ if(card) card.style.display = aplica ? '' : 'none';
+ if(!aplica) return;
+ const clave = faltasAcadActuales().join('|');
+ if(recsAcadClave !== clave){ recsAcad = recsAcadPorDefecto(); recsAcadClave = clave; }
+ renderRecsAcad();
+}
+function renderRecsAcad(){
+ const cont = document.getElementById('lista-recs-acad');
+ if(!cont) return;
+ cont.innerHTML = recsAcad.length ? recsAcad.map((r,i) => `<div style="display:flex;gap:8px;align-items:flex-start;margin-bottom:8px;">
+   <input type="checkbox" ${r.on?'checked':''} onchange="toggleRecAcad(${i},this.checked)" title="Incluir en el documento" style="margin-top:12px;width:18px;height:18px;flex:none;">
+   <textarea rows="3" style="flex:1;${r.on?'':'opacity:.5;'}" oninput="recsAcad[${i}].t=this.value">${escHtml(r.t)}</textarea>
+   <button type="button" title="Eliminar" onclick="eliminarRecAcad(${i})" style="border:1px solid #efc0ba;background:#fff;color:#c0392b;border-radius:8px;padding:6px 10px;cursor:pointer;margin-top:4px;">✕</button></div>`).join('')
+  : '<div style="font-size:13px;color:var(--muted);padding:6px 0;">No hay orientaciones. Agrega al menos una.</div>';
+}
+function toggleRecAcad(i, on){ recsAcad[i].on = on; renderRecsAcad(); }
+function agregarRecAcad(){ recsAcad.splice(Math.max(recsAcad.length-1,0), 0, {t:'', on:true}); renderRecsAcad(); const t = document.querySelectorAll('#lista-recs-acad textarea'); if(t.length) t[Math.max(t.length-2,0)].focus(); }
+function eliminarRecAcad(i){ recsAcad.splice(i,1); renderRecsAcad(); }
+function restablecerRecsAcad(){ if(!confirm('¿Volver a las orientaciones originales de esta falta? Se perderán los cambios.')) return; recsAcad = recsAcadPorDefecto(); renderRecsAcad(); }
+function recsAcadFinales(){
+ const l = recsAcad.filter(r => r.on).map(r => String(r.t||'').replace(/\s+/g,' ').trim()).filter(Boolean);
+ return l.length ? l : recsAcadPorDefecto().map(r => r.t);
+}
+
 // Un llamado puede reunir varias faltas del mismo tipo. "faltaSeleccionada" sigue siendo la principal
 // (define qué detalles se piden); "faltasSel" guarda todas las marcadas.
 let faltasSel = [];
@@ -2719,10 +2832,10 @@ function mostrarCampos(){
  toggleDescTipo();
  return;
  }
- if(faltaSeleccionada==='inasistencia'||faltaSeleccionada==='impuntualidad'){
+ if(esFaltaDias(faltaSeleccionada)){
  document.getElementById('cd-mes').classList.remove('campo-oculto');
- if(bloquesMeses.length===0) agregarMes();
- else renderBloquesMeses();
+ asegurarBloquesDias();
+ renderBloquesMeses();
  // Los días son la descripción; si hay otras faltas marcadas, se pide además describirlas
  if(llHayDescriptiva()) document.getElementById('cd-descripcion').classList.remove('campo-oculto');
  } else {
@@ -2734,8 +2847,8 @@ function mostrarCampos(){
  const ctxTexto = document.getElementById('ctx-texto-base');
  if(ctxTexto){
  const instr = `<strong id="ctx-instructor">${v('instructores')||'[instructor]'}</strong>`;
- if(faltaSeleccionada==='inasistencia'||faltaSeleccionada==='impuntualidad'){
- ctxTexto.innerHTML = `"De acuerdo con los registros de inasistencia y los reportes realizados por el instructor ${instr}, se evidencia: <strong style='color:#c0392b;'>[lo que escribas aquí]</strong> su asistencia ha sido intermitente los [días seleccionados] del presente año. Situación que afecta el desarrollo normal de las actividades de aprendizaje..."`;
+ if(esFaltaDias(faltaSeleccionada)){
+ ctxTexto.innerHTML = '"' + htmlDiasFalta(faltaSeleccionada, v('instructores')||'[instructor]', '[días seleccionados]', 0, 1) + '"';
  } else {
  ctxTexto.innerHTML = `"De acuerdo con los registros y reportes realizados por el instructor ${instr}, se identificó la siguiente situación: <strong style='color:#c0392b;'>[lo que escribas aquí]</strong>"`;
  }
@@ -2761,7 +2874,7 @@ function mostrarCampos(){
 }
 
 function goTo(n){
- if(n===6) setTimeout(prepararRecsDisc, 0);
+ if(n===6) setTimeout(()=>{ prepararRecsDisc(); prepararRecsAcad(); }, 0);
  if(n>1&&!validateStep(n-1))return;
  for(let i=1;i<=7;i++){
  document.getElementById('panel'+i).classList.toggle('active',i===n);
@@ -2814,7 +2927,7 @@ function buildResumen(){
  <div class="preview-row"><span>Tipo de llamado:</span><span>${tipoLabel} — ${numLabel}</span></div>
  <div class="preview-row"><span>${llFaltas().length>1?'Faltas ('+llFaltas().length+'):':'Tipo de falta:'}</span><span>${llEtiquetas().join('<br>')}</span></div>
  <div class="preview-row"><span>Instructor(es):</span><span>${v('instructores')}</span></div>
- ${falta.esDias?`<div class="preview-row"><span>Días:</span><span>${(typeof getDiasParaPDF==='function' && getDiasParaPDF())||'[sin días seleccionados]'}</span></div>`:`<div class="preview-row"><span>Fecha del hecho:</span><span>${ffh}</span></div>`}
+ ${diasFaltasActuales().length?diasFaltasActuales().map(k=>`<div class="preview-row"><span>${diasFaltasActuales().length>1?'Días de '+(k==='impuntualidad'?'impuntualidad':'inasistencia')+':':'Días:'}</span><span>${getDiasParaPDF(k)||'[sin días seleccionados]'}</span></div>`).join(''):`<div class="preview-row"><span>Fecha del hecho:</span><span>${ffh}</span></div>`}
  ${argVal?`<div class="preview-row"><span>Argumentación:</span><span>${argVal.substring(0,80)}${argVal.length>80?'...':''}</span></div>`:''}
  `;
 }
@@ -3035,7 +3148,7 @@ function generarPDF(){
  y=writeJustifiedMixed([
  {t:'De acuerdo con el seguimiento realizado por '},
  {t:instrVal,b:true},
- {t:', se evidencia que, a pesar de las orientaciones brindadas y del Primer Llamado de Atención Académico previamente realizado, persisten incumplimientos relacionados con el desarrollo y la entrega de actividades de aprendizaje, así como la presentación incompleta o extemporánea de evidencias requeridas dentro del proceso formativo. Esta situación ha impactado el avance de su proceso de aprendizaje y el logro oportuno de los resultados de aprendizaje establecidos en el programa de formación.'}
+ {t:', se evidencia que, '+tailBaseAcad()}
  ],y);y+=4;
  } else {
  const textoLibre = descAcad.texto || '[descripción de la situación]';
@@ -3053,15 +3166,12 @@ function generarPDF(){
  y=writeJustified(parrafos[pi].trim(),y,false);y+=4;
  }
  }
- } else if(faltaSeleccionada==='inasistencia'||faltaSeleccionada==='impuntualidad'){
- const diasStr = getDiasParaPDF();
- y=writeJustifiedMixed([
- {t:'De acuerdo con los registros de inasistencia y los reportes realizados por '},
- {t:instrVal,b:true},
- {t:', se evidencia que su asistencia ha sido intermitente '},
- {t:diasStr||'[días no seleccionados]',b:true},
- {t:' del presente año. Situación que afecta el desarrollo normal de las actividades de aprendizaje, el cumplimiento de los compromisos adquiridos y el alcance de los resultados de aprendizaje previstos dentro de su programa de formación.'}
- ],y);y+=4;
+ } else if(esFaltaDias(faltaSeleccionada)){
+ const dfs = diasFaltasActuales();
+ dfs.forEach((k,i)=>{
+ y=checkPage(y,10);
+ y=writeJustifiedMixed(segmentosDiasFalta(k,instrVal,getDiasParaPDF(k)||'[días no seleccionados]',i,dfs.length),y);y+=4;
+ });
  if(llHayDescriptiva()){
   const pa = desc.split(/\n\n+|\n/).filter(p=>p.trim().length>0);
   y=checkPage(y,10);
@@ -3218,14 +3328,7 @@ function generarPDF(){
  doc.setFont('helvetica','bold'); doc.setFontSize(10); doc.setTextColor(...BLACK);
  doc.text('Orientaciones académicas:', ml, y); y+=6;
 
- const recsAcad = [
- 'Cumplir con el desarrollo y la entrega oportuna de las actividades de aprendizaje programadas.',
- 'Presentar las evidencias de aprendizaje pendientes dentro de los plazos acordados con el instructor.',
- 'Realizar seguimiento permanente a las guías de aprendizaje, cronogramas y compromisos académicos establecidos.',
- 'Participar activamente en las actividades de formación y en las estrategias de acompañamiento definidas por el equipo ejecutor.',
- 'Atender las recomendaciones y orientaciones brindadas por los instructores para fortalecer el logro de los resultados de aprendizaje.',
- 'Mantener comunicación oportuna con el instructor cuando se presenten situaciones que puedan afectar el cumplimiento de sus compromisos académicos.'
- ];
+ const recsAcad = recsAcadFinales();
  const bullet2 = '\u2022';
  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(...BLACK);
  for(const rec of recsAcad){
@@ -3237,12 +3340,8 @@ function generarPDF(){
  y+=2;
  }
  y+=6;
- y=checkPage(y, 5.5*3);
- y=writeJustified('El incumplimiento de las anteriores recomendaciones de mejoramiento académico o la persistencia de las situaciones aquí descritas dará lugar a la aplicación de la siguiente medida formativa, correspondiente a la formulación e implementación de un Plan de Mejoramiento Académico, de conformidad con lo establecido en el Reglamento del Aprendiz SENA.',y,false); y+=8;
  y=parrafoFinal([
- {t:'Como evidencia del conocimiento y aceptación de las orientaciones académicas antes descritas, '},
- {t:'el aprendiz deberá firmar un Acta de Compromiso académico', b:true},
- {t:', comprometiéndose a cumplir las acciones de mejora establecidas para corregir las situaciones evidenciadas.'}
+ {t:'El incumplimiento de las anteriores recomendaciones de mejoramiento académico o la persistencia de las situaciones aquí descritas dará lugar a la aplicación de la siguiente medida formativa, correspondiente a la formulación e implementación de un Plan de Mejoramiento Académico, de conformidad con lo establecido en el Reglamento del Aprendiz SENA.'}
  ],y);
  }
 
@@ -3318,7 +3417,7 @@ function volverInicio(){
  document.getElementById('header-p').textContent = 'Centro Nacional Colombo Alemán — Área Metalmecánica';
  document.getElementById('btn-volver-wrap').style.display='none';
  // Reset estado
- bloquesMeses=[]; tipoLlamado=''; numeroLlamado=''; faltaSeleccionada=''; faltasSel=[]; recsDisc=[]; recsDiscFalta='';
+ bloquesMeses=[]; bloquesPorFalta={}; tipoLlamado=''; numeroLlamado=''; faltaSeleccionada=''; faltasSel=[]; recsDisc=[]; recsDiscFalta=''; recsAcad=[]; recsAcadClave='';
  for(let i=1;i<=7;i++){
  const p=document.getElementById('panel'+i);
  if(p){p.classList.remove('active');if(i===1)p.classList.add('active');}
@@ -3400,7 +3499,7 @@ function buildPreviewHTML(){
  if(esSegundo && tipoLlamado==='academico'){
  const descAcad2 = getDescSegundoAcad();
  if(descAcad2.tipo==='base'){
- parrafo2 = `De acuerdo con el seguimiento realizado por <strong>${instrVal}</strong>, se evidencia que, a pesar de las orientaciones brindadas y del Primer Llamado de Atención Académico previamente realizado, persisten incumplimientos relacionados con el desarrollo y la entrega de actividades de aprendizaje, así como la presentación incompleta o extemporánea de evidencias requeridas dentro del proceso formativo. Esta situación ha impactado el avance de su proceso de aprendizaje y el logro oportuno de los resultados de aprendizaje establecidos en el programa de formación.`;
+ parrafo2 = `De acuerdo con el seguimiento realizado por <strong>${instrVal}</strong>, se evidencia que, ${tailBaseAcad()}`;
  } else {
  const tl = descAcad2.texto || '[descripción]';
  const pts = tl.split(/\n\n+|\n/).filter(p=>p.trim().length>0);
@@ -3408,9 +3507,9 @@ function buildPreviewHTML(){
  const extras2 = pts.slice(1).map(p=>`<p style="text-align:justify;margin-bottom:8px;">${p.trim()}</p>`).join('');
  parrafo2 = `De acuerdo con el seguimiento realizado por <strong>${instrVal}</strong>, se evidencia que, ${p0}${extras2 ? '</p>'+extras2+'<p style="display:none">' : ''}`;
  }
- } else if(faltaSeleccionada==='inasistencia'||faltaSeleccionada==='impuntualidad'){
+ } else if(esFaltaDias(faltaSeleccionada)){
  const diasStr = getDiasParaPDF() || '[días no seleccionados]';
- parrafo2 = `De acuerdo con los registros de inasistencia y los reportes realizados por <strong>${instrVal}</strong>, se evidencia que su asistencia ha sido intermitente <strong>${diasStr}</strong> del presente año. Situación que afecta el desarrollo normal de las actividades de aprendizaje, el cumplimiento de los compromisos adquiridos y el alcance de los resultados de aprendizaje previstos dentro de su programa de formación.`;
+ { const dfs = diasFaltasActuales(); parrafo2 = dfs.map((k,i)=>htmlDiasFalta(k,instrVal,getDiasParaPDF(k)||'[días no seleccionados]',i,dfs.length)).join('</p><p style="text-align:justify;margin-bottom:8px;">'); }
  if(llHayDescriptiva()){ const pa2 = (v('descripcionFalta')||'[descripción de la situación]').split(/\n\n+|\n/).filter(p=>p.trim().length>0); parrafo2 += `</p><p style="text-align:justify;margin-bottom:8px;">Adicionalmente, de acuerdo con los reportes realizados por <strong>${instrVal}</strong>, se identificó la siguiente situación: ${pa2.join('</p><p style="text-align:justify;margin-bottom:8px;">')}`; }
  } else if(faltaSeleccionada!=='actividades'){
  const desc = v('descripcionFalta') || '[descripción de la situación]';
@@ -3421,7 +3520,7 @@ function buildPreviewHTML(){
  }
 
  const recsDiscPrev = recsDiscFinales();
- const recsAcad = ['Cumplir con la entrega de todas las evidencias de aprendizaje en los plazos establecidos por el instructor.','Participar activamente en las actividades académicas programadas y cumplir con los compromisos adquiridos.','Mantener comunicación oportuna con el instructor ante cualquier dificultad que afecte el cumplimiento de sus responsabilidades formativas.','Atender las orientaciones y recomendaciones impartidas por los instructores y demás integrantes del equipo ejecutor.','Realizar seguimiento periódico a su proceso formativo y adoptar acciones que contribuyan al mejoramiento de su desempeño académico.'];
+ const recsAcad = recsAcadFinales();
  const recs = tipoLlamado==='disciplinario' ? recsDiscPrev : recsAcad;
  const tipoMejora = tipoLlamado==='disciplinario' ? 'disciplinario' : 'académico';
 
@@ -3431,7 +3530,6 @@ function buildPreviewHTML(){
  <ul style="margin:0 0 16px 18px;padding:0;">${recs.map(r=>`<li style="text-align:justify;margin-bottom:6px;"><strong>${r}</strong></li>`).join('')}</ul>
  <hr style="border:none;border-top:1px solid #ccc;margin:18px 0;">
  <p style="text-align:justify;margin-bottom:10px;"><strong>Se informa que el incumplimiento de las recomendaciones aquí establecidas o la persistencia de las conductas que dieron origen al presente llamado de atención dará lugar a la aplicación de la siguiente medida formativa, consistente en la formulación y ejecución de un Plan de Mejoramiento ${tipoLlamado==='disciplinario'?'Disciplinario':'Académico'}, conforme a lo dispuesto en el Acuerdo 0009 de 2024 del Reglamento del Aprendiz SENA.</strong></p>
-${tipoLlamado==='disciplinario' ? '' : ` <p style="text-align:justify;margin-bottom:24px;"><strong>Como evidencia del conocimiento y aceptación de las recomendaciones antes descritas, el aprendiz deberá firmar un Acta de Compromiso ${tipoLlamado==='disciplinario'?'Disciplinario':'Académico'}, comprometiéndose a cumplir las acciones de mejora establecidas para corregir las situaciones evidenciadas.</strong></p>`}
  <div style="margin-top:16px;display:flex;gap:24px;flex-wrap:wrap;">
  <div style="flex:1;min-width:180px;border-top:2px solid #333;padding-top:6px;"><strong>${getFirmante().toUpperCase()}</strong><br>${getCargoFirmante().replace('\n','<br>')}</div>
  ${firmaCoordinadorLlamado() ? `<div style="flex:1;min-width:180px;border-top:2px solid #333;padding-top:6px;"><strong>${firmaCoordinadorLlamado().nombre.toUpperCase()}</strong><br>${firmaCoordinadorLlamado().cargo.replace('\n','<br>')}</div>` : ''}
@@ -3565,6 +3663,7 @@ function toggleDescTipo(){
  const qb = document.getElementById('ctx-quien-base');
  const ql = document.getElementById('ctx-quien-libre');
  if(qb) qb.textContent = quien;
+ const tb = document.getElementById('ctx-base-tail'); if(tb) tb.textContent = tailBaseAcad();
  if(ql) ql.textContent = quien;
 
  if(esBase){
